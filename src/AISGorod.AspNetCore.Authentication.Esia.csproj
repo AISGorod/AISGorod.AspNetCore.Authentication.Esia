@@ -6,7 +6,21 @@
 
   <PropertyGroup>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <Company>AISGorod</Company>
+    <Authors>Vladislav Moiseev</Authors>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <RepositoryUrl>https://github.com/AISGorod/AISGorod.AspNetCore.Authentication.Esia</RepositoryUrl>
+    <PackageTags>AspNetCore.Authentication ESIA gosuslugi</PackageTags>
+    <Description>Промежуточное ПО для ASP.NET Core для входа пользователей через портал госуслуг (ЕСИА).
+
+ESIA (gosuslugi) identity provider (middleware) for ASP.NET Core based on OpenID Connect.</Description>
+    <PackageReleaseNotes>Initial version.</PackageReleaseNotes>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\LICENSE" Link="LICENSE" Pack="true" PackagePath="" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="2.1.0" />
