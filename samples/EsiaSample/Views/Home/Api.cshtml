@@ -1,0 +1,59 @@
+﻿@{
+    ViewBag.Title = "Проверка API";
+
+    var defaultUrl = ViewBag.Url;
+}
+<div class="row">
+
+    <div class="col-4">
+        <h3>Запрос</h3>
+        <form method="post" id="sendForm">
+            <div class="form-group">
+                <label for="method">Метод</label>
+                <select name="method" class="form-control">
+                    <option value="get" selected="selected">GET</option>
+                    <option value="post">POST</option>
+                    <option value="put">PUT</option>
+                    <option value="delete">DELETE</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="url">URL</label>
+                <input type="text" name="url" value="@(defaultUrl)" class="form-control" />
+            </div>
+            <button type="submit" class="btn btn-primary">Отправить</button>
+        </form>
+    </div>
+
+    <div class="col-8">
+        <h3>Результат</h3>
+        <small><pre id="result">Тут будет написан результат выполнения запроса.</pre></small>
+    </div>
+
+</div>
+
+<style>
+    #result {
+        background-color: #f6f6f6;
+        padding: 5px;
+    }
+</style>
+
+<script>
+    $(function () {
+        $('#sendForm').on('submit', function (e) {
+            e.preventDefault();
+
+            var formData = new FormData($('#sendForm')[0]);
+            $.ajax('/Home/Api', {
+                method: 'post',
+                processData: false,
+                contentType: false,
+                data: formData,
+                success: function (data) {
+                    $('#result').text(data);
+                }
+            });
+        });
+    });
+</script>

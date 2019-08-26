@@ -1,0 +1,34 @@
+﻿@{ 
+    ViewBag.Title = "Информация о пользователе";
+}
+
+@if (!User.Identity.IsAuthenticated)
+{
+    <div class="alert alert-danger">
+        Вы не авторизованы.
+        Пожалуйста, выполните вход в систему.
+    </div>
+}
+
+<div class="row">
+    <div class="col-6">
+        @if (User.Claims.Any())
+        {
+            <h2>Claims</h2>
+            @foreach (var claim in User.Claims)
+            {
+                <strong>@(claim.Type)</strong> @(claim.Value)<br />
+            }
+        }
+    </div>
+    <div class="col-6">
+        @if (ViewBag.UserProps != null)
+        {
+            <h2>Properties</h2>
+            @foreach (var prop in ViewBag.UserProps)
+            {
+                <strong>@(prop.Key)</strong> @(prop.Value)<br />
+            }
+        }
+    </div>
+</div>
