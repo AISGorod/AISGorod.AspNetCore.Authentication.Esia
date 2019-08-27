@@ -14,6 +14,7 @@ namespace Microsoft.Extensions.DependencyInjection
     /// </summary>
     public static class EsiaExtensions
     {
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
         public static AuthenticationBuilder AddEsia(this AuthenticationBuilder builder)
             => builder.AddEsia(EsiaDefaults.AuthenticationScheme, _ => { });
 
@@ -40,6 +41,7 @@ namespace Microsoft.Extensions.DependencyInjection
             var configBuilder = new OpenIdConnectOptionsBuilder(esiaOptions, esiaEnvironment);
             return builder.AddRemoteScheme<OpenIdConnectOptions, EsiaHandler>(authenticationScheme, displayName, configBuilder.BuildAction());
         }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
     }
 }
 

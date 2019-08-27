@@ -39,5 +39,23 @@ namespace AISGorod.AspNetCore.Authentication.Esia
         /// Полезно, если требуется настроить работу с прокси.
         /// </summary>
         public HttpClient Backchannel { get; set; }
+
+        /// <summary>
+        /// Переопределение DefaultSignInScheme.
+        /// Может быть полезно при использовании нескольких провайдеров (например, вместе с IdentityServer).
+        /// </summary>
+        public string SignInScheme { get; set; }
+
+        /// <summary>
+        /// Схема, используемая при логауте.
+        /// По умолчанию берётся значение из SignInScheme.
+        /// </summary>
+        public string SignOutScheme { get; set; }
+
+        /// <summary>
+        /// Сохраняет маркеры доступа, идентификации и обновления в параметрах аутентификации.
+        /// По умолчанию выключено, чтобы уменьшить размер cookie (зато нельзя выполнять API-запросы).
+        /// </summary>
+        public bool SaveTokens { get; set; }
     }
 }

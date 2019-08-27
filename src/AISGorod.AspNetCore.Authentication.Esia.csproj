@@ -16,6 +16,8 @@
 ESIA (gosuslugi) identity provider (middleware) for ASP.NET Core based on OpenID Connect.</Description>
     <PackageReleaseNotes>Initial version.</PackageReleaseNotes>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <Version>1.0.1</Version>
+    <PackageIconUrl>http://www.aisgorod.ru/img/ais_ava.png</PackageIconUrl>
   </PropertyGroup>
 
   <ItemGroup>

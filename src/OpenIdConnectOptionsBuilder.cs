@@ -35,11 +35,13 @@ namespace AISGorod.AspNetCore.Authentication.Esia
                 options.TokenValidationParameters.IssuerSigningKey = new RsaSecurityKey(environment.EsiaCertificate.GetRSAPublicKey());
                 options.TokenValidationParameters.ValidIssuer = "http://esia.gosuslugi.ru/";
                 options.ClientId = esiaOptions.Mnemonic;
-                options.SaveTokens = true;
                 options.GetClaimsFromUserInfoEndpoint = false;
                 options.StateDataFormat = new EsiaSecureDataFormat();
                 options.EventsType = typeof(EsiaEvents);
                 _FillScopes(options.Scope);
+                options.SignInScheme = esiaOptions.SignInScheme;
+                options.SignOutScheme = esiaOptions.SignOutScheme;
+                options.SaveTokens = esiaOptions.SaveTokens;
             };
         }
 
