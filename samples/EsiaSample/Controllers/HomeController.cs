@@ -1,12 +1,15 @@
 ﻿using AISGorod.AspNetCore.Authentication.Esia;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.OAuth.Claims;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace EsiaSample.Controllers
@@ -30,11 +33,12 @@ namespace EsiaSample.Controllers
             return View();
         }
 
-        public IActionResult SignIn(string scopes)
+        public IActionResult SignIn(string scopes, bool orgSelect)
         {
+            var callbackUrl = Url.Action(orgSelect ? "OrganizationSelect" : "Index", "Home");
             return Challenge(new OpenIdConnectChallengeProperties()
             {
-                RedirectUri = Url.Action("Index", "Home"),
+                RedirectUri = callbackUrl,
                 Scope = string.IsNullOrEmpty(scopes) ? null : scopes.Split(' ')
             }, "Esia");
         }
@@ -92,6 +96,45 @@ namespace EsiaSample.Controllers
                 result = ex.Message + "\r\n\r\n" + ex.StackTrace;
             }
             return Content(result);
+        }
+
+        [Authorize]
+        public async Task<IActionResult> OrganizationSelect(int? id)
+        {
+            var oId = User.Claims.First(i => i.Type == "sub").Value;
+            var model = new Models.OrganizationSelectViewModel();
+
+            var organizations = await esiaRestService.CallAsync($"/rs/prns/{oId}/roles", HttpMethod.Get);
+            model.PersonRoles = organizations["elements"].ToObject<List<Models.EsiaPersonRoles>>();
+
+            if (id == null)
+            {
+                // selector render logic
+                return View(model);
+            }
+            else
+            {
+                // org choice login
+
+                var currentOrganization = model.PersonRoles.First(i => i.oid == id);
+                var userInfo = await HttpContext.AuthenticateAsync("Esia");
+                var identity = userInfo.Principal.Identity as ClaimsIdentity;
+
+                var orgClaims = identity.Claims.Where(i => i.Type.StartsWith("urn:esia:org")).ToArray();
+                foreach (var orgClaim in orgClaims)
+                {
+                    identity.RemoveClaim(orgClaim);
+                }
+
+                identity.AddClaim(new Claim("urn:esia:org:oid", currentOrganization.oid.ToString()));
+                identity.AddClaim(new Claim("urn:esia:org:fullName", currentOrganization.fullName));
+                identity.AddClaim(new Claim("urn:esia:org:shortName", currentOrganization.shortName));
+                identity.AddClaim(new Claim("urn:esia:org:ogrn", currentOrganization.ogrn));
+
+                await HttpContext.SignInAsync(userInfo.Principal, userInfo.Properties);
+
+                return RedirectToAction(nameof(Index));
+            }
         }
     }
 }

@@ -1,0 +1,32 @@
+﻿@model EsiaSample.Models.OrganizationSelectViewModel
+
+@{
+    ViewBag.Title = "Информация о пользователе";
+}
+
+<div class="text-center">
+    <p class="org-selector">
+        <h3>Выберите организацию:</h3>
+        <br/>
+
+        <div class="btn-group-vertical">
+            @foreach (var personRole in Model.PersonRoles)
+            {
+                <a asp-action="OrganizationSelect" asp-route-id="@(personRole.oid)" class="btn btn-outline-dark" title="@(personRole.fullName)">
+                    <h4>@(personRole.shortName)</h4>
+                    <small>ОГРН: @(personRole.ogrn)</small>
+                </a>
+            }
+        </div>
+    </p>
+</div>
+
+<style>
+    .org-selector {
+        text-align: center;
+    }
+
+        .org-selector .btn-group-vertical > .btn {
+            width: 400px;
+        }
+</style>

@@ -37,7 +37,7 @@ namespace EsiaSample
                     options.Environment = EsiaEnvironmentType.Test;
                     options.Mnemonic = "TESTSYS";
                     options.Certificate = () => new X509Certificate2(System.IO.File.ReadAllBytes(@"c:\esia.pfx"), "");
-                    options.Scope = new[] { "fullname", "snils", "email", "mobile" };
+                    options.Scope = new[] { "fullname", "snils", "email", "mobile", "usr_org" };
                     options.SaveTokens = true;
                 });
 

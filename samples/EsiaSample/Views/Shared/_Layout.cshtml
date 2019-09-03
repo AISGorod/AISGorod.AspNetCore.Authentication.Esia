@@ -34,6 +34,7 @@
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                             <a class="dropdown-item" asp-area="" asp-controller="Home" asp-action="SignIn">Все scope</a>
                             <a class="dropdown-item" asp-area="" asp-controller="Home" asp-action="SignIn" asp-route-scopes="openid fullname">Только fullname</a>
+                            <a class="dropdown-item" asp-area="" asp-controller="Home" asp-action="SignIn" asp-route-scopes="openid usr_org" asp-route-orgSelect="true">С выбором организации</a>
                         </div>
                     </li>
                 }
