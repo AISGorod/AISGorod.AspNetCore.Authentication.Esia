@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -14,14 +14,15 @@
     <Description>Промежуточное ПО для ASP.NET Core для входа пользователей через портал госуслуг (ЕСИА).
 
 ESIA (gosuslugi) identity provider (middleware) for ASP.NET Core based on OpenID Connect.</Description>
-    <PackageReleaseNotes>Initial version.</PackageReleaseNotes>
+    <PackageReleaseNotes>IEsiaEnvironment becomes public.</PackageReleaseNotes>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <Version>1.0.1</Version>
-    <PackageIconUrl>http://www.aisgorod.ru/img/ais_ava.png</PackageIconUrl>
+    <Version>1.0.2</Version>
+    <PackageIcon>icon.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
     <None Include="..\LICENSE" Link="LICENSE" Pack="true" PackagePath="" />
+    <None Include="icon.png" Pack="true" PackagePath=""/>
   </ItemGroup>
 
   <ItemGroup>
