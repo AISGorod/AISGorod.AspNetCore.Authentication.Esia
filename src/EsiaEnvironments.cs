@@ -15,7 +15,7 @@ namespace AISGorod.AspNetCore.Authentication.Esia
         Test,
 
         /// <summary>
-        /// Продукционная среда ЕСИА.
+        /// Продуктивная среда ЕСИА.
         /// </summary>
         Production
     }
@@ -23,7 +23,7 @@ namespace AISGorod.AspNetCore.Authentication.Esia
     /// <summary>
     /// Настройка среды ЕСИА.
     /// </summary>
-    interface IEsiaEnvironment
+    public interface IEsiaEnvironment
     {
         /// <summary>
         /// Сертификат среды ЕСИА.
@@ -57,6 +57,78 @@ namespace AISGorod.AspNetCore.Authentication.Esia
     }
 
     /// <summary>
+    /// Описание тестовой среды ЕСИА.
+    /// </summary>
+    public class TestEsiaEnvironment : IEsiaEnvironment
+    {
+        /// <summary>
+        /// Сертификат среды ЕСИА.
+        /// </summary>
+        public X509Certificate2 EsiaCertificate => new X509Certificate2(Encoding.UTF8.GetBytes(EsiaCertificates.TestCertificate));
+
+        /// <summary>
+        /// Базовый URL для запросов.
+        /// </summary>
+        public string Host => "https://esia-portal1.test.gosuslugi.ru";
+
+        /// <summary>
+        /// Endpoint для получения авторизационного кода.
+        /// </summary>
+        public string AuthorizationEndpoint => Host + "/aas/oauth2/ac";
+
+        /// <summary>
+        /// Endpoint для получения маркера доступа и(или) маркера идентификации.
+        /// </summary>
+        public string TokenEndpoint => Host + "/aas/oauth2/te";
+
+        /// <summary>
+        /// Endpoint для логаута.
+        /// </summary>
+        public string LogoutEndpoint => Host + "/idp/ext/Logout";
+
+        /// <summary>
+        /// Базовый URL для REST-сервиса персональных данных.
+        /// </summary>
+        public string RestPersonsEndpoint => Host + "/rs/prns/";
+    }
+
+    /// <summary>
+    /// Описание продуктивной среды ЕСИА.
+    /// </summary>
+    public class ProductionEsiaEnvironment : IEsiaEnvironment
+    {
+        /// <summary>
+        /// Сертификат среды ЕСИА.
+        /// </summary>
+        public X509Certificate2 EsiaCertificate => new X509Certificate2(Encoding.UTF8.GetBytes(EsiaCertificates.ProductionCertificate));
+
+        /// <summary>
+        /// Базовый URL для запросов.
+        /// </summary>
+        public string Host => "https://esia.gosuslugi.ru";
+
+        /// <summary>
+        /// Endpoint для получения авторизационного кода.
+        /// </summary>
+        public string AuthorizationEndpoint => Host + "/aas/oauth2/ac";
+
+        /// <summary>
+        /// Endpoint для получения маркера доступа и(или) маркера идентификации.
+        /// </summary>
+        public string TokenEndpoint => Host + "/aas/oauth2/te";
+
+        /// <summary>
+        /// Endpoint для логаута.
+        /// </summary>
+        public string LogoutEndpoint => Host + "/idp/ext/Logout";
+
+        /// <summary>
+        /// Базовый URL для REST-сервиса персональных данных.
+        /// </summary>
+        public string RestPersonsEndpoint => Host + "/rs/prns/";
+    }
+
+    /// <summary>
     /// Позволяет получить экземпляр среды ЕИСА на основании значения перечисления.
     /// </summary>
     sealed class EsiaEnvironmentResolver
@@ -73,48 +145,12 @@ namespace AISGorod.AspNetCore.Authentication.Esia
             switch (this.type)
             {
                 case EsiaEnvironmentType.Test:
-                    return new TestEnvironment();
+                    return new TestEsiaEnvironment();
                 case EsiaEnvironmentType.Production:
-                    return new ProductionEnvironment();
+                    return new ProductionEsiaEnvironment();
                 default:
                     throw new ArgumentException(nameof(type));
             }
         }
-    }
-
-    /// <summary>
-    /// Описание тестовой среды ЕСИА.
-    /// </summary>
-    sealed class TestEnvironment : IEsiaEnvironment
-    {
-        public X509Certificate2 EsiaCertificate => new X509Certificate2(Encoding.UTF8.GetBytes(EsiaCertificates.TestCertificate));
-
-        public string Host => "https://esia-portal1.test.gosuslugi.ru";
-
-        public string AuthorizationEndpoint => Host + "/aas/oauth2/ac";
-
-        public string TokenEndpoint => Host + "/aas/oauth2/te";
-
-        public string LogoutEndpoint => Host + "/idp/ext/Logout";
-
-        public string RestPersonsEndpoint => Host + "/rs/prns/";
-    }
-
-    /// <summary>
-    /// Описание продуктивной среды ЕСИА.
-    /// </summary>
-    sealed class ProductionEnvironment : IEsiaEnvironment
-    {
-        public X509Certificate2 EsiaCertificate => new X509Certificate2(Encoding.UTF8.GetBytes(EsiaCertificates.ProductionCertificate));
-
-        public string Host => "https://esia.gosuslugi.ru";
-
-        public string AuthorizationEndpoint => Host + "/aas/oauth2/ac";
-
-        public string TokenEndpoint => Host + "/aas/oauth2/te";
-
-        public string LogoutEndpoint => Host + "/idp/ext/Logout";
-
-        public string RestPersonsEndpoint => Host + "/rs/prns/";
     }
 }

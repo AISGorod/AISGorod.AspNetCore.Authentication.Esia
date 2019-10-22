@@ -16,11 +16,15 @@ namespace EsiaSample.Controllers
 {
     public class HomeController : Controller
     {
-        private IEsiaRestService esiaRestService;
+        private readonly IEsiaRestService esiaRestService;
+        private readonly IEsiaEnvironment esiaEnvironment;
 
-        public HomeController(IEsiaRestService esiaRestService)
+        public HomeController(
+            IEsiaRestService esiaRestService,
+            IEsiaEnvironment esiaEnvironment)
         {
             this.esiaRestService = esiaRestService;
+            this.esiaEnvironment = esiaEnvironment;
         }
 
         public async Task<IActionResult> Index()
@@ -29,6 +33,8 @@ namespace EsiaSample.Controllers
             var userResult = await HttpContext.AuthenticateAsync();
             var props = userResult.Properties;
             ViewBag.UserProps = props?.Items;
+
+            ViewBag.EsiaEnvironment = esiaEnvironment;
 
             return View();
         }
