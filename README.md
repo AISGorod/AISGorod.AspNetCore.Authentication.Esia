@@ -18,6 +18,7 @@ services
     .AddEsia("Esia", options =>
     {
         options.Environment = EsiaEnvironmentType.Test;
+        //options.EnvironmentInstance = ...; - можно использовать свою реализацию.
         options.Mnemonic = "TESTSYS";
         options.Certificate = () => new X509Certificate2(System.IO.File.ReadAllBytes(@"c:\cert.pfx"), "");
         options.Scope = new[] { "fullname", "snils", "email", "mobile" };
@@ -43,6 +44,16 @@ var contactsJson = await esiaRestService.CallAsync($"/rs/prns/{oId}/ctts?embed=(
 ViewBag.Contacts = contactsJson.ToString(Newtonsoft.Json.Formatting.Indented);
 ```
 Данный кусок кода получает _oId_ пользователя, запрашивает все контакты и складывает их JSON-представление в ViewBag.
+
+## Получение настроек подключения к ЕСИА
+
+Бывает полезно получить информацию о подключении к ЕСИА (адрес хоста, сертификат и т.д.) вне `IEsiaRestService`.
+
+Это можно сделать путём запроса интерфейса `IEsiaEnvironment`.
+
+Также открытыми являются классы `TestEsiaEnvironment` и `ProductionEsiaEnvironment`, от которых можно унаследоваться.
+
+> Пример использования настроек подключения смотрите в проекте `EsiaSample` на стартовой странице.
 
 ## Генерация сертификатов (файлы *.pem, *.key и *.pfx)
 

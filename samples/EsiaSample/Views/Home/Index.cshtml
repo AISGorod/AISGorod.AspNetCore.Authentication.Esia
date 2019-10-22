@@ -1,4 +1,4 @@
-﻿@{ 
+﻿@{
     ViewBag.Title = "Информация о пользователе";
 }
 
@@ -32,3 +32,14 @@
         }
     </div>
 </div>
+
+@if (ViewBag.EsiaEnvironment is AISGorod.AspNetCore.Authentication.Esia.IEsiaEnvironment esiaEnvironment)
+{
+    <h2>Настройки подключения к ЕСИА:</h2>
+    <strong>Тип данных</strong> @(esiaEnvironment.GetType().FullName)
+    <br />
+    <strong>Хост</strong> @(esiaEnvironment.Host)
+    <br />
+    <strong>Отпечаток сертификата ЕСИА</strong> @(esiaEnvironment.EsiaCertificate.Thumbprint)
+    <br />
+}

@@ -28,7 +28,8 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             var esiaOptions = new EsiaOptions();
             configureOptions(esiaOptions);
-            IEsiaEnvironment esiaEnvironment = new EsiaEnvironmentResolver(esiaOptions.Environment).Resolve();
+            IEsiaEnvironment esiaEnvironment = esiaOptions.EnvironmentInstance
+                ?? new EsiaEnvironmentResolver(esiaOptions.Environment ?? throw new ArgumentNullException("Environment and EnvironmentInstance is null")).Resolve();
 
             // register new services
             builder.Services.AddSingleton(esiaOptions);

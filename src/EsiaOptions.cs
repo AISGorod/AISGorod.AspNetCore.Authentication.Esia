@@ -14,8 +14,15 @@ namespace AISGorod.AspNetCore.Authentication.Esia
     {
         /// <summary>
         /// Среда ЕСИА, с которой происходит подключение.
+        /// Необходимо указать или Environment, или EnvironmentInstance.
         /// </summary>
-        public EsiaEnvironmentType Environment { get; set; }
+        public EsiaEnvironmentType? Environment { get; set; }
+
+        /// <summary>
+        /// Экземпляр класса, в котором заданы настройки среды ЕСИА.
+        /// Необходимо указать или Environment, или EnvironmentInstance.
+        /// </summary>
+        public IEsiaEnvironment EnvironmentInstance { get; set; }
 
         /// <summary>
         /// Мнемоника ИС.
