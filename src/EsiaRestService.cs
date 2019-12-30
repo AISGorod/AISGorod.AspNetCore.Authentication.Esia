@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Newtonsoft.Json.Linq;
@@ -42,17 +43,20 @@ namespace AISGorod.AspNetCore.Authentication.Esia
     {
         private HttpContext context;
         private IEsiaEnvironment esiaEnvironment;
+        private IEsiaSigner esiaSigner;
         private IOptionsMonitor<OpenIdConnectOptions> optionsMonitor;
         private EsiaOptions esiaOptions;
 
         public EsiaRestService(
             IHttpContextAccessor httpContextAccessor,
             IEsiaEnvironment esiaEnvironment,
+            IServiceProvider serviceProvider, // TODO add IEsiaSigner directly
             IOptionsMonitor<OpenIdConnectOptions> optionsMonitor,
             EsiaOptions esiaOptions)
         {
             this.context = httpContextAccessor.HttpContext;
             this.esiaEnvironment = esiaEnvironment;
+            this.esiaSigner = serviceProvider.GetService<IEsiaSigner>(); // TODO add IEsiaSigner directly
             this.optionsMonitor = optionsMonitor;
             this.esiaOptions = esiaOptions;
         }
@@ -107,7 +111,7 @@ namespace AISGorod.AspNetCore.Authentication.Esia
             var clientId = options.ClientId;
             var state = Guid.NewGuid().ToString();
 
-            var clientSecret = esiaOptions.SignData(scope, timestamp, clientId, state);
+            var clientSecret = EsiaExtensions.SignData(esiaSigner, esiaOptions, scope, timestamp, clientId, state);
 
             var pairs = new Dictionary<string, string>()
             {

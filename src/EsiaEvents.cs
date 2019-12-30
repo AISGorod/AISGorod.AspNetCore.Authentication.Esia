@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authentication.OAuth.Claims;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -22,11 +23,16 @@ namespace AISGorod.AspNetCore.Authentication.Esia
     {
         private EsiaOptions esiaOptions;
         private IEsiaEnvironment esiaEnvironment;
+        private IEsiaSigner esiaSigner;
 
-        public EsiaEvents(EsiaOptions esiaOptions, IEsiaEnvironment esiaEnvironment)
+        public EsiaEvents(
+            EsiaOptions esiaOptions,
+            IEsiaEnvironment esiaEnvironment,
+            IServiceProvider serviceProvider) // TODO add IEsiaSigner directly
         {
             this.esiaOptions = esiaOptions;
             this.esiaEnvironment = esiaEnvironment;
+            this.esiaSigner = serviceProvider.GetService<IEsiaSigner>(); // TODO add IEsiaSigner directly
         }
 
         /// <summary>
@@ -51,7 +57,7 @@ namespace AISGorod.AspNetCore.Authentication.Esia
             var state = pm.State;
 
             // set clientSecret
-            pm.ClientSecret = esiaOptions.SignData(scope, timestamp, clientId, state);
+            pm.ClientSecret = EsiaExtensions.SignData(esiaSigner, esiaOptions, scope, timestamp, clientId, state);
 
             // ok result
             return Task.CompletedTask;
@@ -79,7 +85,7 @@ namespace AISGorod.AspNetCore.Authentication.Esia
             var state = pm.State;
 
             // set clientSecret
-            pm.ClientSecret = esiaOptions.SignData(scope, timestamp, clientId, state);
+            pm.ClientSecret = EsiaExtensions.SignData(esiaSigner, esiaOptions, scope, timestamp, clientId, state);
 
             // ok
             return Task.CompletedTask;

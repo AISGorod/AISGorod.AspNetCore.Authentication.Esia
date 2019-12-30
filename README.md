@@ -2,10 +2,12 @@
 
 Данная библиотека добавляет возможность авторизации через госуслуги (ЕСИА) по протоколу OpenID Connect, а также добавляет интерфейс доступа к REST-сервисам ЕСИА.
 
+## [История изменений](CHANGELOG.md)
+
 ## Требования
 
 1. AspNetCore не ниже 2.1.
-2. Сертификат ИС должен быть RS256 (не ГОСТ).
+2. Алгоритм формирования электронной подписи должен быть RS256 (указывается в настройках ИС на [технологическом портале](https://esia.gosuslugi.ru/console/tech/)).
 
 ## Подключение
 
@@ -18,11 +20,11 @@ services
     .AddEsia("Esia", options =>
     {
         options.Environment = EsiaEnvironmentType.Test;
-        //options.EnvironmentInstance = ...; - можно использовать свою реализацию.
+        //options.EnvironmentInstance = ...; // можно использовать свою реализацию.
         options.Mnemonic = "TESTSYS";
-        options.Certificate = () => new X509Certificate2(System.IO.File.ReadAllBytes(@"c:\cert.pfx"), "");
         options.Scope = new[] { "fullname", "snils", "email", "mobile" };
     });
+services.AddSingleton<IEsiaSigner, OpensslEsiaSigner>(); // нужна своя реализация подписи запросов от ИС в ЕСИА
 ```
 3. Также убедитесь, что в _Startup.cs_ есть подключение _HttpContextAccessor_:
 ```csharp
@@ -55,29 +57,84 @@ ViewBag.Contacts = contactsJson.ToString(Newtonsoft.Json.Formatting.Indented);
 
 > Пример использования настроек подключения смотрите в проекте `EsiaSample` на стартовой странице.
 
-## Генерация сертификатов (файлы *.pem, *.key и *.pfx)
+## Как запустить пример
 
-> Этот раздел больше походит на шпаргалку или мини-инструкцию для генерации сертификатов через _openssl_.
+> Для ОС Windows 10 необходимо установить [Windows Subsystem for Linux](https://docs.microsoft.com/ru-ru/windows/wsl/install-win10) и Ubuntu 18.04 в нём.
+> Действия выполняются внутри терминала этой ОС.
 
-Сперва необходимо сгенерировать сертификат с приватным ключом.
+Данный раздел показывает, как можно запустить пример работы с ЕСИА на Ubuntu 18.04 (или Windows 10 c WSL).
+Такая конфигурация выбрана из-за того, что на Linux намного удобнее включается поддержка ГОСТ для openssl.
 
-Воспользуемся утилитой _openssl_ (генерируется сертификат на 10 лет, что небезопасно):
+Сперва необходимо обновить списки пакетов: `$ sudo apt update`.
+
+Затем устанавливается пакет для поддержки ГОСТ в openssl: `$ sudo apt install libengine-gost-openssl1.1`.
+
+После этого необходимо открыть файл с настройками openssl: `$ sudo nano /etc/ssl/openssl.cnf`.
+
+Дописать в начало файла (например, после `oid_section             = new_oids`): `openssl_conf = openssl_def`.
+
+Дописать в конец файла:
+
+```ini
+[openssl_def]
+engines = engine_section
+
+[engine_section]
+gost = gost_section
+
+[gost_section]
+engine_id = gost
+dynamic_path = /usr/lib/x86_64-linux-gnu/engines-1.1/gost.so
+default_algorithms = ALL
+CRYPT_PARAMS = id-Gost28147-89-CryptoPro-A-ParamSet
 ```
-openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 3650
+
+Для проверки установки движка gost можно выполнить следующую команду и сравнить результат с представленным ниже:
+
+```bash
+$ openssl engine gost -c
+(gost) Reference implementation of GOST engine
+ [gost89, gost89-cnt, gost89-cnt-12, gost89-cbc, grasshopper-ecb, grasshopper-cbc, grasshopper-cfb, grasshopper-ofb, grasshopper-ctr, md_gost94, gost-mac, md_gost12_256, md_gost12_512, gost-mac-12, gost2001, gost-mac, gost2012_256, gost2012_512, gost-mac-12]
+```
+
+Теперь необходимо сгенерировать ключи для ЕСИА при помощи команд:
+
+```bash
+$ openssl req -x509 -newkey gost2012_256 -pkeyopt paramset:A -nodes -keyout esia.key -out esia.pem -days 3650
+$ openssl pkcs12 -export -out esia.pfx -inkey esia.key -in esia.pem
 ```
 
 Данные о стране, городе, имени сертификата можно вбивать любые, они не играют роли для ЕСИА. 
 
-После успешного выполнения команды файл `cert.pem` будет содержать искомый сертификат.
-Именно этот файл необходимо прикладывать к заявками на подключение ИС к ЕСИА.
+Чтобы проверить, что подпись данных в openssl работает, можете использовать следующую команду:
 
-Файл `key.pem` будет содержать зашифрованный закрытый (приватный) ключ.
-
-Генерация сертификата в формате PKCS#12 (или PFX, это необходимо для .NET) выполняется следующей командой:
-
+```bash
+$ openssl cms -sign -engine gost -inkey esia.key -signer esia.pem <<< '123'
 ```
-openssl pkcs12 -export -out key.pfx -inkey key.pem -in cert.pem
+
+Должен вернуться вывод с огромным base64-текстом, разбитым на несколько строк.
+
+> Для регистрации ключа в ЕСИА на технологический портал требуется загружать файл `.pem`.
+
+Теперь для запуска примера потребуется:
+
+- изменить мнемонику ИС в `~/samples/EsiaSample/Startup.cs`.
+- пусть до ключа и сертификата в `~/samples/EsiaSample/OpensslEsiaSigner.cs`.
+- установить [.NET Core SDK](https://docs.microsoft.com/ru-ru/dotnet/core/install/linux-package-manager-ubuntu-1804), если он ещё не стоит.
+  При этом версия SDK должна совпадать с версией netcore в `~/samples/EsiaSample`.
+  Это необходимо для Razor.
+
+Запуск примера можно проделать следующим образом:
+
+```bash
+$ dotnet build
+$ dotnet run -p samples/EsiaSample/
 ```
+
+Веб-сайт для демонстрации работы с ЕСИА будет доступен по адресу https://localhost:5000/.
+
+> Кстати, замечено, что при включенном ГОСТ в openssl не всегда восстанавливаются пакеты NuGet.
+> Временно выключить поддержку ГОСТ можно, закомментировав строку, написанную в настройках openssl в начале файла.
 
 ## Есть замечания / хочу внести вклад
 

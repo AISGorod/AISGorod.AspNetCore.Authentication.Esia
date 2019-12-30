@@ -35,12 +35,12 @@ namespace EsiaSample
                 .AddEsia("Esia", options =>
                 {
                     //options.Environment = EsiaEnvironmentType.Test;
-                    options.EnvironmentInstance = new Models.CustomEsiaEnvironment();
+                    options.EnvironmentInstance = new CustomEsiaEnvironment();
                     options.Mnemonic = "TESTSYS";
-                    options.Certificate = () => new X509Certificate2(System.IO.File.ReadAllBytes(@"c:\esia.pfx"), "");
                     options.Scope = new[] { "fullname", "snils", "email", "mobile", "usr_org" };
                     options.SaveTokens = true;
                 });
+            services.AddSingleton<IEsiaSigner, OpensslEsiaSigner>();
 
             services.AddMvc();
         }

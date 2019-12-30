@@ -56,9 +56,22 @@ namespace AISGorod.AspNetCore.Authentication.Esia
         /// <summary>
         /// Подписывает запрос (или вычисляет client_secret запроса). 
         /// </summary>
-        public static string SignData(this EsiaOptions options, string scope, string timestamp, string clientId, string state)
+        internal static string SignData(IEsiaSigner esiaSigner, EsiaOptions options, string scope, string timestamp, string clientId, string state)
         {
             byte[] signData = Encoding.UTF8.GetBytes(scope + timestamp + clientId + state);
+            return (esiaSigner != null)
+                ? esiaSigner.Sign(signData)
+                : _SignDataRSA(options, signData);
+        }
+
+        /// <summary>
+        /// Подписывает данные по алгоритму RSA (устарело).
+        /// </summary>
+        /// <param name="options">Настройки сервиса.</param>
+        /// <param name="signData">Данные для подписи.</param>
+        /// <returns>Подпись (для client_secret).</returns>
+        private static string _SignDataRSA(EsiaOptions options, byte[] signData)
+        {
             using (var certPfx = options.Certificate())
             {
                 var contentInfo = new ContentInfo(signData);

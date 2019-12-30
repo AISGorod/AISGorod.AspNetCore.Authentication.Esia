@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace EsiaSample.Models
+namespace EsiaSample
 {
     /// <summary>
     /// Собственное описание настроек подключения к ЕСИА.

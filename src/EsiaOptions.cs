@@ -33,6 +33,7 @@ namespace AISGorod.AspNetCore.Authentication.Esia
         /// Функция, возвращающая сертификат ИС.
         /// Обязательно должен быть закрытый (приватный) ключ.
         /// </summary>
+        [Obsolete("Please use IEsiaSigner singleton.")]
         public Func<X509Certificate2> Certificate { get; set; }
 
         /// <summary>

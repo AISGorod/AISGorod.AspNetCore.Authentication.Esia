@@ -14,9 +14,9 @@
     <Description>Промежуточное ПО для ASP.NET Core для входа пользователей через портал госуслуг (ЕСИА).
 
 ESIA (gosuslugi) identity provider (middleware) for ASP.NET Core based on OpenID Connect.</Description>
-    <PackageReleaseNotes>IEsiaEnvironment becomes public.</PackageReleaseNotes>
+    <PackageReleaseNotes>https://github.com/AISGorod/AISGorod.AspNetCore.Authentication.Esia/releases/</PackageReleaseNotes>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <Version>1.0.2</Version>
+    <Version>1.1.0</Version>
     <PackageIcon>icon.png</PackageIcon>
   </PropertyGroup>
 
