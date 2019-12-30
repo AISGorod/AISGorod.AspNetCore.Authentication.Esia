@@ -2,6 +2,8 @@
 
 Данная библиотека добавляет возможность авторизации через госуслуги (ЕСИА) по протоколу OpenID Connect, а также добавляет интерфейс доступа к REST-сервисам ЕСИА.
 
+## [История изменений](CHANGELOG.md)
+
 ## Требования
 
 1. AspNetCore не ниже 2.1.
@@ -55,32 +57,80 @@ ViewBag.Contacts = contactsJson.ToString(Newtonsoft.Json.Formatting.Indented);
 
 > Пример использования настроек подключения смотрите в проекте `EsiaSample` на стартовой странице.
 
-## Немного про ГОСТ 34.10-2012 и ГОСТ 34.11-2012
+## Как запустить пример
 
-> Этот раздел больше походит на шпаргалку или мини-инструкцию для генерации сертификатов через _openssl_.
+> Для ОС Windows 10 необходимо установить [Windows Subsystem for Linux](https://docs.microsoft.com/ru-ru/windows/wsl/install-win10) и установить Ubuntu 18.04.
+> В этом случае действия выполняются внутри терминала этой ОС.
 
-Как недавно стало известно, ЕСИА с I квартала 2020 года отключает возможность подписывать запросы от ИС к ЕСИА при помощи алгоритмов, отличных от ГОСТ 34.10-2012.
+Данный раздел показывает, как можно запустить пример работы с ЕСИА на Ubuntu 18.04 (или Windows 10 c WSL).
+Такая конфигурация выбрана из-за того, что на Linux намного удобнее включается поддержка ГОСТ для openssl.
 
-Радует то, что _пока_ в планах нет использования для этих целей квалифицированных электронных подписей, то есть достаточно как и раньше самоподписанного сертификата.
-Также хорошо, что ЕСИА оставили возможность формирования маркеров с их стороны при помощи RS256 (хотя бы _это_ переписывать не придётся).
+Сперва необходимо обновить списки пакетов: `sudo apt update`.
 
-Таким образом, необходимо сгенерировать сертификат с приватным ключом (сертификат генерируется на 10 лет, что небезопасно).
-Также сразу создадим pfx-файл, но смысла в этом пока нет.
+Затем устанавливается пакет для поддержки ГОСТ в openssl: `sudo apt install libengine-gost-openssl1.1`.
 
+После этого необходимо открыть файл с настройками openssl: `nano /etc/ssl/openssl.cnf`.
+
+Дописать в начало файла (например, после `oid_section             = new_oids`): `openssl_conf = openssl_def`.
+
+Дописать в конец файла:
+
+```ini
+[openssl_def]
+engines = engine_section
+
+[engine_section]
+gost = gost_section
+
+[gost_section]
+engine_id = gost
+dynamic_path = /usr/lib/x86_64-linux-gnu/engines-1.1/gost.so
+default_algorithms = ALL
+CRYPT_PARAMS = id-Gost28147-89-CryptoPro-A-ParamSet
 ```
+
+Для проверки установки движка gost можно выполнить следующую команду и сравнить результат с представленным ниже:
+
+```bash
+$ openssl engine gost -c
+(gost) Reference implementation of GOST engine
+ [gost89, gost89-cnt, gost89-cnt-12, gost89-cbc, grasshopper-ecb, grasshopper-cbc, grasshopper-cfb, grasshopper-ofb, grasshopper-ctr, md_gost94, gost-mac, md_gost12_256, md_gost12_512, gost-mac-12, gost2001, gost-mac, gost2012_256, gost2012_512, gost-mac-12]
+```
+
+Теперь необходимо сгенерировать ключи для ЕСИА при помощи команд:
+
+```bash
 openssl req -x509 -newkey gost2012_256 -pkeyopt paramset:A -nodes -keyout esia.key -out esia.pem -days 3650
 openssl pkcs12 -export -out esia.pfx -inkey esia.key -in esia.pem
 ```
 
-> Стоит иметь в виду, что для работы с ГОСТ в openssl требуется подключение движка gost.
-
 Данные о стране, городе, имени сертификата можно вбивать любые, они не играют роли для ЕСИА. 
 
-Чтобы проверить, что openssl работает, можете использовать следующую команду:
+Чтобы проверить, что подпись данных в openssl работает, можете использовать следующую команду:
 
-```
+```bash
 openssl cms -sign -engine gost -inkey esia.key -signer esia.pem <<< '123'
 ```
+
+Должен вернуться вывод с огромным base64-текстом, разбитым на несколько строк.
+
+Теперь для запуска примера потребуется:
+
+- изменить мнемонику ИС в `~/samples/EsiaSample/Startup.cs`.
+- пусть до ключа и сертификата в `~/samples/EsiaSample/OpensslEsiaSigner.cs`.
+- установить [.NET Core SDK](https://docs.microsoft.com/ru-ru/dotnet/core/install/linux-package-manager-ubuntu-1804), если он ещё не стоит.
+  При этом версия SDK должна совпадать с версией netcore в `~/samples/EsiaSample`.
+  Это необходимо для Razor.
+
+Запуск примера можно проделать следующим образом:
+
+```bash
+$ dotnet build
+$ dotnet run -p samples/EsiaSample/
+```
+
+> Кстати, замечено, что при включенном ГОСТ в openssl не всегда восстанавливаются пакеты NuGet.
+> Временно выключить поддкржку ГОСТ можно, закомментировав строку, написанную в настройках openssl в начале файла.
 
 ## Есть замечания / хочу внести вклад
 
