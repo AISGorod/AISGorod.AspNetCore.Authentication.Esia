@@ -59,17 +59,17 @@ ViewBag.Contacts = contactsJson.ToString(Newtonsoft.Json.Formatting.Indented);
 
 ## Как запустить пример
 
-> Для ОС Windows 10 необходимо установить [Windows Subsystem for Linux](https://docs.microsoft.com/ru-ru/windows/wsl/install-win10) и установить Ubuntu 18.04.
-> В этом случае действия выполняются внутри терминала этой ОС.
+> Для ОС Windows 10 необходимо установить [Windows Subsystem for Linux](https://docs.microsoft.com/ru-ru/windows/wsl/install-win10) и Ubuntu 18.04 в нём.
+> Действия выполняются внутри терминала этой ОС.
 
 Данный раздел показывает, как можно запустить пример работы с ЕСИА на Ubuntu 18.04 (или Windows 10 c WSL).
 Такая конфигурация выбрана из-за того, что на Linux намного удобнее включается поддержка ГОСТ для openssl.
 
-Сперва необходимо обновить списки пакетов: `sudo apt update`.
+Сперва необходимо обновить списки пакетов: `$ sudo apt update`.
 
-Затем устанавливается пакет для поддержки ГОСТ в openssl: `sudo apt install libengine-gost-openssl1.1`.
+Затем устанавливается пакет для поддержки ГОСТ в openssl: `$ sudo apt install libengine-gost-openssl1.1`.
 
-После этого необходимо открыть файл с настройками openssl: `nano /etc/ssl/openssl.cnf`.
+После этого необходимо открыть файл с настройками openssl: `$ sudo nano /etc/ssl/openssl.cnf`.
 
 Дописать в начало файла (например, после `oid_section             = new_oids`): `openssl_conf = openssl_def`.
 
@@ -100,8 +100,8 @@ $ openssl engine gost -c
 Теперь необходимо сгенерировать ключи для ЕСИА при помощи команд:
 
 ```bash
-openssl req -x509 -newkey gost2012_256 -pkeyopt paramset:A -nodes -keyout esia.key -out esia.pem -days 3650
-openssl pkcs12 -export -out esia.pfx -inkey esia.key -in esia.pem
+$ openssl req -x509 -newkey gost2012_256 -pkeyopt paramset:A -nodes -keyout esia.key -out esia.pem -days 3650
+$ openssl pkcs12 -export -out esia.pfx -inkey esia.key -in esia.pem
 ```
 
 Данные о стране, городе, имени сертификата можно вбивать любые, они не играют роли для ЕСИА. 
@@ -109,10 +109,12 @@ openssl pkcs12 -export -out esia.pfx -inkey esia.key -in esia.pem
 Чтобы проверить, что подпись данных в openssl работает, можете использовать следующую команду:
 
 ```bash
-openssl cms -sign -engine gost -inkey esia.key -signer esia.pem <<< '123'
+$ openssl cms -sign -engine gost -inkey esia.key -signer esia.pem <<< '123'
 ```
 
 Должен вернуться вывод с огромным base64-текстом, разбитым на несколько строк.
+
+> Для регистрации ключа в ЕСИА на технологический портал требуется загружать файл `.pem`.
 
 Теперь для запуска примера потребуется:
 
@@ -129,8 +131,10 @@ $ dotnet build
 $ dotnet run -p samples/EsiaSample/
 ```
 
+Веб-сайт для демонстрации работы с ЕСИА будет доступен по адресу https://localhost:5000/.
+
 > Кстати, замечено, что при включенном ГОСТ в openssl не всегда восстанавливаются пакеты NuGet.
-> Временно выключить поддкржку ГОСТ можно, закомментировав строку, написанную в настройках openssl в начале файла.
+> Временно выключить поддержку ГОСТ можно, закомментировав строку, написанную в настройках openssl в начале файла.
 
 ## Есть замечания / хочу внести вклад
 
