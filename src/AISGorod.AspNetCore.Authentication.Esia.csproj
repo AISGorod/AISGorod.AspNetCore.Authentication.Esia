@@ -27,7 +27,6 @@ ESIA (gosuslugi) identity provider (middleware) for ASP.NET Core based on OpenID
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="3.1.2" />
-    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="4.7.0" />
   </ItemGroup>
 
 </Project>
