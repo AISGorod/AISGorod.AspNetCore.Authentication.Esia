@@ -13,6 +13,7 @@ using System.Security.Claims;
 using System.Security.Cryptography.Pkcs;
 using System.Text;
 using System.Threading.Tasks;
+using System.Text.Json;
 
 namespace AISGorod.AspNetCore.Authentication.Esia
 {
@@ -106,10 +107,9 @@ namespace AISGorod.AspNetCore.Authentication.Esia
             var prnsResult = await httpClient.SendAsync(httpRequest);
             if (prnsResult.IsSuccessStatusCode)
             {
-                var prnsJson = JObject.Parse(await prnsResult.Content.ReadAsStringAsync());
-                prnsJson.Remove("stateFacts");
+                using var doc = JsonDocument.Parse(await prnsResult.Content.ReadAsStringAsync());
                 var claimsAction = new MapAllClaimsAction();
-                claimsAction.Run(prnsJson, context.Principal.Identity as ClaimsIdentity, "esia_prns");
+                claimsAction.Run(doc.RootElement, context.Principal.Identity as ClaimsIdentity, "esia_prns");
             }
 
             context.Properties.SetString(EsiaDefaults.EnablesScopesPropertiesKey, string.Join(" ", (context.Properties as OpenIdConnectChallengeProperties)?.Scope ?? context.Options.Scope));

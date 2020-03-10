@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -16,18 +16,18 @@
 ESIA (gosuslugi) identity provider (middleware) for ASP.NET Core based on OpenID Connect.</Description>
     <PackageReleaseNotes>https://github.com/AISGorod/AISGorod.AspNetCore.Authentication.Esia/releases/</PackageReleaseNotes>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <Version>1.1.0</Version>
+    <Version>1.2.0</Version>
     <PackageIcon>icon.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
     <None Include="..\LICENSE" Link="LICENSE" Pack="true" PackagePath="" />
-    <None Include="icon.png" Pack="true" PackagePath=""/>
+    <None Include="icon.png" Pack="true" PackagePath="" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="2.1.0" />
-    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="4.5.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="3.1.2" />
+    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="4.7.0" />
   </ItemGroup>
 
 </Project>
