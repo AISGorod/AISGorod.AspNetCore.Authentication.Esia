@@ -21,7 +21,9 @@ namespace AISGorod.AspNetCore.Authentication.Esia
             this.environment = environment;
         }
 
-        public Action<OpenIdConnectOptions> BuildAction()
+        public Action<OpenIdConnectOptions> BuildAction() => BuildAction<EsiaEvents>();
+
+        public Action<OpenIdConnectOptions> BuildAction<TEsiaEvents>() where TEsiaEvents : EsiaEvents
         {
             return (OpenIdConnectOptions options) =>
             {
@@ -37,7 +39,7 @@ namespace AISGorod.AspNetCore.Authentication.Esia
                 options.ClientId = esiaOptions.Mnemonic;
                 options.GetClaimsFromUserInfoEndpoint = false;
                 options.StateDataFormat = new EsiaSecureDataFormat();
-                options.EventsType = typeof(EsiaEvents);
+                options.EventsType = typeof(TEsiaEvents);
                 _FillScopes(options.Scope);
                 options.SignInScheme = esiaOptions.SignInScheme;
                 options.SignOutScheme = esiaOptions.SignOutScheme;
