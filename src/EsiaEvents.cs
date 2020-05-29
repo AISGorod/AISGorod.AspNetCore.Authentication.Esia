@@ -52,8 +52,6 @@ namespace AISGorod.AspNetCore.Authentication.Esia
             pm.Parameters.Add("timestamp", now.ToString("yyyy.MM.dd HH:mm:ss") + " " + now.ToString("zzz").Replace(":", ""));
             pm.State = Guid.NewGuid().ToString();
 
-            AddAdditionalParametersForReceivingAccessCode(pm.Parameters);
-            
             // get data for sign
             var scope = pm.Parameters["scope"];
             var timestamp = pm.Parameters["timestamp"];
@@ -63,8 +61,7 @@ namespace AISGorod.AspNetCore.Authentication.Esia
             // set clientSecret
             pm.ClientSecret = EsiaExtensions.SignData(EsiaSigner, EsiaOptions, scope, timestamp, clientId, state);
 
-            // ok result
-            return Task.CompletedTask;
+            return AddAdditionalParametersForReceivingAccessCode(pm.Parameters);
         }
 
         /// <summary>
