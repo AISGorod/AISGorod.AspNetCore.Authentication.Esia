@@ -23,7 +23,7 @@ namespace AISGorod.AspNetCore.Authentication.Esia
 
         public Action<OpenIdConnectOptions> BuildAction() => BuildAction<EsiaEvents>();
 
-        public Action<OpenIdConnectOptions> BuildAction<TEsiaEvents>() where TEsiaEvents : EsiaEvents
+        public Action<OpenIdConnectOptions> BuildAction<TEsiaEvents>() where TEsiaEvents : OpenIdConnectEvents
         {
             return (OpenIdConnectOptions options) =>
             {

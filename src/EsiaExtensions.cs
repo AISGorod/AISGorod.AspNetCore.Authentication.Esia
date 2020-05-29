@@ -18,21 +18,21 @@ namespace Microsoft.Extensions.DependencyInjection
             => builder.AddEsia(EsiaDefaults.AuthenticationScheme, _ => { });
 
         public static AuthenticationBuilder AddEsia<TEsiaEvents>(this AuthenticationBuilder builder)
-            where TEsiaEvents : EsiaEvents
+            where TEsiaEvents : OpenIdConnectEvents
             => builder.AddEsia<TEsiaEvents>(EsiaDefaults.AuthenticationScheme, _ => { });
 
         public static AuthenticationBuilder AddEsia(this AuthenticationBuilder builder, Action<EsiaOptions> configureOptions)
             => builder.AddEsia(EsiaDefaults.AuthenticationScheme, configureOptions);
 
         public static AuthenticationBuilder AddEsia<TEsiaEvents>(this AuthenticationBuilder builder, Action<EsiaOptions> configureOptions)
-            where TEsiaEvents : EsiaEvents
+            where TEsiaEvents : OpenIdConnectEvents
             => builder.AddEsia<TEsiaEvents>(EsiaDefaults.AuthenticationScheme, configureOptions);
 
         public static AuthenticationBuilder AddEsia(this AuthenticationBuilder builder, string authenticationScheme, Action<EsiaOptions> configureOptions)
             => builder.AddEsia(authenticationScheme, EsiaDefaults.DisplayName, configureOptions);
 
         public static AuthenticationBuilder AddEsia<TEsiaEvents>(this AuthenticationBuilder builder, string authenticationScheme, Action<EsiaOptions> configureOptions)
-            where TEsiaEvents : EsiaEvents
+            where TEsiaEvents : OpenIdConnectEvents
             => builder.AddEsia<TEsiaEvents>(authenticationScheme, EsiaDefaults.DisplayName, configureOptions);
 
         public static AuthenticationBuilder AddEsia(this AuthenticationBuilder builder, string authenticationScheme, string displayName, Action<EsiaOptions> configureOptions)
@@ -43,7 +43,7 @@ namespace Microsoft.Extensions.DependencyInjection
             string authenticationScheme,
             string displayName,
             Action<EsiaOptions> configureOptions)
-            where TEsiaEvents : EsiaEvents
+            where TEsiaEvents : OpenIdConnectEvents
         {
             var esiaOptions = new EsiaOptions();
             configureOptions(esiaOptions);
