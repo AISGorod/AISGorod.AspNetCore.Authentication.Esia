@@ -1,15 +1,12 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.OAuth.Claims;
+﻿using Microsoft.AspNetCore.Authentication.OAuth.Claims;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
 using System.Text.Json;
 
@@ -18,21 +15,27 @@ namespace AISGorod.AspNetCore.Authentication.Esia
     /// <summary>
     /// Класс, реализующий обрабочики событий от поставщика данных.
     /// </summary>
-    sealed class EsiaEvents : OpenIdConnectEvents
+    public class EsiaEvents : OpenIdConnectEvents
     {
-        private EsiaOptions esiaOptions;
-        private IEsiaEnvironment esiaEnvironment;
-        private IEsiaSigner esiaSigner;
+        protected readonly EsiaOptions EsiaOptions;
+        protected readonly IEsiaEnvironment EsiaEnvironment;
+        protected readonly IEsiaSigner EsiaSigner;
 
         public EsiaEvents(
             EsiaOptions esiaOptions,
             IEsiaEnvironment esiaEnvironment,
             IServiceProvider serviceProvider) // TODO add IEsiaSigner directly
         {
-            this.esiaOptions = esiaOptions;
-            this.esiaEnvironment = esiaEnvironment;
-            this.esiaSigner = serviceProvider.GetService<IEsiaSigner>(); // TODO add IEsiaSigner directly
+            this.EsiaOptions = esiaOptions;
+            this.EsiaEnvironment = esiaEnvironment;
+            this.EsiaSigner = serviceProvider.GetService<IEsiaSigner>(); // TODO add IEsiaSigner directly
         }
+
+        /// <summary>
+        /// Добавление дополнительных параметров в запрос получения авторизационного кода
+        /// </summary>
+        protected virtual Task AddAdditionalParametersForReceivingAccessCode(IDictionary<string, string> parameters) =>
+            Task.CompletedTask;
 
         /// <summary>
         /// Событие перенаправления к поставщику данных.
@@ -49,6 +52,8 @@ namespace AISGorod.AspNetCore.Authentication.Esia
             pm.Parameters.Add("timestamp", now.ToString("yyyy.MM.dd HH:mm:ss") + " " + now.ToString("zzz").Replace(":", ""));
             pm.State = Guid.NewGuid().ToString();
 
+            AddAdditionalParametersForReceivingAccessCode(pm.Parameters);
+            
             // get data for sign
             var scope = pm.Parameters["scope"];
             var timestamp = pm.Parameters["timestamp"];
@@ -56,7 +61,7 @@ namespace AISGorod.AspNetCore.Authentication.Esia
             var state = pm.State;
 
             // set clientSecret
-            pm.ClientSecret = EsiaExtensions.SignData(esiaSigner, esiaOptions, scope, timestamp, clientId, state);
+            pm.ClientSecret = EsiaExtensions.SignData(EsiaSigner, EsiaOptions, scope, timestamp, clientId, state);
 
             // ok result
             return Task.CompletedTask;
@@ -84,7 +89,7 @@ namespace AISGorod.AspNetCore.Authentication.Esia
             var state = pm.State;
 
             // set clientSecret
-            pm.ClientSecret = EsiaExtensions.SignData(esiaSigner, esiaOptions, scope, timestamp, clientId, state);
+            pm.ClientSecret = EsiaExtensions.SignData(EsiaSigner, EsiaOptions, scope, timestamp, clientId, state);
 
             // ok
             return Task.CompletedTask;
@@ -100,7 +105,7 @@ namespace AISGorod.AspNetCore.Authentication.Esia
             var userOid = context.SecurityToken.Subject;
             var httpClient = context.Options.Backchannel;
 
-            var httpRequest = new HttpRequestMessage(HttpMethod.Get, esiaEnvironment.RestPersonsEndpoint + userOid);
+            var httpRequest = new HttpRequestMessage(HttpMethod.Get, EsiaEnvironment.RestPersonsEndpoint + userOid);
             httpRequest.Headers.Authorization = new AuthenticationHeaderValue(context.TokenEndpointResponse.TokenType, context.TokenEndpointResponse.AccessToken);
             var prnsResult = await httpClient.SendAsync(httpRequest);
             if (prnsResult.IsSuccessStatusCode)
