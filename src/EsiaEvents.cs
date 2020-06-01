@@ -17,10 +17,24 @@ namespace AISGorod.AspNetCore.Authentication.Esia
     /// </summary>
     public class EsiaEvents : OpenIdConnectEvents
     {
+        /// <summary>
+        /// Свойства подключения к ЕСИА.
+        /// </summary>
         protected readonly EsiaOptions EsiaOptions;
+
+        /// <summary>
+        /// Среда ЕСИА.
+        /// </summary>
         protected readonly IEsiaEnvironment EsiaEnvironment;
+
+        /// <summary>
+        /// Сервис подписи данных для взаимодействия с ЕСИА.
+        /// </summary>
         protected readonly IEsiaSigner EsiaSigner;
 
+        /// <param name="esiaOptions">Свойства подключения к ЕСИА.</param>
+        /// <param name="esiaEnvironment">Среда ЕСИА.</param>
+        /// <param name="serviceProvider">Поставщик служб (сейчас используется для получения IEsiaSigner).</param>
         public EsiaEvents(
             EsiaOptions esiaOptions,
             IEsiaEnvironment esiaEnvironment,
