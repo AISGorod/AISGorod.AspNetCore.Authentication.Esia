@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using System;
-using System.Security.Cryptography.Pkcs;
 using System.Text;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -18,13 +17,33 @@ namespace Microsoft.Extensions.DependencyInjection
         public static AuthenticationBuilder AddEsia(this AuthenticationBuilder builder)
             => builder.AddEsia(EsiaDefaults.AuthenticationScheme, _ => { });
 
+        public static AuthenticationBuilder AddEsia<TEsiaEvents>(this AuthenticationBuilder builder)
+            where TEsiaEvents : OpenIdConnectEvents
+            => builder.AddEsia<TEsiaEvents>(EsiaDefaults.AuthenticationScheme, _ => { });
+
         public static AuthenticationBuilder AddEsia(this AuthenticationBuilder builder, Action<EsiaOptions> configureOptions)
             => builder.AddEsia(EsiaDefaults.AuthenticationScheme, configureOptions);
+
+        public static AuthenticationBuilder AddEsia<TEsiaEvents>(this AuthenticationBuilder builder, Action<EsiaOptions> configureOptions)
+            where TEsiaEvents : OpenIdConnectEvents
+            => builder.AddEsia<TEsiaEvents>(EsiaDefaults.AuthenticationScheme, configureOptions);
 
         public static AuthenticationBuilder AddEsia(this AuthenticationBuilder builder, string authenticationScheme, Action<EsiaOptions> configureOptions)
             => builder.AddEsia(authenticationScheme, EsiaDefaults.DisplayName, configureOptions);
 
+        public static AuthenticationBuilder AddEsia<TEsiaEvents>(this AuthenticationBuilder builder, string authenticationScheme, Action<EsiaOptions> configureOptions)
+            where TEsiaEvents : OpenIdConnectEvents
+            => builder.AddEsia<TEsiaEvents>(authenticationScheme, EsiaDefaults.DisplayName, configureOptions);
+
         public static AuthenticationBuilder AddEsia(this AuthenticationBuilder builder, string authenticationScheme, string displayName, Action<EsiaOptions> configureOptions)
+            => builder.AddEsia<EsiaEvents>(authenticationScheme, displayName, configureOptions);
+
+        public static AuthenticationBuilder AddEsia<TEsiaEvents>(
+            this AuthenticationBuilder builder,
+            string authenticationScheme,
+            string displayName,
+            Action<EsiaOptions> configureOptions)
+            where TEsiaEvents : OpenIdConnectEvents
         {
             var esiaOptions = new EsiaOptions();
             configureOptions(esiaOptions);
@@ -34,13 +53,13 @@ namespace Microsoft.Extensions.DependencyInjection
             // register new services
             builder.Services.AddSingleton(esiaOptions);
             builder.Services.AddSingleton(esiaEnvironment);
-            builder.Services.AddSingleton<EsiaEvents>();
+            builder.Services.AddSingleton<TEsiaEvents>();
             builder.Services.AddSingleton<OpenIdConnectOptionsBuilder>();
             builder.Services.AddTransient<IEsiaRestService, EsiaRestService>();
             builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IPostConfigureOptions<OpenIdConnectOptions>, OpenIdConnectPostConfigureOptions>());
 
             var configBuilder = new OpenIdConnectOptionsBuilder(esiaOptions, esiaEnvironment);
-            return builder.AddRemoteScheme<OpenIdConnectOptions, EsiaHandler>(authenticationScheme, displayName, configBuilder.BuildAction());
+            return builder.AddRemoteScheme<OpenIdConnectOptions, EsiaHandler>(authenticationScheme, displayName, configBuilder.BuildAction<TEsiaEvents>());
         }
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
     }
