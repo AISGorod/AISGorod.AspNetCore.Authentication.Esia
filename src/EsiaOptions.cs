@@ -2,8 +2,10 @@
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
+using Microsoft.IdentityModel.Tokens;
 
 namespace AISGorod.AspNetCore.Authentication.Esia
 {
@@ -58,5 +60,11 @@ namespace AISGorod.AspNetCore.Authentication.Esia
         /// По умолчанию выключено, чтобы уменьшить размер cookie (зато нельзя выполнять API-запросы).
         /// </summary>
         public bool SaveTokens { get; set; }
+        
+        /// <summary>
+        /// Валидатор маркера доступа.
+        /// Значение по умолчанию - валидатор JwtSecurityTokenHandler.
+        /// </summary>
+        public ISecurityTokenValidator SecurityTokenValidator { get; set; } = new JwtSecurityTokenHandler();
     }
 }
