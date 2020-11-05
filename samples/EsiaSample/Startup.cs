@@ -36,6 +36,7 @@ namespace EsiaSample
                     options.Mnemonic = "TESTSYS";
                     options.Scope = new[] { "fullname", "snils", "email", "mobile", "usr_org" };
                     options.SaveTokens = true;
+                    options.SecurityTokenValidator = new CustomSecurityTokenValidator();
                 });
             services.AddSingleton<IEsiaSigner, OpensslEsiaSigner>();
 
