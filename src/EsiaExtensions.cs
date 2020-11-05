@@ -33,17 +33,26 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static AuthenticationBuilder AddEsia<TEsiaEvents>(this AuthenticationBuilder builder, string authenticationScheme, Action<EsiaOptions> configureOptions)
             where TEsiaEvents : OpenIdConnectEvents
-            => builder.AddEsia<TEsiaEvents>(authenticationScheme, EsiaDefaults.DisplayName, configureOptions);
+            => builder.AddEsia<TEsiaEvents, EsiaHandler>(authenticationScheme, EsiaDefaults.DisplayName, configureOptions);
 
         public static AuthenticationBuilder AddEsia(this AuthenticationBuilder builder, string authenticationScheme, string displayName, Action<EsiaOptions> configureOptions)
-            => builder.AddEsia<EsiaEvents>(authenticationScheme, displayName, configureOptions);
-
+            => builder.AddEsia<EsiaEvents, EsiaHandler>(authenticationScheme, displayName, configureOptions);
+        
         public static AuthenticationBuilder AddEsia<TEsiaEvents>(
             this AuthenticationBuilder builder,
             string authenticationScheme,
             string displayName,
             Action<EsiaOptions> configureOptions)
             where TEsiaEvents : OpenIdConnectEvents
+            => builder.AddEsia<TEsiaEvents, EsiaHandler>(authenticationScheme, displayName, configureOptions);
+
+        public static AuthenticationBuilder AddEsia<TEsiaEvents, TEsiaHandler>(
+            this AuthenticationBuilder builder,
+            string authenticationScheme,
+            string displayName,
+            Action<EsiaOptions> configureOptions)
+            where TEsiaEvents : OpenIdConnectEvents
+            where TEsiaHandler : OpenIdConnectHandler
         {
             var esiaOptions = new EsiaOptions();
             configureOptions(esiaOptions);
@@ -59,7 +68,7 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IPostConfigureOptions<OpenIdConnectOptions>, OpenIdConnectPostConfigureOptions>());
 
             var configBuilder = new OpenIdConnectOptionsBuilder(esiaOptions, esiaEnvironment);
-            return builder.AddRemoteScheme<OpenIdConnectOptions, EsiaHandler>(authenticationScheme, displayName, configBuilder.BuildAction<TEsiaEvents>());
+            return builder.AddRemoteScheme<OpenIdConnectOptions, TEsiaHandler>(authenticationScheme, displayName, configBuilder.BuildAction<TEsiaEvents>());
         }
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
     }
