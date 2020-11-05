@@ -109,7 +109,7 @@ $ openssl pkcs12 -export -out esia.pfx -inkey esia.key -in esia.pem -engine gost
 Чтобы проверить, что подпись данных в openssl работает, можете использовать следующую команду:
 
 ```bash
-$ openssl cms -sign -engine gost -inkey esia.key -signer esia.pem -engine gost <<< '123'
+$ openssl cms -sign -engine gost -inkey esia.key -signer esia.pem <<< '123'
 ```
 
 Должен вернуться вывод с огромным base64-текстом, разбитым на несколько строк.
