@@ -38,6 +38,7 @@ namespace AISGorod.AspNetCore.Authentication.Esia
                 options.TokenValidationParameters.ValidIssuer = "http://esia.gosuslugi.ru/";
                 options.SecurityTokenValidator = esiaOptions.SecurityTokenValidator;
                 options.ClientId = esiaOptions.Mnemonic;
+                options.ProtocolValidator.RequireNonce = false;
                 options.GetClaimsFromUserInfoEndpoint = false;
                 options.StateDataFormat = new EsiaSecureDataFormat();
                 options.EventsType = typeof(TEsiaEvents);
