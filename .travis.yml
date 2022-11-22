@@ -1,6 +1,0 @@
-language: csharp
-solution: Esia.sln
-mono: none
-dotnet: 6.0.403
-script:
-  - dotnet build
