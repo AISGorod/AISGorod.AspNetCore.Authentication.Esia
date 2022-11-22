@@ -39,7 +39,7 @@ namespace EsiaSample.Controllers
             return View();
         }
 
-        public IActionResult SignIn(string scopes, bool orgSelect)
+        public IActionResult LogIn(string scopes, bool orgSelect)
         {
             var callbackUrl = Url.Action(orgSelect ? "OrganizationSelect" : "Index", "Home");
             return Challenge(new OpenIdConnectChallengeProperties()
@@ -50,7 +50,7 @@ namespace EsiaSample.Controllers
         }
 
         [Authorize]
-        public IActionResult SignOut()
+        public IActionResult LogOut()
         {
             return SignOut("Cookies", "Esia");
         }

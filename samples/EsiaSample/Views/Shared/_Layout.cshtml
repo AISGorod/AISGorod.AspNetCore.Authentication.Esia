@@ -23,7 +23,7 @@
                 {
                     <li class="nav-item"><a class="nav-link" asp-area="" asp-controller="Home" asp-action="Api">Тест API</a></li>
                     <li class="nav-item"><a class="nav-link" asp-area="" asp-controller="Home" asp-action="Refresh">Обновить маркер доступа</a></li>
-                    <li class="nav-item"><a class="nav-link" asp-area="" asp-controller="Home" asp-action="SignOut">Выйти</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-area="" asp-controller="Home" asp-action="LogOut">Выйти</a></li>
                 }
                 else
                 {
@@ -32,9 +32,9 @@
                             Войти через госуслуги (ЕСИА)
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" asp-area="" asp-controller="Home" asp-action="SignIn">Все scope</a>
-                            <a class="dropdown-item" asp-area="" asp-controller="Home" asp-action="SignIn" asp-route-scopes="openid fullname">Только fullname</a>
-                            <a class="dropdown-item" asp-area="" asp-controller="Home" asp-action="SignIn" asp-route-scopes="openid usr_org" asp-route-orgSelect="true">С выбором организации</a>
+                            <a class="dropdown-item" asp-area="" asp-controller="Home" asp-action="LogIn">Все scope</a>
+                            <a class="dropdown-item" asp-area="" asp-controller="Home" asp-action="LogIn" asp-route-scopes="openid fullname">Только fullname</a>
+                            <a class="dropdown-item" asp-area="" asp-controller="Home" asp-action="LogIn" asp-route-scopes="openid usr_org" asp-route-orgSelect="true">С выбором организации</a>
                         </div>
                     </li>
                 }
