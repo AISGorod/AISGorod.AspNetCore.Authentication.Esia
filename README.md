@@ -1,6 +1,6 @@
 # AISGorod.AspNetCore.Authentication.Esia
 
-[![Build Status](https://travis-ci.org/AISGorod/AISGorod.AspNetCore.Authentication.Esia.svg?branch=master)](https://travis-ci.org/AISGorod/AISGorod.AspNetCore.Authentication.Esia)
+[![Build Status](https://github.com/AISGorod/AISGorod.AspNetCore.Authentication.Esia/actions/workflows/workflow.yml/badge.svg?branch=main)](https://github.com/AISGorod/AISGorod.AspNetCore.Authentication.Esia/actions/workflows/workflow.yml)
 
 Данная библиотека добавляет возможность авторизации через госуслуги (ЕСИА) по протоколу OpenID Connect, а также добавляет интерфейс доступа к REST-сервисам ЕСИА.
 
