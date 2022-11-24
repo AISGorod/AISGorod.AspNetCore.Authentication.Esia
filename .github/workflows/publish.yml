@@ -1,0 +1,20 @@
+name: NuGet publish workflow
+on: [workflow_dispatch]
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    name: Publish package into NuGet
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: | 
+            3.1.x
+            6.0.x
+      - name: Pack
+        run: dotnet pack src -c release -o bld
+      - name: Rename
+        run: find bld/ -type f -name "*.nupkg" -exec mv {} bld/out.nupkg \;
+      - name: Push
+        run: dotnet nuget push bld/out.nupkg -s "https://api.nuget.org/v3/index.json" -k ${{secrets.NUGET_API_KEY}}
