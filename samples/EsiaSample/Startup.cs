@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using AISGorod.AspNetCore.Authentication.Esia;
@@ -29,7 +29,7 @@ namespace EsiaSample
                 {
                     options.Cookie.Name = "EsiaSample.Cookie";
                 })
-                .AddEsia("Esia", options =>
+                .AddEsia<CustomEsiaEvents>("Esia", options =>
                 {
                     //options.Environment = EsiaEnvironmentType.Test;
                     options.EnvironmentInstance = new CustomEsiaEnvironment();
