@@ -74,7 +74,7 @@ ViewBag.Contacts = contactsJson.ToString(Newtonsoft.Json.Formatting.Indented);
 
 После этого необходимо открыть файл с настройками openssl: `$ sudo nano /etc/ssl/openssl.cnf`.
 
-Дописать в начало файла (например, после `oid_section             = new_oids`): `openssl_conf = openssl_def`.
+Дописать в начало файла (например, после `oid_section = new_oids`): `openssl_conf = openssl_def`.
 
 Дописать в конец файла:
 
