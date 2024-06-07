@@ -1,19 +1,19 @@
-﻿using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using Microsoft.IdentityModel.Tokens;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.IdentityModel.Tokens;
 
 namespace AISGorod.AspNetCore.Authentication.Esia
 {
     /// <summary>
     /// Формирует экземпляр класса OpenIdConnectOptions из экземпляра класса EsiaOptions.
     /// </summary>
-    class OpenIdConnectOptionsBuilder
+    internal class OpenIdConnectOptionsBuilder
     {
-        private EsiaOptions esiaOptions;
-        private IEsiaEnvironment environment;
+        private readonly IEsiaEnvironment environment;
+        private readonly EsiaOptions esiaOptions;
 
         public OpenIdConnectOptionsBuilder(EsiaOptions esiaOptions, IEsiaEnvironment environment)
         {
@@ -21,14 +21,17 @@ namespace AISGorod.AspNetCore.Authentication.Esia
             this.environment = environment;
         }
 
-        public Action<OpenIdConnectOptions> BuildAction() => BuildAction<EsiaEvents>();
+        public Action<OpenIdConnectOptions> BuildAction()
+        {
+            return BuildAction<EsiaEvents>();
+        }
 
         public Action<OpenIdConnectOptions> BuildAction<TEsiaEvents>() where TEsiaEvents : OpenIdConnectEvents
         {
-            return (OpenIdConnectOptions options) =>
+            return options =>
             {
                 options.Backchannel = esiaOptions.Backchannel;
-                options.Configuration = new OpenIdConnectConfiguration()
+                options.Configuration = new OpenIdConnectConfiguration
                 {
                     AuthorizationEndpoint = environment.AuthorizationEndpoint,
                     TokenEndpoint = environment.TokenEndpoint,
@@ -54,15 +57,9 @@ namespace AISGorod.AspNetCore.Authentication.Esia
             optionsScope.Clear();
             optionsScope.Add("openid");
             if (esiaOptions.Scope != null)
-            {
                 foreach (var scope in esiaOptions.Scope)
-                {
                     if (!scope.Equals("openid", StringComparison.OrdinalIgnoreCase))
-                    {
                         optionsScope.Add(scope);
-                    }
-                }
-            }
         }
     }
 }

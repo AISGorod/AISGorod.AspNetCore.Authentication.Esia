@@ -16,6 +16,7 @@
 
 1. Добавьте NuGet-пакет `AISGorod.AspNetCore.Authentication.Esia`.
 2. Добавьте в _Startup.cs_ следующие строки (ниже данные для примера):
+
 ```csharp
 services
     .AddAuthentication(...)
@@ -29,7 +30,9 @@ services
     });
 services.AddSingleton<IEsiaSigner, OpensslEsiaSigner>(); // нужна своя реализация подписи запросов от ИС в ЕСИА
 ```
+
 3. Также убедитесь, что в _Startup.cs_ есть подключение _HttpContextAccessor_:
+
 ```csharp
 services.AddHttpContextAccessor();
 ```
@@ -43,11 +46,13 @@ services.AddHttpContextAccessor();
 В нём есть метод `CallAsync`, который и отвечает за актуализацию токенов и общение с API ЕСИА.
 
 Пример запроса:
+
 ```csharp
 var oId = User.Claims.First(i => i.Type == "sub").Value;
 var contactsJson = await esiaRestService.CallAsync($"/rs/prns/{oId}/ctts?embed=(elements)", HttpMethod.Get);
 ViewBag.Contacts = contactsJson.ToString(Newtonsoft.Json.Formatting.Indented);
 ```
+
 Данный кусок кода получает _oId_ пользователя, запрашивает все контакты и складывает их JSON-представление в ViewBag.
 
 ## Получение настроек подключения к ЕСИА
@@ -74,7 +79,7 @@ ViewBag.Contacts = contactsJson.ToString(Newtonsoft.Json.Formatting.Indented);
 
 После этого необходимо открыть файл с настройками openssl: `$ sudo nano /etc/ssl/openssl.cnf`.
 
-Дописать в начало файла (например, после `oid_section             = new_oids`): `openssl_conf = openssl_def`.
+Дописать в начало файла (например, после `oid_section = new_oids`): `openssl_conf = openssl_def`.
 
 Дописать в конец файла:
 
@@ -107,7 +112,7 @@ $ openssl req -x509 -newkey gost2012_256 -pkeyopt paramset:A -nodes -keyout esia
 $ openssl pkcs12 -export -out esia.pfx -inkey esia.key -in esia.pem -engine gost
 ```
 
-Данные о стране, городе, имени сертификата можно вбивать любые, они не играют роли для ЕСИА. 
+Данные о стране, городе, имени сертификата можно вбивать любые, они не играют роли для ЕСИА.
 
 Чтобы проверить, что подпись данных в openssl работает, можете использовать следующую команду:
 

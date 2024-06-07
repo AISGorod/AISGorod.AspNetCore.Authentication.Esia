@@ -31,7 +31,12 @@ public class CustomEsiaEvents : AISGorod.AspNetCore.Authentication.Esia.EsiaEven
             tempData.Add("ErrorMessage", "Ошибка взаимодействия с ЕСИА. Пожалуйста, попробуйте ещё раз.");
             tempData.Save();
         }
-        context.Response.Redirect(context.Properties.RedirectUri ?? "/");
+
+        if (context.Properties != null)
+        {
+            context.Response.Redirect(context.Properties.RedirectUri ?? "/");
+        }
+
         context.HandleResponse();
         return Task.CompletedTask;
     }
