@@ -84,7 +84,7 @@ namespace AISGorod.AspNetCore.Authentication.Esia
             var responseMessage = await client.SendAsync(request);
             responseMessage.EnsureSuccessStatusCode();
             var responseStr = await responseMessage.Content.ReadAsStringAsync();
-            var responseJson = JObject.Parse(responseStr);
+            var responseJson = JObject.Parse(responseStr);  
 
             return responseJson;
         }

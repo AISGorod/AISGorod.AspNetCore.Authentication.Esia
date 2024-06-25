@@ -43,8 +43,6 @@ public class HomeController : Controller
     {
         var callbackUrl = Url.Action(orgSelect ? "OrganizationSelect" : "Index", "Home");
         
-        Console.WriteLine("scopes");
-        Console.WriteLine(scopes);
         return Challenge(new OpenIdConnectChallengeProperties()
         {
             RedirectUri = callbackUrl,
