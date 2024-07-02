@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace AISGorod.AspNetCore.Authentication.Esia
+﻿namespace AISGorod.AspNetCore.Authentication.Esia
 {
     /// <summary>
     /// Интерфейс для подписи данных с помощью ключа ИС.

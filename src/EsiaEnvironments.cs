@@ -64,7 +64,7 @@ namespace AISGorod.AspNetCore.Authentication.Esia
         /// <summary>
         /// Сертификат среды ЕСИА.
         /// </summary>
-        public X509Certificate2 EsiaCertificate => new X509Certificate2(Encoding.UTF8.GetBytes(EsiaCertificates.TestCertificate));
+        public X509Certificate2 EsiaCertificate => new(Encoding.UTF8.GetBytes(EsiaCertificates.TestCertificate));
 
         /// <summary>
         /// Базовый URL для запросов.
@@ -100,7 +100,7 @@ namespace AISGorod.AspNetCore.Authentication.Esia
         /// <summary>
         /// Сертификат среды ЕСИА.
         /// </summary>
-        public X509Certificate2 EsiaCertificate => new X509Certificate2(Encoding.UTF8.GetBytes(EsiaCertificates.ProductionCertificate));
+        public X509Certificate2 EsiaCertificate => new(Encoding.UTF8.GetBytes(EsiaCertificates.ProductionCertificate));
 
         /// <summary>
         /// Базовый URL для запросов.
@@ -142,15 +142,12 @@ namespace AISGorod.AspNetCore.Authentication.Esia
 
         public IEsiaEnvironment Resolve()
         {
-            switch (this.type)
+            return type switch
             {
-                case EsiaEnvironmentType.Test:
-                    return new TestEsiaEnvironment();
-                case EsiaEnvironmentType.Production:
-                    return new ProductionEsiaEnvironment();
-                default:
-                    throw new ArgumentException(nameof(type));
-            }
+                EsiaEnvironmentType.Test => new TestEsiaEnvironment(),
+                EsiaEnvironmentType.Production => new ProductionEsiaEnvironment(),
+                _ => throw new ArgumentException(nameof(type))
+            };
         }
     }
 }

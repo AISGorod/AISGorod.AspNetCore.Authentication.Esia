@@ -4,12 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace EsiaSample
+namespace EsiaSample;
+
+/// <summary>
+/// Собственное описание настроек подключения к ЕСИА.
+/// </summary>
+public class CustomEsiaEnvironment : TestEsiaEnvironment
 {
-    /// <summary>
-    /// Собственное описание настроек подключения к ЕСИА.
-    /// </summary>
-    public class CustomEsiaEnvironment : TestEsiaEnvironment
-    {
-    }
 }

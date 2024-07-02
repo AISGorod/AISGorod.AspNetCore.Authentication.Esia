@@ -15,25 +15,25 @@ namespace Microsoft.Extensions.DependencyInjection
     {
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
         public static AuthenticationBuilder AddEsia(this AuthenticationBuilder builder)
-            => builder.AddEsia(EsiaDefaults.AuthenticationScheme, _ => { });
+            => builder.AddEsia(EsiaDefaults.AUTHENTICATION_SCHEME, _ => { });
 
         public static AuthenticationBuilder AddEsia<TEsiaEvents>(this AuthenticationBuilder builder)
             where TEsiaEvents : OpenIdConnectEvents
-            => builder.AddEsia<TEsiaEvents>(EsiaDefaults.AuthenticationScheme, _ => { });
+            => builder.AddEsia<TEsiaEvents>(EsiaDefaults.AUTHENTICATION_SCHEME, _ => { });
 
         public static AuthenticationBuilder AddEsia(this AuthenticationBuilder builder, Action<EsiaOptions> configureOptions)
-            => builder.AddEsia(EsiaDefaults.AuthenticationScheme, configureOptions);
+            => builder.AddEsia(EsiaDefaults.AUTHENTICATION_SCHEME, configureOptions);
 
         public static AuthenticationBuilder AddEsia<TEsiaEvents>(this AuthenticationBuilder builder, Action<EsiaOptions> configureOptions)
             where TEsiaEvents : OpenIdConnectEvents
-            => builder.AddEsia<TEsiaEvents>(EsiaDefaults.AuthenticationScheme, configureOptions);
+            => builder.AddEsia<TEsiaEvents>(EsiaDefaults.AUTHENTICATION_SCHEME, configureOptions);
 
         public static AuthenticationBuilder AddEsia(this AuthenticationBuilder builder, string authenticationScheme, Action<EsiaOptions> configureOptions)
-            => builder.AddEsia(authenticationScheme, EsiaDefaults.DisplayName, configureOptions);
+            => builder.AddEsia(authenticationScheme, EsiaDefaults.DISPLAY_NAME, configureOptions);
 
         public static AuthenticationBuilder AddEsia<TEsiaEvents>(this AuthenticationBuilder builder, string authenticationScheme, Action<EsiaOptions> configureOptions)
             where TEsiaEvents : OpenIdConnectEvents
-            => builder.AddEsia<TEsiaEvents, EsiaHandler>(authenticationScheme, EsiaDefaults.DisplayName, configureOptions);
+            => builder.AddEsia<TEsiaEvents, EsiaHandler>(authenticationScheme, EsiaDefaults.DISPLAY_NAME, configureOptions);
 
         public static AuthenticationBuilder AddEsia(this AuthenticationBuilder builder, string authenticationScheme, string displayName, Action<EsiaOptions> configureOptions)
             => builder.AddEsia<EsiaEvents, EsiaHandler>(authenticationScheme, displayName, configureOptions);

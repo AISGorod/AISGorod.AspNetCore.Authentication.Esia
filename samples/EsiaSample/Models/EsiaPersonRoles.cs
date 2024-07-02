@@ -3,18 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace EsiaSample.Models
+namespace EsiaSample.Models;
+
+public class EsiaPersonRoles
 {
-    public class EsiaPersonRoles
-    {
-        public int oid { get; set; }
+    public int oid { get; set; }
 
-        public string fullName { get; set; }
+    public string fullName { get; set; }
 
-        public string shortName { get; set; }
+    public string shortName { get; set; }
 
-        public string ogrn { get; set; }
+    public string ogrn { get; set; }
 
-        // Тут должно быть намного больше свойств. Но текущего набора достаточно.
-    }
+    // Тут должно быть намного больше свойств. Но текущего набора достаточно.
 }

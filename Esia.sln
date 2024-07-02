@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AISGorod.AspNetCore.Authent
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EsiaSample", "samples\EsiaSample\EsiaSample.csproj", "{2EE8199B-3BF3-4375-ADAC-77A59A48B57F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EsiaNet8Sample", "samples\EsiaNet8Sample\EsiaNet8Sample.csproj", "{6BBCBD35-642B-4BDC-80B1-2B474351A26D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{2EE8199B-3BF3-4375-ADAC-77A59A48B57F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2EE8199B-3BF3-4375-ADAC-77A59A48B57F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2EE8199B-3BF3-4375-ADAC-77A59A48B57F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6BBCBD35-642B-4BDC-80B1-2B474351A26D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6BBCBD35-642B-4BDC-80B1-2B474351A26D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6BBCBD35-642B-4BDC-80B1-2B474351A26D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6BBCBD35-642B-4BDC-80B1-2B474351A26D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
