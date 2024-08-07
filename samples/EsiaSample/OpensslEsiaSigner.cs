@@ -10,8 +10,8 @@ namespace EsiaSample;
 /// </summary>
 public class OpensslEsiaSigner : IEsiaSigner
 {
-    private const string KEY_FILE = @"/home/vv_tokarev/esia.key";
-    private const string CRT_FILE = @"/home/vv_tokarev/esia.pem";
+    private const string KEY_FILE = @"/home/username/esia.key";
+    private const string CRT_FILE = @"/home/username/esia.pem";
 
     public string Sign(byte[] data)
     {

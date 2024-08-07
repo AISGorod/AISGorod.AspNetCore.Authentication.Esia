@@ -23,7 +23,7 @@ builder.Services
     {
         //options.Environment = EsiaEnvironmentType.Test;
         options.EnvironmentInstance = new CustomEsiaEnvironment();
-        options.Mnemonic = "RIAS-HCS-ULYANOVSK";
+        options.Mnemonic = "TESTSYS";
         options.Scope = ["fullname", "snils", "email", "mobile", "usr_org" ];
         options.SaveTokens = true;
         options.SecurityTokenValidator = new CustomSecurityTokenValidator();

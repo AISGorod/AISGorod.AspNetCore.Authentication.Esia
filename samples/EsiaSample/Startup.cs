@@ -31,7 +31,7 @@ public class Startup
             {
                 //options.Environment = EsiaEnvironmentType.Test;
                 options.EnvironmentInstance = new CustomEsiaEnvironment();
-                options.Mnemonic = "RIAS-HCS-ULYANOVSK";
+                options.Mnemonic = "";
                 options.Scope = new[] { "fullname", "snils", "email", "mobile", "usr_org" };
                 options.SaveTokens = true;
                 options.SecurityTokenValidator = new CustomSecurityTokenValidator();

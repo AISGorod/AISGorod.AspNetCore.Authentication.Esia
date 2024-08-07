@@ -56,10 +56,19 @@ namespace AISGorod.AspNetCore.Authentication.Esia
         {
             optionsScope.Clear();
             optionsScope.Add("openid");
-            if (esiaOptions.Scope != null)
-                foreach (var scope in esiaOptions.Scope)
-                    if (!scope.Equals("openid", StringComparison.OrdinalIgnoreCase))
-                        optionsScope.Add(scope);
+            
+            if (esiaOptions.Scope == null)
+            {
+                return;
+            }
+            
+            foreach (var scope in esiaOptions.Scope)
+            {
+                if (!scope.Equals("openid", StringComparison.OrdinalIgnoreCase))
+                {
+                    optionsScope.Add(scope);
+                }
+            }
         }
     }
 }

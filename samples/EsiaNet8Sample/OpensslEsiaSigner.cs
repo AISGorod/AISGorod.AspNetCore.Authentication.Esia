@@ -10,14 +10,14 @@ namespace EsiaNet8Sample;
 /// </summary>
 public class OpensslEsiaSigner : IEsiaSigner
 {
-    private const string KEY_FILE = "/home/vv_tokarev/esia.key";
-    private const string CRT_FILE = "/home/vv_tokarev/esia.pem";
+    private const string KeyFile = "/home/username/esia.key";
+    private const string CrtFile = "/home/username/esia.pem";
 
     public string Sign(byte[] data)
     {
         var a = new Process();
         a.StartInfo.FileName = "openssl";
-        a.StartInfo.Arguments = $"cms -sign -binary -stream -engine gost -inkey {KEY_FILE} -signer {CRT_FILE} -nodetach -outform pem";
+        a.StartInfo.Arguments = $"cms -sign -binary -stream -engine gost -inkey {KeyFile} -signer {CrtFile} -nodetach -outform pem";
 
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {

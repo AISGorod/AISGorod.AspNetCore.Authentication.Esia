@@ -8,16 +8,16 @@
         /// <summary>
         /// Значение по умолчанию для EsiaOptions.AuthenticationScheme.
         /// </summary>
-        public const string AUTHENTICATION_SCHEME = "Esia";
+        public const string AuthenticationScheme = "Esia";
 
         /// <summary>
         /// Значение по умолчанию для названия поставщика.
         /// </summary>
-        public const string DISPLAY_NAME = "Госуслуги (ЕСИА)";
+        public const string DisplayName = "Госуслуги (ЕСИА)";
 
         /// <summary>
         /// Название ключа в AuthenticationProperties, в котором хранятся текущие scope сессии.
         /// </summary>
-        public const string ENABLES_SCOPES_PROPERTIES_KEY = "Esia.EnabledScopes";
+        public const string EnablesScopesPropertiesKey = "Esia.EnabledScopes";
     }
 }

@@ -126,7 +126,7 @@ namespace AISGorod.AspNetCore.Authentication.Esia
                 claimsAction.Run(doc.RootElement, context.Principal.Identity as ClaimsIdentity, "esia_prns");
             }
 
-            context.Properties.SetString(EsiaDefaults.ENABLES_SCOPES_PROPERTIES_KEY, string.Join(" ", (context.Properties as OpenIdConnectChallengeProperties)?.Scope ?? context.Options.Scope));
+            context.Properties.SetString(EsiaDefaults.EnablesScopesPropertiesKey, string.Join(" ", (context.Properties as OpenIdConnectChallengeProperties)?.Scope ?? context.Options.Scope));
         }
 
         /// <summary>
