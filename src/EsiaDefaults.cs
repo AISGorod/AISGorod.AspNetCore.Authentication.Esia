@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace AISGorod.AspNetCore.Authentication.Esia
+﻿namespace AISGorod.AspNetCore.Authentication.Esia
 {
     /// <summary>
     /// Константы, используемые по умолчанию.
@@ -17,11 +13,11 @@ namespace AISGorod.AspNetCore.Authentication.Esia
         /// <summary>
         /// Значение по умолчанию для названия поставщика.
         /// </summary>
-        public static readonly string DisplayName = "Госуслуги (ЕСИА)";
+        public const string DisplayName = "Госуслуги (ЕСИА)";
 
         /// <summary>
         /// Название ключа в AuthenticationProperties, в котором хранятся текущие scope сессии.
         /// </summary>
-        public static readonly string EnablesScopesPropertiesKey = "Esia.EnabledScopes";
+        public const string EnablesScopesPropertiesKey = "Esia.EnabledScopes";
     }
 }

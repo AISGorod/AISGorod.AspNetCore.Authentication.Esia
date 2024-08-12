@@ -3,18 +3,18 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace EsiaSample
-{
-    /// <summary>
-    /// Простейшая обёртка подписи запросов над openssl.
-    /// </summary>
-    public class OpensslEsiaSigner : IEsiaSigner
-    {
-        private const string KEY_FILE = @"/home/vladdy/esia.key";
-        private const string CRT_FILE = @"/home/vladdy/esia.pem";
+namespace EsiaSample;
 
-        public string Sign(byte[] data)
-        {
+/// <summary>
+/// Простейшая обёртка подписи запросов над openssl.
+/// </summary>
+public class OpensslEsiaSigner : IEsiaSigner
+{
+    private const string KEY_FILE = @"/home/username/esia.key";
+    private const string CRT_FILE = @"/home/username/esia.pem";
+
+    public string Sign(byte[] data)
+    {
             Process a = new Process();
             a.StartInfo.FileName = "openssl";
             a.StartInfo.Arguments = $"cms -sign -binary -stream -engine gost -inkey {KEY_FILE} -signer {CRT_FILE} -nodetach -outform pem";
@@ -53,5 +53,4 @@ namespace EsiaSample
             }
             return resultData.ToString();
         }
-    }
 }

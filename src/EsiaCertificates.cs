@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace AISGorod.AspNetCore.Authentication.Esia
+﻿namespace AISGorod.AspNetCore.Authentication.Esia
 {
     /// <summary>
-    /// Сертификаты тестовой и продуктивной сред ЕСИА, используемые для формирования электронных подписей ответов как поставщика.
-    /// Можно взять из архива http://esia.gosuslugi.ru/public/esia.zip.
-    /// Ссылка на архив взята из методических рекомендаций ЕСИА, п. 3.1.2 "Аутентификация с использованием OpenID Connect 1.0".
+    ///     Сертификаты тестовой и продуктивной сред ЕСИА, используемые для формирования электронных подписей ответов как поставщика.
+    ///     Можно взять из архива http://esia.gosuslugi.ru/public/esia.zip.
+    ///     Ссылка на архив взята из методических рекомендаций ЕСИА, п. 3.1.2 "Аутентификация с использованием OpenID Connect 1.0".
     /// </summary>
-    static class EsiaCertificates
+    internal static class EsiaCertificates
     {
         /// <summary>
-        /// Сертификат тестовой среды ЕСИА.
+        ///     Сертификат тестовой среды ЕСИА.
         /// </summary>
         public const string TestCertificate = @"-----BEGIN CERTIFICATE-----
 MIIDVDCCAjygAwIBAgIEU/3lwTANBgkqhkiG9w0BAQUFADBsMRAwDgYDVQQGEwdV
@@ -36,7 +32,7 @@ rNYRhvVqY/YiGqxvrUmNJaOpFxUfEn/UgPHkxIBEtglvY/1jXOB/Yg==
 -----END CERTIFICATE-----";
 
         /// <summary>
-        /// Сертификат продукционной среды ЕСИА.
+        ///     Сертификат продукционной среды ЕСИА.
         /// </summary>
         public const string ProductionCertificate = @"-----BEGIN CERTIFICATE-----
 MIIC+DCCAeCgAwIBAgIEZkCOZTANBgkqhkiG9w0BAQsFADA+MQswCQYDVQQGEwJS

@@ -13,7 +13,7 @@ using System.Text.Json;
 namespace AISGorod.AspNetCore.Authentication.Esia
 {
     /// <summary>
-    /// Класс, реализующий обрабочики событий от поставщика данных.
+    /// Класс, реализующий обработчики событий от поставщика данных.
     /// </summary>
     public class EsiaEvents : OpenIdConnectEvents
     {
