@@ -38,7 +38,7 @@ namespace AISGorod.AspNetCore.Authentication.Esia
                     EndSessionEndpoint = environment.LogoutEndpoint
                 };
                 options.TokenValidationParameters.IssuerSigningKey = new RsaSecurityKey(environment.EsiaCertificate.GetRSAPublicKey());
-                options.TokenValidationParameters.ValidIssuer = "http://esia.gosuslugi.ru/";
+                options.TokenValidationParameters.ValidIssuer = environment.Issuer;
                 options.SecurityTokenValidator = esiaOptions.SecurityTokenValidator;
                 options.ClientId = esiaOptions.Mnemonic;
                 options.ProtocolValidator.RequireNonce = false;

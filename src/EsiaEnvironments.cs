@@ -17,7 +17,7 @@ namespace AISGorod.AspNetCore.Authentication.Esia
         /// <summary>
         /// Продуктивная среда ЕСИА.
         /// </summary>
-        Production
+        Production,
     }
 
     /// <summary>
@@ -54,6 +54,11 @@ namespace AISGorod.AspNetCore.Authentication.Esia
         /// Базовый URL для REST-сервиса персональных данных.
         /// </summary>
         string RestPersonsEndpoint { get; }
+
+        /// <summary>
+        /// Issuer маркеров доступа.
+        /// </summary>
+        string Issuer { get; }
     }
 
     /// <summary>
@@ -90,6 +95,11 @@ namespace AISGorod.AspNetCore.Authentication.Esia
         /// Базовый URL для REST-сервиса персональных данных.
         /// </summary>
         public string RestPersonsEndpoint => Host + "/rs/prns/";
+
+        /// <summary>
+        /// Issuer маркеров доступа.
+        /// </summary>
+        public string Issuer => "http://esia-portal1.test.gosuslugi.ru/";
     }
 
     /// <summary>
@@ -126,6 +136,11 @@ namespace AISGorod.AspNetCore.Authentication.Esia
         /// Базовый URL для REST-сервиса персональных данных.
         /// </summary>
         public string RestPersonsEndpoint => Host + "/rs/prns/";
+
+        /// <summary>
+        /// Issuer маркеров доступа.
+        /// </summary>
+        public string Issuer => "http://esia.gosuslugi.ru/";
     }
 
     /// <summary>
