@@ -5,12 +5,11 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        dotnet: [ '6.x', '8.x', '9.x' ]
-    name: Dotnet ${{ matrix.dotnet }} sample
+        project: [ 'src/', 'samples/EsiaNet8Sample/', 'samples/EsiaSample' ]
+    name: Build ${{ matrix.project }}
     steps:
-      - uses: actions/checkout@v3
-      - name: Setup dotnet
-        uses: actions/setup-dotnet@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: ${{ matrix.dotnet }}
-      - run: dotnet build
+          dotnet-version: '9.x'
+      - run: dotnet build ${{ matrix.project }}
