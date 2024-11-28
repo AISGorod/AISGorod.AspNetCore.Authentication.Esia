@@ -2,7 +2,7 @@
     ViewBag.Title = "Информация о пользователе";
 }
 
-@if (!User.Identity.IsAuthenticated)
+@if (User.Identity?.IsAuthenticated != true)
 {
     <div class="alert alert-danger">
         Вы не авторизованы.

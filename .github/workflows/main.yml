@@ -5,7 +5,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        dotnet: [ '3.1.x', '6.x' ]
+        dotnet: [ '6.x', '8.x', '9.x' ]
     name: Dotnet ${{ matrix.dotnet }} sample
     steps:
       - uses: actions/checkout@v3
