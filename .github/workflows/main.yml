@@ -1,7 +1,7 @@
 name: Main workflow
 on: [push]
 jobs:
-  build-src:
+  build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
