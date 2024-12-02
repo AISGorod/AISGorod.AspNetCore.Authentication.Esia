@@ -19,5 +19,10 @@
         /// Название ключа в AuthenticationProperties, в котором хранятся текущие scope сессии.
         /// </summary>
         public const string EnablesScopesPropertiesKey = "Esia.EnabledScopes";
+
+        /// <summary>
+        /// Имя HTTP-клиента для работы REST API.
+        /// </summary>
+        public const string RestClientHttpName = "Esia.RestClient";
     }
 }

@@ -1,5 +1,10 @@
 # История изменений
 
+## Версия 1.6.1
+
+- Исправлена ошибка обращения к REST API ЕСИА, если `EsiaOptions.Backchannel` не указан.
+- В `EsiaOptions` добавлен необязательный параметр `RestApiHttpClientHandler` для гибкой настройки `IEsiaRestService`.
+
 ## Версия 1.6.0
 
 - Добавлена поддержка .NET 8 и 9.

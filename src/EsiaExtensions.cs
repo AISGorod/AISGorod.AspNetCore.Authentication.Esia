@@ -37,7 +37,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static AuthenticationBuilder AddEsia(this AuthenticationBuilder builder, string authenticationScheme, string displayName, Action<EsiaOptions> configureOptions)
             => builder.AddEsia<EsiaEvents, EsiaHandler>(authenticationScheme, displayName, configureOptions);
-        
+
         public static AuthenticationBuilder AddEsia<TEsiaEvents>(
             this AuthenticationBuilder builder,
             string authenticationScheme,
@@ -66,6 +66,7 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.AddSingleton<OpenIdConnectOptionsBuilder>();
             builder.Services.AddTransient<IEsiaRestService, EsiaRestService>();
             builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IPostConfigureOptions<OpenIdConnectOptions>, OpenIdConnectPostConfigureOptions>());
+            builder.Services.AddHttpClient(EsiaDefaults.RestClientHttpName, esiaOptions.RestApiHttpClientHandler ?? ((_) => { }));
 
             var configBuilder = new OpenIdConnectOptionsBuilder(esiaOptions, esiaEnvironment);
             return builder.AddRemoteScheme<OpenIdConnectOptions, TEsiaHandler>(authenticationScheme, displayName, configBuilder.BuildAction<TEsiaEvents>());

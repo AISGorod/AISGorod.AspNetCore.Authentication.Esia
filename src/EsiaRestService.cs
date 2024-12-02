@@ -46,19 +46,22 @@ namespace AISGorod.AspNetCore.Authentication.Esia
         private IEsiaSigner esiaSigner;
         private IOptionsMonitor<OpenIdConnectOptions> optionsMonitor;
         private EsiaOptions esiaOptions;
+        private IHttpClientFactory httpClientFactory;
 
         public EsiaRestService(
             IHttpContextAccessor httpContextAccessor,
             IEsiaEnvironment esiaEnvironment,
             IServiceProvider serviceProvider, // TODO add IEsiaSigner directly
             IOptionsMonitor<OpenIdConnectOptions> optionsMonitor,
-            EsiaOptions esiaOptions)
+            EsiaOptions esiaOptions,
+            IHttpClientFactory httpClientFactory)
         {
             this.context = httpContextAccessor.HttpContext;
             this.esiaEnvironment = esiaEnvironment;
             this.esiaSigner = serviceProvider.GetService<IEsiaSigner>(); // TODO add IEsiaSigner directly
             this.optionsMonitor = optionsMonitor;
             this.esiaOptions = esiaOptions;
+            this.httpClientFactory = httpClientFactory;
         }
 
         public async Task<JObject> CallAsync(string url, HttpMethod method)
@@ -77,7 +80,7 @@ namespace AISGorod.AspNetCore.Authentication.Esia
                 throw new ArgumentNullException(nameof(accessToken));
             }
 
-            var client = esiaOptions.Backchannel ?? new HttpClient();
+            var client = esiaOptions.Backchannel ?? httpClientFactory.CreateClient(EsiaDefaults.RestClientHttpName);
             var request = new HttpRequestMessage(method, esiaEnvironment.Host + url);
             request.Headers.Authorization = new AuthenticationHeaderValue(tokenType, accessToken);
 
