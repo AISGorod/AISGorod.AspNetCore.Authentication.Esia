@@ -1,21 +1,26 @@
 ﻿using AISGorod.AspNetCore.Authentication.Esia;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.OAuth.Claims;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
+using System.Text.Json;
 using System.Threading.Tasks;
+using EsiaSample.Models;
 
 namespace EsiaSample.Controllers;
 
 public class HomeController : Controller
 {
+    /// <summary>
+    /// Настройки сериализации.
+    /// </summary>
+    private static readonly JsonSerializerOptions JsonSerializerOptions = new() { WriteIndented = true };
+    
     private readonly IEsiaRestService esiaRestService;
     private readonly IEsiaEnvironment esiaEnvironment;
 
@@ -97,7 +102,7 @@ public class HomeController : Controller
             }
 
             var resultJson = await esiaRestService.CallAsync(url, httpMethod);
-            result = resultJson.ToString(Newtonsoft.Json.Formatting.Indented);
+            result = JsonSerializer.Serialize(resultJson, JsonSerializerOptions);
         }
         catch (Exception ex)
         {
@@ -114,7 +119,8 @@ public class HomeController : Controller
         var model = new Models.OrganizationSelectViewModel();
 
         var organizations = await esiaRestService.CallAsync($"/rs/prns/{oId}/roles", HttpMethod.Get);
-        model.PersonRoles = organizations["elements"].ToObject<List<Models.EsiaPersonRoles>>();
+        var jsonString = organizations.GetProperty("elements").GetRawText();
+        model.PersonRoles = JsonSerializer.Deserialize<List<EsiaPersonRoles>>(jsonString);
 
         if (id == null)
         {

@@ -4,12 +4,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace AISGorod.AspNetCore.Authentication.Esia
@@ -26,7 +26,7 @@ namespace AISGorod.AspNetCore.Authentication.Esia
         /// <param name="url">Путь до веб-сервиса относительно корня сайта. Например, /rs/prns/1000?ctts</param>
         /// <param name="method">Метод, которым</param>
         /// <returns></returns>
-        Task<JObject> CallAsync(string url, HttpMethod method);
+        Task<JsonElement> CallAsync(string url, HttpMethod method);
 
         /// <summary>
         /// Обновляет маркеры доступа и обновления.
@@ -64,7 +64,7 @@ namespace AISGorod.AspNetCore.Authentication.Esia
             this.httpClientFactory = httpClientFactory;
         }
 
-        public async Task<JObject> CallAsync(string url, HttpMethod method)
+        public async Task<JsonElement> CallAsync(string url, HttpMethod method)
         {
             await CheckAndRefreshTokensAsync();
 
@@ -87,9 +87,9 @@ namespace AISGorod.AspNetCore.Authentication.Esia
             var responseMessage = await client.SendAsync(request);
             responseMessage.EnsureSuccessStatusCode();
             var responseStr = await responseMessage.Content.ReadAsStringAsync();
-            var responseJson = JObject.Parse(responseStr);
+            var responseJson = JsonDocument.Parse(responseStr);  
 
-            return responseJson;
+            return responseJson.RootElement;
         }
 
         public async Task RefreshTokensAsync()
@@ -130,17 +130,17 @@ namespace AISGorod.AspNetCore.Authentication.Esia
             var tokenResponse = await options.Backchannel.PostAsync(options.Configuration.TokenEndpoint, content, context.RequestAborted);
             tokenResponse.EnsureSuccessStatusCode();
 
-            var payload = JObject.Parse(await tokenResponse.Content.ReadAsStringAsync());
+            var payload = JsonDocument.Parse(await tokenResponse.Content.ReadAsStringAsync()).RootElement;
 
-            var stateReceived = payload.Value<string>("state");
+            var stateReceived = payload.GetProperty("state").GetString();
             if (state != stateReceived)
             {
                 throw new ArgumentException(nameof(state));
             }
 
-            props.UpdateTokenValue("access_token", payload.Value<string>("access_token"));
-            props.UpdateTokenValue("refresh_token", payload.Value<string>("refresh_token"));
-            if (int.TryParse(payload.Value<string>("expires_in"), NumberStyles.Integer, CultureInfo.InvariantCulture, out var seconds))
+            props.UpdateTokenValue("access_token", payload.GetProperty("access_token").GetString() ?? string.Empty);
+            props.UpdateTokenValue("refresh_token", payload.GetProperty("refresh_token").GetString() ?? string.Empty);
+            if (int.TryParse(payload.GetProperty("expires_in").GetString(), NumberStyles.Integer, CultureInfo.InvariantCulture, out var seconds))
             {
                 var expiresAt = DateTimeOffset.UtcNow + TimeSpan.FromSeconds(seconds);
                 props.UpdateTokenValue("expires_at", expiresAt.ToString("o", CultureInfo.InvariantCulture));

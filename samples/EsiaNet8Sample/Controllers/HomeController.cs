@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using System.Text.Json;
 using AISGorod.AspNetCore.Authentication.Esia;
 using EsiaNet8Sample.Models;
 using Microsoft.AspNetCore.Authentication;
@@ -17,6 +18,11 @@ public class HomeController(
     IEsiaRestService esiaRestService,
     IEsiaEnvironment esiaEnvironment) : Controller
 {
+    /// <summary>
+    /// Настройки сериализации.
+    /// </summary>
+    private static readonly JsonSerializerOptions JsonSerializerOptions = new() { WriteIndented = true };
+    
     /// <summary>
     /// Главная страница.
     /// </summary>
@@ -90,6 +96,7 @@ public class HomeController(
     public async Task<IActionResult> Api(string url, string method)
     {
         string result;
+        // Включение отступов
         try
         {
             var httpMethod = method switch
@@ -102,7 +109,7 @@ public class HomeController(
             };
 
             var resultJson = await esiaRestService.CallAsync(url, httpMethod);
-            result = resultJson.ToString(Newtonsoft.Json.Formatting.Indented);
+            result = JsonSerializer.Serialize(resultJson, JsonSerializerOptions);
         }
         catch (Exception ex)
         {
@@ -123,7 +130,8 @@ public class HomeController(
         var model = new OrganizationSelectViewModel();
 
         var organizations = await esiaRestService.CallAsync($"/rs/prns/{oId}/roles", HttpMethod.Get);
-        model.PersonRoles = organizations["elements"].ToObject<List<EsiaPersonRoles>>();
+        var jsonString = organizations.GetProperty("elements").GetRawText();
+        model.PersonRoles = JsonSerializer.Deserialize<List<EsiaPersonRoles>>(jsonString);
 
         if (id == null)
         {
