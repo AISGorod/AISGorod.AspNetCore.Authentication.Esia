@@ -56,8 +56,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             var esiaOptions = new EsiaOptions();
             configureOptions(esiaOptions);
-            IEsiaEnvironment esiaEnvironment = esiaOptions.EnvironmentInstance
-                ?? new EsiaEnvironmentResolver(esiaOptions.Environment ?? throw new ArgumentNullException("Environment and EnvironmentInstance is null")).Resolve();
+            IEsiaEnvironment esiaEnvironment = esiaOptions.EnvironmentInstance;
 
             // register new services
             builder.Services.AddSingleton(esiaOptions);
@@ -85,7 +84,7 @@ namespace AISGorod.AspNetCore.Authentication.Esia
         /// <summary>
         /// Подписывает запрос (или вычисляет client_secret запроса). 
         /// </summary>
-        internal static string SignData(IEsiaSigner esiaSigner, EsiaOptions options, string scope, string timestamp, string clientId, string state)
+        internal static string SignData(IEsiaSigner? esiaSigner, EsiaOptions options, string scope, string timestamp, string clientId, string state)
         {
             byte[] signData = Encoding.UTF8.GetBytes(scope + timestamp + clientId + state);
             return (esiaSigner != null)

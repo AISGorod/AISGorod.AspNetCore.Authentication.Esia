@@ -16,17 +16,26 @@ namespace AISGorod.AspNetCore.Authentication.Esia
         public string Protect(AuthenticationProperties data) =>
             Protect(data, null);
 
-        public string Protect(AuthenticationProperties data, string purpose)
+        public string Protect(AuthenticationProperties data, string? purpose)
         {
             var code = data.Items.TryGetValue(OpenIdConnectDefaults.UserstatePropertiesKey, out var item) ? item : Guid.NewGuid().ToString();
-            _dict.Add(code, data);
-            return code;
+            if (code != null)
+            {
+                _dict.Add(code, data);
+                return code;
+            }
+
+            return string.Empty;
         }
 
-        public AuthenticationProperties Unprotect(string protectedText) =>
+        public AuthenticationProperties? Unprotect(string? protectedText) =>
             Unprotect(protectedText, null);
 
-        public AuthenticationProperties Unprotect(string protectedText, string purpose) =>
-            !_dict.Remove(protectedText, value: out var data) ? null : data;
+        public AuthenticationProperties? Unprotect(string? protectedText, string? purpose)
+        {
+            if (protectedText != null)
+                return !_dict.Remove(protectedText, value: out var data) ? null : data;
+            return null;
+        }
     }
 }

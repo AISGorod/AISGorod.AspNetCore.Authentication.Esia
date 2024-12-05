@@ -15,7 +15,7 @@ public class OpensslEsiaSigner : IEsiaSigner
 
     public string Sign(byte[] data)
     {
-            Process a = new Process();
+            var a = new Process();
             a.StartInfo.FileName = "openssl";
             a.StartInfo.Arguments = $"cms -sign -binary -stream -engine gost -inkey {KEY_FILE} -signer {CRT_FILE} -nodetach -outform pem";
 
@@ -33,22 +33,28 @@ public class OpensslEsiaSigner : IEsiaSigner
             a.StandardInput.Write(Encoding.UTF8.GetString(data)); // просто передавать массив байтов не получается - ломает подпись
             a.StandardInput.Close();
 
-            StringBuilder resultData = new StringBuilder();
-            bool isKeyProcessing = false;
+            var resultData = new StringBuilder();
+            var isKeyProcessing = false;
             while (!a.StandardOutput.EndOfStream)
             {
-                string line = a.StandardOutput.ReadLine();
-                if (line == "-----BEGIN CMS-----")
+                var line = a.StandardOutput.ReadLine();
+                switch (line)
                 {
-                    isKeyProcessing = true;
-                }
-                else if (line == "-----END CMS-----")
-                {
-                    isKeyProcessing = false;
-                }
-                else if (isKeyProcessing)
-                {
-                    resultData.Append(line);
+                    case "-----BEGIN CMS-----":
+                        isKeyProcessing = true;
+                        break;
+                    case "-----END CMS-----":
+                        isKeyProcessing = false;
+                        break;
+                    default:
+                    {
+                        if (isKeyProcessing)
+                        {
+                            resultData.Append(line);
+                        }
+
+                        break;
+                    }
                 }
             }
             return resultData.ToString();

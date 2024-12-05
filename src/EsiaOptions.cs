@@ -21,36 +21,36 @@ namespace AISGorod.AspNetCore.Authentication.Esia
         /// Экземпляр класса, в котором заданы настройки среды ЕСИА.
         /// Необходимо указать или Environment, или EnvironmentInstance.
         /// </summary>
-        public IEsiaEnvironment EnvironmentInstance { get; set; }
+        public IEsiaEnvironment? EnvironmentInstance { get; set; }
 
         /// <summary>
         /// Мнемоника ИС.
         /// </summary>
-        public string Mnemonic { get; set; }
+        public string Mnemonic { get; set; } = string.Empty;
 
         /// <summary>
         /// Набор scope, которые указаны в заявке на регистрацию системы.
         /// При отсутствии openid он добавляется автоматически.
         /// </summary>
-        public ICollection<string> Scope { get; set; }
+        public ICollection<string> Scope { get; set; } = new List<string>();
 
         /// <summary>
         /// Экземпляр класса HttpClient, с помощью которого будут выполняться запросы.
         /// Полезно, если требуется настроить работу с прокси.
         /// </summary>
-        public HttpClient Backchannel { get; set; }
+        public HttpClient? Backchannel { get; set; }
 
         /// <summary>
         /// Переопределение DefaultSignInScheme.
         /// Может быть полезно при использовании нескольких провайдеров (например, вместе с IdentityServer).
         /// </summary>
-        public string SignInScheme { get; set; }
+        public string? SignInScheme { get; set; }
 
         /// <summary>
         /// Схема, используемая при логауте.
         /// По умолчанию берётся значение из SignInScheme.
         /// </summary>
-        public string SignOutScheme { get; set; }
+        public string? SignOutScheme { get; set; }
 
         /// <summary>
         /// Сохраняет маркеры доступа, идентификации и обновления в параметрах аутентификации.
@@ -67,6 +67,6 @@ namespace AISGorod.AspNetCore.Authentication.Esia
         /// <summary>
         /// Если не задан <see cref="Backchannel"/>, то позволяет настроить обработчик HTTP-клиента для сервиса обмена с REST API.
         /// </summary>
-        public Action<HttpClient> RestApiHttpClientHandler { get; set; }
+        public Action<HttpClient>? RestApiHttpClientHandler { get; set; }
     }
 }

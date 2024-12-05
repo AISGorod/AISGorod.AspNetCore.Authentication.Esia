@@ -30,7 +30,7 @@ namespace AISGorod.AspNetCore.Authentication.Esia
         /// <summary>
         /// Сервис подписи данных для взаимодействия с ЕСИА.
         /// </summary>
-        protected readonly IEsiaSigner EsiaSigner;
+        protected readonly IEsiaSigner? EsiaSigner;
 
         /// <param name="esiaOptions">Свойства подключения к ЕСИА.</param>
         /// <param name="esiaEnvironment">Среда ЕСИА.</param>
@@ -88,19 +88,25 @@ namespace AISGorod.AspNetCore.Authentication.Esia
             var pm = context.TokenEndpointRequest;
 
             // add additional fields for redirect
-            pm.ClientId = context.Options.ClientId;
-            pm.Parameters.Add("scope", string.Join(" ", (context.Properties as OpenIdConnectChallengeProperties)?.Scope ?? context.Options.Scope));
-            pm.Parameters.Add("timestamp", now.ToString("yyyy.MM.dd HH:mm:ss") + " " + now.ToString("zzz").Replace(":", ""));
-            pm.State = Guid.NewGuid().ToString();
+            if (pm != null)
+            {
+                pm.ClientId = context.Options.ClientId;
+                pm.Parameters.Add("scope", string.Join(" ", (context.Properties as OpenIdConnectChallengeProperties)?.Scope ?? context.Options.Scope));
+                pm.Parameters.Add("timestamp", now.ToString("yyyy.MM.dd HH:mm:ss") + " " + now.ToString("zzz").Replace(":", ""));
+                pm.State = Guid.NewGuid().ToString();
 
-            // get data for sign
-            var scope = pm.Parameters["scope"];
-            var timestamp = pm.Parameters["timestamp"];
-            var clientId = pm.ClientId;
-            var state = pm.State;
+                // get data for sign
+                var scope = pm.Parameters["scope"];
+                var timestamp = pm.Parameters["timestamp"];
+                var clientId = pm.ClientId;
+                var state = pm.State;
 
-            // set clientSecret
-            pm.ClientSecret = EsiaExtensions.SignData(EsiaSigner, EsiaOptions, scope, timestamp, clientId, state);
+                // set clientSecret
+                if (clientId != null)
+                {
+                    pm.ClientSecret = EsiaExtensions.SignData(EsiaSigner, EsiaOptions, scope, timestamp, clientId, state);
+                }
+            }
 
             // ok
             return Task.CompletedTask;
@@ -117,16 +123,19 @@ namespace AISGorod.AspNetCore.Authentication.Esia
             var httpClient = context.Options.Backchannel;
 
             var httpRequest = new HttpRequestMessage(HttpMethod.Get, EsiaEnvironment.RestPersonsEndpoint + userOid);
-            httpRequest.Headers.Authorization = new AuthenticationHeaderValue(context.TokenEndpointResponse.TokenType, context.TokenEndpointResponse.AccessToken);
+            if (context.TokenEndpointResponse != null)
+            {
+                httpRequest.Headers.Authorization = new AuthenticationHeaderValue(context.TokenEndpointResponse.TokenType, context.TokenEndpointResponse.AccessToken);
+            } 
             var prnsResult = await httpClient.SendAsync(httpRequest);
             if (prnsResult.IsSuccessStatusCode)
             {
                 using var doc = JsonDocument.Parse(await prnsResult.Content.ReadAsStringAsync());
                 var claimsAction = new MapAllClaimsAction();
-                claimsAction.Run(doc.RootElement, context.Principal.Identity as ClaimsIdentity, "esia_prns");
+                claimsAction.Run(doc.RootElement, context.Principal?.Identity as ClaimsIdentity ?? throw new InvalidOperationException(), "esia_prns");
             }
 
-            context.Properties.SetString(EsiaDefaults.EnablesScopesPropertiesKey, string.Join(" ", (context.Properties as OpenIdConnectChallengeProperties)?.Scope ?? context.Options.Scope));
+            context.Properties?.SetString(EsiaDefaults.EnablesScopesPropertiesKey, string.Join(" ", (context.Properties as OpenIdConnectChallengeProperties)?.Scope ?? context.Options.Scope));
         }
 
         /// <summary>

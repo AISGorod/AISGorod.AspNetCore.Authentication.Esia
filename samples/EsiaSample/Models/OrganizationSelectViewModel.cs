@@ -7,5 +7,5 @@ namespace EsiaSample.Models;
 
 public class OrganizationSelectViewModel
 {
-    public List<EsiaPersonRoles> PersonRoles { get; set; }
+    public List<EsiaPersonRoles>? PersonRoles { get; set; }
 }

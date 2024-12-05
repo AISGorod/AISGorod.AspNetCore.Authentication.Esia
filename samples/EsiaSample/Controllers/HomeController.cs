@@ -51,7 +51,7 @@ public class HomeController : Controller
         return Challenge(new OpenIdConnectChallengeProperties()
         {
             RedirectUri = callbackUrl,
-            Scope = string.IsNullOrEmpty(scopes) ? null : scopes.Split(' ')
+            Scope = (string.IsNullOrEmpty(scopes) ? null : scopes.Split(' ')) ?? Array.Empty<string>()
         }, "Esia");
     }
 
@@ -81,25 +81,17 @@ public class HomeController : Controller
     [HttpPost]
     public async Task<IActionResult> Api(string url, string method)
     {
-        var result = default(string);
+        string result;
         try
         {
-            HttpMethod httpMethod = default(HttpMethod);
-            switch (method)
+            var httpMethod = method switch
             {
-                case "get":
-                    httpMethod = HttpMethod.Get;
-                    break;
-                case "post":
-                    httpMethod = HttpMethod.Post;
-                    break;
-                case "put":
-                    httpMethod = HttpMethod.Put;
-                    break;
-                case "delete":
-                    httpMethod = HttpMethod.Delete;
-                    break;
-            }
+                "get" => HttpMethod.Get,
+                "post" => HttpMethod.Post,
+                "put" => HttpMethod.Put,
+                "delete" => HttpMethod.Delete,
+                _ => HttpMethod.Get
+            };
 
             var resultJson = await esiaRestService.CallAsync(url, httpMethod);
             result = JsonSerializer.Serialize(resultJson, JsonSerializerOptions);
@@ -131,22 +123,42 @@ public class HomeController : Controller
         {
             // org choice login
 
-            var currentOrganization = model.PersonRoles.First(i => i.oid == id);
-            var userInfo = await HttpContext.AuthenticateAsync("Esia");
-            var identity = userInfo.Principal.Identity as ClaimsIdentity;
-
-            var orgClaims = identity.Claims.Where(i => i.Type.StartsWith("urn:esia:org")).ToArray();
-            foreach (var orgClaim in orgClaims)
+            if (model.PersonRoles != null)
             {
-                identity.RemoveClaim(orgClaim);
+                var currentOrganization = model.PersonRoles.First(i => i.oid == id);
+                var userInfo = await HttpContext.AuthenticateAsync("Esia");
+                var identity = userInfo.Principal?.Identity as ClaimsIdentity;
+
+                var orgClaims = identity?.Claims.Where(i => i.Type.StartsWith("urn:esia:org")).ToArray();
+                if (orgClaims != null)
+                {
+                    foreach (var orgClaim in orgClaims)
+                    {
+                        identity?.RemoveClaim(orgClaim);
+                    } 
+                }
+                
+                identity?.AddClaim(new Claim("urn:esia:org:oid", currentOrganization.oid.ToString()));
+                if (currentOrganization.fullName != null)
+                {
+                    identity?.AddClaim(new Claim("urn:esia:org:fullName", currentOrganization.fullName));
+                }
+
+                if (currentOrganization.shortName != null)
+                {
+                    identity?.AddClaim(new Claim("urn:esia:org:shortName", currentOrganization.shortName));
+                }
+
+                if (currentOrganization.ogrn != null)
+                {
+                    identity?.AddClaim(new Claim("urn:esia:org:ogrn", currentOrganization.ogrn));
+                }
+
+                if (userInfo.Principal != null)
+                {
+                    await HttpContext.SignInAsync(userInfo.Principal, userInfo.Properties);
+                } 
             }
-
-            identity.AddClaim(new Claim("urn:esia:org:oid", currentOrganization.oid.ToString()));
-            identity.AddClaim(new Claim("urn:esia:org:fullName", currentOrganization.fullName));
-            identity.AddClaim(new Claim("urn:esia:org:shortName", currentOrganization.shortName));
-            identity.AddClaim(new Claim("urn:esia:org:ogrn", currentOrganization.ogrn));
-
-            await HttpContext.SignInAsync(userInfo.Principal, userInfo.Properties);
 
             return RedirectToAction(nameof(Index));
         }

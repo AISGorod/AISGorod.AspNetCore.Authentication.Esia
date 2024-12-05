@@ -105,7 +105,7 @@ public class HomeController(
                 "post" => HttpMethod.Post,
                 "put" => HttpMethod.Put,
                 "delete" => HttpMethod.Delete,
-                _ => default
+                _ => HttpMethod.Get
             };
 
             var resultJson = await esiaRestService.CallAsync(url, httpMethod);
@@ -140,22 +140,40 @@ public class HomeController(
         }
         // org choice login
 
-        var currentOrganization = model.PersonRoles.First(i => i.oid == id);
-        var userInfo = await HttpContext.AuthenticateAsync("Esia");
-        var identity = userInfo.Principal.Identity as ClaimsIdentity;
-
-        var orgClaims = identity.Claims.Where(i => i.Type.StartsWith("urn:esia:org")).ToArray();
-        foreach (var orgClaim in orgClaims)
+        if (model.PersonRoles != null)
         {
-            identity.RemoveClaim(orgClaim);
+            var currentOrganization = model.PersonRoles.First(i => i.oid == id);
+            var userInfo = await HttpContext.AuthenticateAsync("Esia");
+            var identity = userInfo.Principal?.Identity as ClaimsIdentity;
+
+            var orgClaims = identity?.Claims.Where(i => i.Type.StartsWith("urn:esia:org")).ToArray();
+            if (orgClaims != null)
+                foreach (var orgClaim in orgClaims)
+                {
+                    identity?.RemoveClaim(orgClaim);
+                }
+
+            identity?.AddClaim(new Claim("urn:esia:org:oid", currentOrganization.oid.ToString()));
+            if (currentOrganization.fullName != null)
+            {
+                identity?.AddClaim(new Claim("urn:esia:org:fullName", currentOrganization.fullName));
+            }
+
+            if (currentOrganization.shortName != null)
+            {
+                identity?.AddClaim(new Claim("urn:esia:org:shortName", currentOrganization.shortName));
+            }
+
+            if (currentOrganization.ogrn != null)
+            {
+                identity?.AddClaim(new Claim("urn:esia:org:ogrn", currentOrganization.ogrn));
+            }
+
+            if (userInfo.Principal != null)
+            {
+                await HttpContext.SignInAsync(userInfo.Principal, userInfo.Properties);
+            } 
         }
-
-        identity.AddClaim(new Claim("urn:esia:org:oid", currentOrganization.oid.ToString()));
-        identity.AddClaim(new Claim("urn:esia:org:fullName", currentOrganization.fullName));
-        identity.AddClaim(new Claim("urn:esia:org:shortName", currentOrganization.shortName));
-        identity.AddClaim(new Claim("urn:esia:org:ogrn", currentOrganization.ogrn));
-
-        await HttpContext.SignInAsync(userInfo.Principal, userInfo.Properties);
 
         return RedirectToAction(nameof(Index));
     }
