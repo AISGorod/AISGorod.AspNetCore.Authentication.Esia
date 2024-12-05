@@ -5,7 +5,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        project: [ 'src/', 'samples/EsiaNet8Sample/', 'samples/EsiaSample' ]
+        project: [ 'src/', 'samples/EsiaNet8Sample/' ]
     name: Build ${{ matrix.project }}
     steps:
       - uses: actions/checkout@v4
