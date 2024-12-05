@@ -1,21 +1,26 @@
 ﻿using AISGorod.AspNetCore.Authentication.Esia;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.OAuth.Claims;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
+using System.Text.Json;
 using System.Threading.Tasks;
+using EsiaSample.Models;
 
 namespace EsiaSample.Controllers;
 
 public class HomeController : Controller
 {
+    /// <summary>
+    /// Настройки сериализации.
+    /// </summary>
+    private static readonly JsonSerializerOptions JsonSerializerOptions = new() { WriteIndented = true };
+    
     private readonly IEsiaRestService esiaRestService;
     private readonly IEsiaEnvironment esiaEnvironment;
 
@@ -46,7 +51,7 @@ public class HomeController : Controller
         return Challenge(new OpenIdConnectChallengeProperties()
         {
             RedirectUri = callbackUrl,
-            Scope = string.IsNullOrEmpty(scopes) ? null : scopes.Split(' ')
+            Scope = (string.IsNullOrEmpty(scopes) ? null : scopes.Split(' ')) ?? Array.Empty<string>()
         }, "Esia");
     }
 
@@ -76,28 +81,20 @@ public class HomeController : Controller
     [HttpPost]
     public async Task<IActionResult> Api(string url, string method)
     {
-        var result = default(string);
+        string result;
         try
         {
-            HttpMethod httpMethod = default(HttpMethod);
-            switch (method)
+            var httpMethod = method switch
             {
-                case "get":
-                    httpMethod = HttpMethod.Get;
-                    break;
-                case "post":
-                    httpMethod = HttpMethod.Post;
-                    break;
-                case "put":
-                    httpMethod = HttpMethod.Put;
-                    break;
-                case "delete":
-                    httpMethod = HttpMethod.Delete;
-                    break;
-            }
+                "get" => HttpMethod.Get,
+                "post" => HttpMethod.Post,
+                "put" => HttpMethod.Put,
+                "delete" => HttpMethod.Delete,
+                _ => HttpMethod.Get
+            };
 
             var resultJson = await esiaRestService.CallAsync(url, httpMethod);
-            result = resultJson.ToString(Newtonsoft.Json.Formatting.Indented);
+            result = JsonSerializer.Serialize(resultJson, JsonSerializerOptions);
         }
         catch (Exception ex)
         {
@@ -114,7 +111,8 @@ public class HomeController : Controller
         var model = new Models.OrganizationSelectViewModel();
 
         var organizations = await esiaRestService.CallAsync($"/rs/prns/{oId}/roles", HttpMethod.Get);
-        model.PersonRoles = organizations["elements"].ToObject<List<Models.EsiaPersonRoles>>();
+        var jsonString = organizations.GetProperty("elements").GetRawText();
+        model.PersonRoles = JsonSerializer.Deserialize<List<EsiaPersonRoles>>(jsonString);
 
         if (id == null)
         {
@@ -125,22 +123,42 @@ public class HomeController : Controller
         {
             // org choice login
 
-            var currentOrganization = model.PersonRoles.First(i => i.oid == id);
-            var userInfo = await HttpContext.AuthenticateAsync("Esia");
-            var identity = userInfo.Principal.Identity as ClaimsIdentity;
-
-            var orgClaims = identity.Claims.Where(i => i.Type.StartsWith("urn:esia:org")).ToArray();
-            foreach (var orgClaim in orgClaims)
+            if (model.PersonRoles != null)
             {
-                identity.RemoveClaim(orgClaim);
+                var currentOrganization = model.PersonRoles.First(i => i.oid == id);
+                var userInfo = await HttpContext.AuthenticateAsync("Esia");
+                var identity = userInfo.Principal?.Identity as ClaimsIdentity;
+
+                var orgClaims = identity?.Claims.Where(i => i.Type.StartsWith("urn:esia:org")).ToArray();
+                if (orgClaims != null)
+                {
+                    foreach (var orgClaim in orgClaims)
+                    {
+                        identity?.RemoveClaim(orgClaim);
+                    } 
+                }
+                
+                identity?.AddClaim(new Claim("urn:esia:org:oid", currentOrganization.oid.ToString()));
+                if (currentOrganization.fullName != null)
+                {
+                    identity?.AddClaim(new Claim("urn:esia:org:fullName", currentOrganization.fullName));
+                }
+
+                if (currentOrganization.shortName != null)
+                {
+                    identity?.AddClaim(new Claim("urn:esia:org:shortName", currentOrganization.shortName));
+                }
+
+                if (currentOrganization.ogrn != null)
+                {
+                    identity?.AddClaim(new Claim("urn:esia:org:ogrn", currentOrganization.ogrn));
+                }
+
+                if (userInfo.Principal != null)
+                {
+                    await HttpContext.SignInAsync(userInfo.Principal, userInfo.Properties);
+                } 
             }
-
-            identity.AddClaim(new Claim("urn:esia:org:oid", currentOrganization.oid.ToString()));
-            identity.AddClaim(new Claim("urn:esia:org:fullName", currentOrganization.fullName));
-            identity.AddClaim(new Claim("urn:esia:org:shortName", currentOrganization.shortName));
-            identity.AddClaim(new Claim("urn:esia:org:ogrn", currentOrganization.ogrn));
-
-            await HttpContext.SignInAsync(userInfo.Principal, userInfo.Properties);
 
             return RedirectToAction(nameof(Index));
         }

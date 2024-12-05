@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AISGorod.AspNetCore.Authentication.Esia;
 using Microsoft.AspNetCore.Authentication;
@@ -9,7 +10,7 @@ namespace EsiaSample;
 /// <summary>
 /// Собственная реализация обработки событий от поставщика данных.
 /// </summary>
-public class CustomEsiaEvents : AISGorod.AspNetCore.Authentication.Esia.EsiaEvents
+public class CustomEsiaEvents : EsiaEvents
 {
     private readonly ITempDataDictionaryFactory _tempDataDictionaryFactory;
 
@@ -26,9 +27,8 @@ public class CustomEsiaEvents : AISGorod.AspNetCore.Authentication.Esia.EsiaEven
     public override Task RemoteFailure(RemoteFailureContext context)
     {
         var tempData = _tempDataDictionaryFactory.GetTempData(context.HttpContext);
-        if (!tempData.ContainsKey("ErrorMessage"))
+        if (tempData.TryAdd("ErrorMessage", "Ошибка взаимодействия с ЕСИА. Пожалуйста, попробуйте ещё раз."))
         {
-            tempData.Add("ErrorMessage", "Ошибка взаимодействия с ЕСИА. Пожалуйста, попробуйте ещё раз.");
             tempData.Save();
         }
 

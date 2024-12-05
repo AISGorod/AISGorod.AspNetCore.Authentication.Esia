@@ -4,12 +4,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace AISGorod.AspNetCore.Authentication.Esia
@@ -26,7 +26,7 @@ namespace AISGorod.AspNetCore.Authentication.Esia
         /// <param name="url">Путь до веб-сервиса относительно корня сайта. Например, /rs/prns/1000?ctts</param>
         /// <param name="method">Метод, которым</param>
         /// <returns></returns>
-        Task<JObject> CallAsync(string url, HttpMethod method);
+        Task<JsonElement> CallAsync(string url, HttpMethod method);
 
         /// <summary>
         /// Обновляет маркеры доступа и обновления.
@@ -56,15 +56,15 @@ namespace AISGorod.AspNetCore.Authentication.Esia
             EsiaOptions esiaOptions,
             IHttpClientFactory httpClientFactory)
         {
-            this.context = httpContextAccessor.HttpContext;
+            context = httpContextAccessor.HttpContext ?? throw new ArgumentNullException(nameof(httpContextAccessor.HttpContext));
             this.esiaEnvironment = esiaEnvironment;
-            this.esiaSigner = serviceProvider.GetService<IEsiaSigner>(); // TODO add IEsiaSigner directly
+            esiaSigner = serviceProvider.GetService<IEsiaSigner>() ?? throw new ArgumentNullException(nameof(IEsiaSigner)); // TODO add IEsiaSigner directly
             this.optionsMonitor = optionsMonitor;
             this.esiaOptions = esiaOptions;
             this.httpClientFactory = httpClientFactory;
         }
 
-        public async Task<JObject> CallAsync(string url, HttpMethod method)
+        public async Task<JsonElement> CallAsync(string url, HttpMethod method)
         {
             await CheckAndRefreshTokensAsync();
 
@@ -75,6 +75,7 @@ namespace AISGorod.AspNetCore.Authentication.Esia
             {
                 throw new ArgumentNullException(nameof(tokenType));
             }
+
             if (string.IsNullOrEmpty(accessToken))
             {
                 throw new ArgumentNullException(nameof(accessToken));
@@ -87,9 +88,9 @@ namespace AISGorod.AspNetCore.Authentication.Esia
             var responseMessage = await client.SendAsync(request);
             responseMessage.EnsureSuccessStatusCode();
             var responseStr = await responseMessage.Content.ReadAsStringAsync();
-            var responseJson = JObject.Parse(responseStr);
+            var responseJson = JsonDocument.Parse(responseStr);
 
-            return responseJson;
+            return responseJson.RootElement;
         }
 
         public async Task RefreshTokensAsync()
@@ -105,7 +106,7 @@ namespace AISGorod.AspNetCore.Authentication.Esia
             var user = userResult.Principal;
             var props = userResult.Properties;
 
-            var options = optionsMonitor.Get(props.Items[".AuthScheme"]);
+            var options = optionsMonitor.Get(props?.Items[".AuthScheme"]);
 
             var now = DateTimeOffset.Now;
 
@@ -114,38 +115,48 @@ namespace AISGorod.AspNetCore.Authentication.Esia
             var clientId = options.ClientId;
             var state = Guid.NewGuid().ToString();
 
-            var clientSecret = EsiaExtensions.SignData(esiaSigner, esiaOptions, scope, timestamp, clientId, state);
-
-            var pairs = new Dictionary<string, string>()
+            if (clientId != null && options.ClientId != null)
             {
-                { "client_id", options.ClientId },
-                { "client_secret", clientSecret },
-                { "scope", scope },
-                { "timestamp", timestamp },
-                { "state", state },
-                { "grant_type", "refresh_token" },
-                { "refresh_token", refreshToken }
-            };
-            var content = new FormUrlEncodedContent(pairs);
-            var tokenResponse = await options.Backchannel.PostAsync(options.Configuration.TokenEndpoint, content, context.RequestAborted);
-            tokenResponse.EnsureSuccessStatusCode();
+                var clientSecret = EsiaExtensions.SignData(esiaSigner, esiaOptions, scope, timestamp, clientId, state);
 
-            var payload = JObject.Parse(await tokenResponse.Content.ReadAsStringAsync());
+                var pairs = new Dictionary<string, string>
+                {
+                    { "client_id", options.ClientId },
+                    { "client_secret", clientSecret },
+                    { "scope", scope },
+                    { "timestamp", timestamp },
+                    { "state", state },
+                    { "grant_type", "refresh_token" },
+                    { "refresh_token", refreshToken }
+                };
+                var content = new FormUrlEncodedContent(pairs);
+                var tokenResponse = await options.Backchannel.PostAsync(options.Configuration?.TokenEndpoint, content, context.RequestAborted);
+                tokenResponse.EnsureSuccessStatusCode();
 
-            var stateReceived = payload.Value<string>("state");
-            if (state != stateReceived)
-            {
-                throw new ArgumentException(nameof(state));
+                var payload = JsonDocument.Parse(await tokenResponse.Content.ReadAsStringAsync()).RootElement;
+
+                var stateReceived = payload.GetProperty("state").GetString();
+                if (state != stateReceived)
+                {
+                    throw new ArgumentException(nameof(state));
+                }
+
+                if (props != null)
+                {
+                    props.UpdateTokenValue("access_token", payload.GetProperty("access_token").GetString() ?? string.Empty);
+                    props.UpdateTokenValue("refresh_token", payload.GetProperty("refresh_token").GetString() ?? string.Empty);
+                    if (int.TryParse(payload.GetProperty("expires_in").GetString(), NumberStyles.Integer, CultureInfo.InvariantCulture, out var seconds))
+                    {
+                        var expiresAt = DateTimeOffset.UtcNow + TimeSpan.FromSeconds(seconds);
+                        props.UpdateTokenValue("expires_at", expiresAt.ToString("o", CultureInfo.InvariantCulture));
+                    }
+                }
             }
 
-            props.UpdateTokenValue("access_token", payload.Value<string>("access_token"));
-            props.UpdateTokenValue("refresh_token", payload.Value<string>("refresh_token"));
-            if (int.TryParse(payload.Value<string>("expires_in"), NumberStyles.Integer, CultureInfo.InvariantCulture, out var seconds))
+            if (user != null)
             {
-                var expiresAt = DateTimeOffset.UtcNow + TimeSpan.FromSeconds(seconds);
-                props.UpdateTokenValue("expires_at", expiresAt.ToString("o", CultureInfo.InvariantCulture));
-            }
-            await context.SignInAsync(user, props);
+                await context.SignInAsync(user, props);
+            } 
         }
 
         private async Task CheckAndRefreshTokensAsync()
@@ -155,6 +166,7 @@ namespace AISGorod.AspNetCore.Authentication.Esia
             {
                 throw new ArgumentNullException(nameof(expiresAtToken));
             }
+
             var expiresAt = DateTimeOffset.ParseExact(expiresAtToken, "o", CultureInfo.InvariantCulture);
             if (expiresAt.AddMinutes(-1) < DateTimeOffset.Now)
             {
