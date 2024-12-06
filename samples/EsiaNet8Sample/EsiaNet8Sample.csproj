@@ -32,7 +32,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\src\AISGorod.AspNetCore.Authentication.Esia.csproj" />
+      <ProjectReference Include="..\..\src\Esia.BouncyCastle\Esia.BouncyCastle.csproj" />
+      <ProjectReference Include="..\..\src\Esia\AISGorod.AspNetCore.Authentication.Esia.csproj" />
     </ItemGroup>
 
 </Project>

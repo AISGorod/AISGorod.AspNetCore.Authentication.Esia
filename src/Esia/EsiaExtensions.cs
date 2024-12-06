@@ -58,6 +58,14 @@ namespace Microsoft.Extensions.DependencyInjection
             configureOptions(esiaOptions);
             IEsiaEnvironment esiaEnvironment = esiaOptions.EnvironmentInstance;
 
+            if (esiaOptions.SignerFactory == null)
+            {
+                throw new InvalidOperationException("Необходимо настроить один из способов подписи.");
+            }
+            
+            // Регистрация сервиса подписи.
+            builder.Services.AddSingleton(provider => esiaOptions.SignerFactory(provider));
+
             // register new services
             builder.Services.AddSingleton(esiaOptions);
             builder.Services.AddSingleton(esiaEnvironment);
@@ -66,7 +74,7 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.Services.AddTransient<IEsiaRestService, EsiaRestService>();
             builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IPostConfigureOptions<OpenIdConnectOptions>, OpenIdConnectPostConfigureOptions>());
             builder.Services.AddHttpClient(EsiaDefaults.RestClientHttpName, esiaOptions.RestApiHttpClientHandler ?? ((_) => { }));
-
+            
             var configBuilder = new OpenIdConnectOptionsBuilder(esiaOptions, esiaEnvironment);
             return builder.AddRemoteScheme<OpenIdConnectOptions, TEsiaHandler>(authenticationScheme, displayName, configBuilder.BuildAction<TEsiaEvents>());
         }

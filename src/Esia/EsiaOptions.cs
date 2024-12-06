@@ -12,6 +12,16 @@ namespace AISGorod.AspNetCore.Authentication.Esia
     public class EsiaOptions // : RemoteAuthenticationOptions
     {
         /// <summary>
+        /// Подпись настроена.
+        /// </summary>
+        private bool signerConfigured;
+        
+        /// <summary>
+        /// Фабрика подписей.
+        /// </summary>
+        internal Func<IServiceProvider, IEsiaSigner>? SignerFactory { get; private set; }
+        
+        /// <summary>
         /// Среда ЕСИА, с которой происходит подключение.
         /// Необходимо указать или Environment, или EnvironmentInstance.
         /// </summary>
@@ -68,5 +78,18 @@ namespace AISGorod.AspNetCore.Authentication.Esia
         /// Если не задан <see cref="Backchannel"/>, то позволяет настроить обработчик HTTP-клиента для сервиса обмена с REST API.
         /// </summary>
         public Action<HttpClient>? RestApiHttpClientHandler { get; set; }
+        
+        /// <summary>
+        /// Использовать подпись.
+        /// </summary>
+        /// <param name="factory">Фабрика.</param>
+        public void UseSigner(Func<IServiceProvider, IEsiaSigner> factory)
+        {
+            if (signerConfigured)
+                throw new InvalidOperationException("Можно настроить только один вариант подписи. Множественные варианты подписи не допускаются.");
+            
+            SignerFactory = factory;
+            signerConfigured = true;
+        }
     }
 }
