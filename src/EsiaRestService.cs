@@ -66,31 +66,38 @@ namespace AISGorod.AspNetCore.Authentication.Esia
 
         public async Task<JsonElement> CallAsync(string url, HttpMethod method)
         {
-            await CheckAndRefreshTokensAsync();
-
-            var tokenType = await context.GetTokenAsync(OpenIdConnectParameterNames.TokenType);
-            var accessToken = await context.GetTokenAsync(OpenIdConnectParameterNames.AccessToken);
-
-            if (string.IsNullOrEmpty(tokenType))
+            try
             {
-                throw new ArgumentNullException(nameof(tokenType));
-            }
+                await CheckAndRefreshTokensAsync();
 
-            if (string.IsNullOrEmpty(accessToken))
+                var tokenType = await context.GetTokenAsync(OpenIdConnectParameterNames.TokenType);
+                var accessToken = await context.GetTokenAsync(OpenIdConnectParameterNames.AccessToken);
+
+                if (string.IsNullOrEmpty(tokenType))
+                {
+                    throw new ArgumentNullException(nameof(tokenType));
+                }
+
+                if (string.IsNullOrEmpty(accessToken))
+                {
+                    throw new ArgumentNullException(nameof(accessToken));
+                }
+
+                var client = esiaOptions.Backchannel ?? httpClientFactory.CreateClient(EsiaDefaults.RestClientHttpName);
+                var request = new HttpRequestMessage(method, esiaEnvironment.Host + url);
+                request.Headers.Authorization = new AuthenticationHeaderValue(tokenType, accessToken);
+
+                var responseMessage = await client.SendAsync(request);
+                responseMessage.EnsureSuccessStatusCode();
+                var responseStr = await responseMessage.Content.ReadAsStringAsync();
+                var responseJson = JsonDocument.Parse(responseStr);
+
+                return responseJson.RootElement;
+            }
+            catch (Exception ex)
             {
-                throw new ArgumentNullException(nameof(accessToken));
+                throw new EsiaRestRequestException($"Ошибка при обращении к {url}", ex);
             }
-
-            var client = esiaOptions.Backchannel ?? httpClientFactory.CreateClient(EsiaDefaults.RestClientHttpName);
-            var request = new HttpRequestMessage(method, esiaEnvironment.Host + url);
-            request.Headers.Authorization = new AuthenticationHeaderValue(tokenType, accessToken);
-
-            var responseMessage = await client.SendAsync(request);
-            responseMessage.EnsureSuccessStatusCode();
-            var responseStr = await responseMessage.Content.ReadAsStringAsync();
-            var responseJson = JsonDocument.Parse(responseStr);
-
-            return responseJson.RootElement;
         }
 
         public async Task RefreshTokensAsync()
@@ -156,7 +163,7 @@ namespace AISGorod.AspNetCore.Authentication.Esia
             if (user != null)
             {
                 await context.SignInAsync(user, props);
-            } 
+            }
         }
 
         private async Task CheckAndRefreshTokensAsync()
