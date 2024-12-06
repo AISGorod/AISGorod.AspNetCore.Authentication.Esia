@@ -30,8 +30,8 @@ builder.Services
         
         options.UseBouncyCastle(bouncyCastleOptions =>
         {
-            bouncyCastleOptions.KeyFilePath = "/home/vv_tokarev/esia.key";
-            bouncyCastleOptions.CertFilePath = "/home/vv_tokarev/esia.pem";
+            bouncyCastleOptions.KeyFilePath = "/home/username/esia.key";
+            bouncyCastleOptions.CertFilePath = "/home/username/esia.pem";
         });
     });
 
