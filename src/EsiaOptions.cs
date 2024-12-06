@@ -59,6 +59,11 @@ namespace AISGorod.AspNetCore.Authentication.Esia
         public bool SaveTokens { get; set; }
 
         /// <summary>
+        /// Запрашивает и сохраняет в claims с типом <see cref="EsiaDefaults.PrnsCttsClaimType"/> сведения о контактных данных ФЛ.
+        /// </summary>
+        public bool GetContactsOnSignIn { get; set; }
+
+        /// <summary>
         /// Валидатор маркера доступа.
         /// Значение по умолчанию - валидатор JwtSecurityTokenHandler.
         /// </summary>

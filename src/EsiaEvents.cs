@@ -119,22 +119,34 @@ namespace AISGorod.AspNetCore.Authentication.Esia
         {
             // We cannot use default UserInfoEndpoint because there are {oId} in uri, BLYATTTT!
 
-            var userOid = context.SecurityToken.Subject;
-            var httpClient = context.Options.Backchannel;
+            ArgumentNullException.ThrowIfNull(context.TokenEndpointResponse);
 
-            var httpRequest = new HttpRequestMessage(HttpMethod.Get, EsiaEnvironment.RestPersonsEndpoint + userOid);
-            if (context.TokenEndpointResponse != null)
+            var userOid = context.SecurityToken.Subject;
+            ArgumentNullException.ThrowIfNull(userOid, nameof(userOid));
+
+            var httpClient = context.Options.Backchannel;
+            ArgumentNullException.ThrowIfNull(httpClient, nameof(httpClient));
+
+            var claimsIdentity = (ClaimsIdentity?)context.Principal?.Identity;
+            ArgumentNullException.ThrowIfNull(claimsIdentity);
+
+            // Get and fill main info.
+            var prnsResponse = await CallRestEndpointAsync(httpClient, userOid, context.TokenEndpointResponse, HttpMethod.Get);
+            var prnsClaimAction = new MapAllClaimsAction();
+            prnsClaimAction.Run(prnsResponse, claimsIdentity, "esia_prns");
+
+            // Get and fill contacts.
+            if (EsiaOptions.GetContactsOnSignIn)
             {
-                httpRequest.Headers.Authorization = new AuthenticationHeaderValue(context.TokenEndpointResponse.TokenType, context.TokenEndpointResponse.AccessToken);
-            } 
-            var prnsResult = await httpClient.SendAsync(httpRequest);
-            if (prnsResult.IsSuccessStatusCode)
-            {
-                using var doc = JsonDocument.Parse(await prnsResult.Content.ReadAsStringAsync());
-                var claimsAction = new MapAllClaimsAction();
-                claimsAction.Run(doc.RootElement, context.Principal?.Identity as ClaimsIdentity ?? throw new InvalidOperationException(), "esia_prns");
+                var contactsResponse = await CallRestEndpointAsync(httpClient, userOid, context.TokenEndpointResponse, HttpMethod.Get, "/ctts?embed=(elements)");
+                var contactsClaimsAction = new JsonKeyClaimAction(EsiaDefaults.PrnsCttsClaimType, ClaimValueTypes.String, "elements");
+                contactsClaimsAction.Run(contactsResponse, claimsIdentity, "esia_prns_ctts");
             }
 
+            // TODO: Get and fill addresses.
+            // TODO: Get and fill documents.
+
+            // Fill scopes.
             context.Properties?.SetString(EsiaDefaults.EnablesScopesPropertiesKey, string.Join(" ", (context.Properties as OpenIdConnectChallengeProperties)?.Scope ?? context.Options.Scope));
         }
 
@@ -148,6 +160,21 @@ namespace AISGorod.AspNetCore.Authentication.Esia
             pm.PostLogoutRedirectUri = null;
             pm.Parameters.Add("redirect_url", context.Properties.RedirectUri); // THERE ARE DEFAULT redirect_uri param, blyat!!!
             return Task.CompletedTask;
+        }
+
+        private async Task<JsonElement> CallRestEndpointAsync(
+            HttpClient httpClient,
+            string userOid,
+            OpenIdConnectMessage tokenEndpointResponse,
+            HttpMethod method,
+            string suffix = "")
+        {
+            var httpRequest = new HttpRequestMessage(method, EsiaEnvironment.RestPersonsEndpoint + userOid + suffix);
+            httpRequest.Headers.Authorization = new AuthenticationHeaderValue(tokenEndpointResponse.TokenType, tokenEndpointResponse.AccessToken);
+            var restResponse = await httpClient.SendAsync(httpRequest);
+            restResponse.EnsureSuccessStatusCode();
+            using var doc = JsonDocument.Parse(await restResponse.Content.ReadAsStringAsync());
+            return doc.RootElement.Clone();
         }
     }
 }

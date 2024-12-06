@@ -24,5 +24,10 @@
         /// Имя HTTP-клиента для работы REST API.
         /// </summary>
         public const string RestClientHttpName = "Esia.RestClient";
+
+        /// <summary>
+        /// Тип claim для контактных данных ФЛ.
+        /// </summary>
+        public const string PrnsCttsClaimType = "urn:esia:prns:ctts";
     }
 }
