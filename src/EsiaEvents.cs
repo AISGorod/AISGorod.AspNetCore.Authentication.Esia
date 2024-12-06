@@ -119,7 +119,7 @@ namespace AISGorod.AspNetCore.Authentication.Esia
         {
             // We cannot use default UserInfoEndpoint because there are {oId} in uri, BLYATTTT!
 
-            ArgumentNullException.ThrowIfNull(context.TokenEndpointResponse);
+            ArgumentNullException.ThrowIfNull(context.TokenEndpointResponse, nameof(context.TokenEndpointResponse));
 
             var userOid = context.SecurityToken.Subject;
             ArgumentNullException.ThrowIfNull(userOid, nameof(userOid));
@@ -128,23 +128,36 @@ namespace AISGorod.AspNetCore.Authentication.Esia
             ArgumentNullException.ThrowIfNull(httpClient, nameof(httpClient));
 
             var claimsIdentity = (ClaimsIdentity?)context.Principal?.Identity;
-            ArgumentNullException.ThrowIfNull(claimsIdentity);
+            ArgumentNullException.ThrowIfNull(claimsIdentity, nameof(claimsIdentity));
 
             // Get and fill main info.
             var prnsResponse = await CallRestEndpointAsync(httpClient, userOid, context.TokenEndpointResponse, HttpMethod.Get);
             var prnsClaimAction = new MapAllClaimsAction();
             prnsClaimAction.Run(prnsResponse, claimsIdentity, "esia_prns");
 
-            // Get and fill contacts.
-            if (EsiaOptions.GetContactsOnSignIn)
+            // Get and fill contact information.
+            if (EsiaOptions.GetPrnsContactInformationOnSignIn)
             {
                 var contactsResponse = await CallRestEndpointAsync(httpClient, userOid, context.TokenEndpointResponse, HttpMethod.Get, "/ctts?embed=(elements)");
                 var contactsClaimsAction = new JsonKeyClaimAction(EsiaDefaults.PrnsCttsClaimType, ClaimValueTypes.String, "elements");
                 contactsClaimsAction.Run(contactsResponse, claimsIdentity, "esia_prns_ctts");
             }
 
-            // TODO: Get and fill addresses.
-            // TODO: Get and fill documents.
+            // Get and fill addresses.
+            if (EsiaOptions.GetPrnsAddressesOnSignIn)
+            {
+                var addressesResponse = await CallRestEndpointAsync(httpClient, userOid, context.TokenEndpointResponse, HttpMethod.Get, "/addrs?embed=(elements)");
+                var addressesClaimsAction = new JsonKeyClaimAction(EsiaDefaults.PrnsAddrsClaimType, ClaimValueTypes.String, "elements");
+                addressesClaimsAction.Run(addressesResponse, claimsIdentity, "esia_prns_addrs");
+            }
+
+            // Get and fill documents.
+            if (EsiaOptions.GetPrnsDocumentsOnSignIn)
+            {
+                var documentsResponse = await CallRestEndpointAsync(httpClient, userOid, context.TokenEndpointResponse, HttpMethod.Get, "/docs?embed=(elements)");
+                var documentsClaimsAction = new JsonKeyClaimAction(EsiaDefaults.PrnsDocsClaimType, ClaimValueTypes.String, "elements");
+                documentsClaimsAction.Run(documentsResponse, claimsIdentity, "esia_prns_docs");
+            }
 
             // Fill scopes.
             context.Properties?.SetString(EsiaDefaults.EnablesScopesPropertiesKey, string.Join(" ", (context.Properties as OpenIdConnectChallengeProperties)?.Scope ?? context.Options.Scope));
@@ -167,14 +180,21 @@ namespace AISGorod.AspNetCore.Authentication.Esia
             string userOid,
             OpenIdConnectMessage tokenEndpointResponse,
             HttpMethod method,
-            string suffix = "")
+            string? suffix = default)
         {
-            var httpRequest = new HttpRequestMessage(method, EsiaEnvironment.RestPersonsEndpoint + userOid + suffix);
-            httpRequest.Headers.Authorization = new AuthenticationHeaderValue(tokenEndpointResponse.TokenType, tokenEndpointResponse.AccessToken);
-            var restResponse = await httpClient.SendAsync(httpRequest);
-            restResponse.EnsureSuccessStatusCode();
-            using var doc = JsonDocument.Parse(await restResponse.Content.ReadAsStringAsync());
-            return doc.RootElement.Clone();
+            try
+            {
+                var httpRequest = new HttpRequestMessage(method, EsiaEnvironment.RestPersonsEndpoint + userOid + suffix);
+                httpRequest.Headers.Authorization = new AuthenticationHeaderValue(tokenEndpointResponse.TokenType, tokenEndpointResponse.AccessToken);
+                var restResponse = await httpClient.SendAsync(httpRequest);
+                restResponse.EnsureSuccessStatusCode();
+                using var doc = JsonDocument.Parse(await restResponse.Content.ReadAsStringAsync());
+                return doc.RootElement.Clone();
+            }
+            catch (Exception ex)
+            {
+                throw new EsiaRestRequestException($"Ошибка запроса к адресу {EsiaEnvironment.RestPersonsEndpoint + userOid + suffix} для получения данных о пользователе", ex);
+            }
         }
     }
 }

@@ -29,5 +29,15 @@
         /// Тип claim для контактных данных ФЛ.
         /// </summary>
         public const string PrnsCttsClaimType = "urn:esia:prns:ctts";
+
+        /// <summary>
+        /// Тип claim для адресов ФЛ.
+        /// </summary>
+        public const string PrnsAddrsClaimType = "urn:esia:prns:addrs";
+
+        /// <summary>
+        /// Тип claim для документов ФЛ.
+        /// </summary>
+        public const string PrnsDocsClaimType = "urn:esia:prns:docs";
     }
 }
