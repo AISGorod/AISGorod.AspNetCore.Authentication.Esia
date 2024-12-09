@@ -1,25 +1,30 @@
 <Project>
 
     <PropertyGroup>
-		<GenerateDocumentationFile>true</GenerateDocumentationFile>
-		<Company>AISGorod</Company>
-		<Authors>Vladislav Moiseev</Authors>
-		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-		<RepositoryUrl>https://github.com/AISGorod/AISGorod.AspNetCore.Authentication.Esia</RepositoryUrl>
-		<PackageProjectUrl>https://github.com/AISGorod/AISGorod.AspNetCore.Authentication.Esia</PackageProjectUrl>
-		<PackageReleaseNotes>https://github.com/AISGorod/AISGorod.AspNetCore.Authentication.Esia/releases/</PackageReleaseNotes>
-		<PackageTags>AspNetCore.Authentication ESIA gosuslugi</PackageTags>
-		<Description>
-			Промежуточное ПО для ASP.NET Core для входа пользователей через портал госуслуг (ЕСИА).
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <Company>AISGorod</Company>
+        <Authors>Vladislav Moiseev</Authors>
+        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+        <RepositoryUrl>https://github.com/AISGorod/AISGorod.AspNetCore.Authentication.Esia</RepositoryUrl>
+        <PackageProjectUrl>https://github.com/AISGorod/AISGorod.AspNetCore.Authentication.Esia</PackageProjectUrl>
+        <PackageReleaseNotes>https://github.com/AISGorod/AISGorod.AspNetCore.Authentication.Esia/releases/</PackageReleaseNotes>
+        <PackageTags>AspNetCore.Authentication ESIA gosuslugi</PackageTags>
+        <Description>
+            Промежуточное ПО для ASP.NET Core для входа пользователей через портал госуслуг (ЕСИА).
 
-			ESIA (gosuslugi) identity provider (middleware) for ASP.NET Core based on OpenID Connect.
-		</Description>
-		<PackageLicenseFile>LICENSE</PackageLicenseFile>
-		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<Version>2.0.0-alpha1</Version>
-		<PackageIcon>icon.png</PackageIcon>
-	</PropertyGroup>
-    
+            ESIA (gosuslugi) identity provider (middleware) for ASP.NET Core based on OpenID Connect.
+        </Description>
+        <PackageLicenseFile>LICENSE</PackageLicenseFile>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <Version>2.0.0-alpha1</Version>
+        <PackageIcon>icon.png</PackageIcon>
+    </PropertyGroup>
+
+    <PropertyGroup Label="Namespaces">
+        <AssemblyName>AISGorod.AspNetCore.Authentication.Esia.$(MSBuildProjectName)</AssemblyName>
+        <RootNamespace>AISGorod.AspNetCore.Authentication.Esia.$(MSBuildProjectName)</RootNamespace>
+    </PropertyGroup>
+
     <PropertyGroup Label="Settings">
         <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
         <Nullable>enable</Nullable>
@@ -31,9 +36,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <None Include="..\..\LICENSE" Link="LICENSE" Pack="true" PackagePath="" />
-		<None Include="..\..\README.md" Link="README.md" Pack="true" PackagePath="" />
-		<None Include="..\..\icon.png" Pack="true" PackagePath="" />
+        <None Include="..\..\LICENSE" Link="LICENSE" Pack="true" PackagePath=""/>
+        <None Include="..\..\README.md" Link="README.md" Pack="true" PackagePath=""/>
+        <None Include="..\..\icon.png" Pack="true" PackagePath=""/>
     </ItemGroup>
 
 </Project>

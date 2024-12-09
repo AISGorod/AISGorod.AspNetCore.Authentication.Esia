@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.12.35521.163 d17.12
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AISGorod.AspNetCore.Authentication.Esia", "src\AISGorod.AspNetCore.Authentication.Esia\AISGorod.AspNetCore.Authentication.Esia.csproj", "{5F801EED-8223-4D35-BB0B-D922C01B9BF5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Esia", "src\Esia\Esia.csproj", "{5F801EED-8223-4D35-BB0B-D922C01B9BF5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EsiaNet8Sample", "samples\EsiaNet8Sample\EsiaNet8Sample.csproj", "{6BBCBD35-642B-4BDC-80B1-2B474351A26D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AISGorod.AspNetCore.Authentication.Esia.BouncyCastle", "src\AISGorod.AspNetCore.Authentication.Esia.BouncyCastle\AISGorod.AspNetCore.Authentication.Esia.BouncyCastle.csproj", "{C2CC2E7B-A8B5-465D-88AC-F5B4570BC8C1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BouncyCastle", "src\BouncyCastle\BouncyCastle.csproj", "{C2CC2E7B-A8B5-465D-88AC-F5B4570BC8C1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AISGorod.AspNetCore.Authentication.Esia.CryptoPro", "src\AISGorod.AspNetCore.Authentication.Esia.CryptoPro\AISGorod.AspNetCore.Authentication.Esia.CryptoPro.csproj", "{3655E32E-13DE-4485-AAE0-10A4BD0B5217}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CryptoPro", "src\CryptoPro\CryptoPro.csproj", "{3655E32E-13DE-4485-AAE0-10A4BD0B5217}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

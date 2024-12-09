@@ -5,7 +5,7 @@
     </ItemGroup>
     
     <ItemGroup>
-      <ProjectReference Include="..\AISGorod.AspNetCore.Authentication.Esia\AISGorod.AspNetCore.Authentication.Esia.csproj" />
+      <ProjectReference Include="..\Esia\Esia.csproj" />
     </ItemGroup>
 
 </Project>
