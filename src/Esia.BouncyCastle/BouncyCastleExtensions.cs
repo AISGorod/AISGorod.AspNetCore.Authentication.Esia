@@ -1,6 +1,5 @@
 ﻿using System;
 using AISGorod.AspNetCore.Authentication.Esia;
-using AISGorod.AspNetCore.Authentication.Esia.Options;
 
 namespace Esia.BouncyCastle;
 
@@ -21,11 +20,7 @@ public static class BouncyCastleExtensions
     {
         options.UseSigner(_ =>
         {
-            var bcOptions = new BouncyCastleOptions
-            {
-                KeyFilePath = string.Empty,
-                CertFilePath = string.Empty
-            };
+            var bcOptions = new BouncyCastleOptions();
             configure.Invoke(bcOptions);
             return new BouncyCastleEsiaSigner(bcOptions);
         });

@@ -7,7 +7,6 @@ using CryptoPro.Security.Cryptography;
 using CryptoPro.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography;
-using AISGorod.AspNetCore.Authentication.Esia.Options;
 
 namespace Esia.CryptoPro;
 

@@ -1,6 +1,5 @@
 ﻿using System;
 using AISGorod.AspNetCore.Authentication.Esia;
-using AISGorod.AspNetCore.Authentication.Esia.Options;
 
 namespace Esia.CryptoPro;
 
@@ -21,10 +20,7 @@ public static class CryptoProExtensions
     {
         options.UseSigner(_ =>
         {
-            var cpOptions = new CryptoProOptions
-            {
-                CertThumbprint = string.Empty
-            };
+            var cpOptions = new CryptoProOptions();
             configure.Invoke(cpOptions);
             return new CryptoProEsiaSigner(cpOptions);
         });

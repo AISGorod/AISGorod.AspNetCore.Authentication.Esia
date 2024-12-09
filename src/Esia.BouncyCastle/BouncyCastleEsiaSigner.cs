@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using AISGorod.AspNetCore.Authentication.Esia;
-using AISGorod.AspNetCore.Authentication.Esia.Options;
 using Org.BouncyCastle.Asn1.Pkcs;
 using Org.BouncyCastle.Asn1.Rosstandart;
 using Org.BouncyCastle.Cms;
