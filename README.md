@@ -124,13 +124,28 @@ $ openssl cms -sign -engine gost -inkey esia.key -signer esia.pem <<< '123'
 
 > Для регистрации ключа в ЕСИА на технологический портал требуется загружать файл `.pem`.
 
+В проекте существует 2 способа подписи:
+
+- Bouncy castle.
+- CryptoPro.
+
+По умолчание указан Bouncy castle. CryptoPro используется аналогично.
+
 Теперь для запуска примера потребуется:
 
-- изменить мнемонику ИС в `~/samples/EsiaSample/Startup.cs`.
-- пусть до ключа и сертификата в `~/samples/EsiaSample/OpensslEsiaSigner.cs`.
+- изменить мнемонику ИС в `~/samples/EsiaSample/Program.cs`.
+- изменить путь до ключа (KeyFilePath) и сертификата (CertFilePath) в `~/samples/EsiaSample/Program.cs` метод `UseBouncyCastle(...)`.
 - установить [.NET Core SDK](https://docs.microsoft.com/ru-ru/dotnet/core/install/linux-package-manager-ubuntu-1804), если он ещё не стоит.
   При этом версия SDK должна совпадать с версией netcore в `~/samples/EsiaSample`.
   Это необходимо для Razor.
+
+Если вы будете использовать режим подписи через CryptoPro, необходимо загрузить nuget пакеты. В проекте есть файл, который делает это автоматически:
+
+Необходимо сделать файл скрипта исполняемым и запустить:
+```bash
+$ chmod +x utils/download_crypto_pro.sh
+$ utils/download_crypto_pro.sh
+```
 
 Запуск примера можно проделать следующим образом:
 

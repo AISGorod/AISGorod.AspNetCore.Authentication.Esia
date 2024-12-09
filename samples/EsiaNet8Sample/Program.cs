@@ -1,4 +1,5 @@
 using AISGorod.AspNetCore.Authentication.Esia;
+using AISGorod.AspNetCore.Authentication.Esia.BouncyCastle;
 using EsiaNet8Sample;
 using Microsoft.IdentityModel.JsonWebTokens;
 
@@ -24,12 +25,16 @@ builder.Services
         //options.Environment = EsiaEnvironmentType.Test;
         options.EnvironmentInstance = new CustomEsiaEnvironment();
         options.Mnemonic = "TESTSYS";
-        options.Scope = ["fullname", "snils", "email", "mobile", "usr_org" ];
+        options.Scope = ["fullname", "snils", "email", "mobile", "usr_org"];
         options.SaveTokens = true;
         options.SecurityTokenValidator = new CustomSecurityTokenValidator();
-    });
 
-builder.Services.AddSingleton<IEsiaSigner, OpensslEsiaSigner>();
+        options.UseBouncyCastle(bouncyCastleOptions =>
+        {
+            bouncyCastleOptions.KeyFilePath = "/home/username/esia.key";
+            bouncyCastleOptions.CertFilePath = "/home/username/esia.pem";
+        });
+    });
 
 builder.Services.AddMvc();
 
@@ -37,7 +42,7 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseDeveloperExceptionPage();
+	app.UseDeveloperExceptionPage();
 }
 
 app.UseRouting();
