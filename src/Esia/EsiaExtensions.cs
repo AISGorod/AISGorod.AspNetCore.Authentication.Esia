@@ -56,7 +56,8 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             var esiaOptions = new EsiaOptions();
             configureOptions(esiaOptions);
-            IEsiaEnvironment esiaEnvironment = esiaOptions.EnvironmentInstance;
+            IEsiaEnvironment esiaEnvironment = esiaOptions.EnvironmentInstance
+                ?? new EsiaEnvironmentResolver(esiaOptions.Environment ?? throw new ArgumentNullException("Environment and EnvironmentInstance is null")).Resolve();
 
             if (esiaOptions.SignerFactory == null)
             {
