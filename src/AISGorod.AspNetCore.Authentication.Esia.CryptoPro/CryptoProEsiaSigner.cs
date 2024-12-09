@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Security.Cryptography.Pkcs;
 using System.Security;
-using AISGorod.AspNetCore.Authentication.Esia;
-using CryptoPro.Security.Cryptography.Pkcs;
-using CryptoPro.Security.Cryptography;
-using CryptoPro.Security.Cryptography.X509Certificates;
-using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography;
+using System.Security.Cryptography.Pkcs;
+using System.Security.Cryptography.X509Certificates;
+using CryptoPro.Security.Cryptography;
+using CryptoPro.Security.Cryptography.Pkcs;
+using CryptoPro.Security.Cryptography.X509Certificates;
 
-namespace Esia.CryptoPro;
+namespace AISGorod.AspNetCore.Authentication.Esia.CryptoPro;
 
 /// <summary>
 /// Простейшая обёртка подписи запросов над КриптоПро.

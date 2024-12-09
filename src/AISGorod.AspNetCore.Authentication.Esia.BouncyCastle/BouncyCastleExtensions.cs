@@ -1,7 +1,6 @@
 ﻿using System;
-using AISGorod.AspNetCore.Authentication.Esia;
 
-namespace Esia.BouncyCastle;
+namespace AISGorod.AspNetCore.Authentication.Esia.BouncyCastle;
 
 /// <summary>
 /// Расширение для BouncyCastle.

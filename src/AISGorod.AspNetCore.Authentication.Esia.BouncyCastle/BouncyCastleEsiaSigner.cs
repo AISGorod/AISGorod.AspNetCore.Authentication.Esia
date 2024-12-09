@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using AISGorod.AspNetCore.Authentication.Esia;
 using Org.BouncyCastle.Asn1.Pkcs;
 using Org.BouncyCastle.Asn1.Rosstandart;
 using Org.BouncyCastle.Cms;
@@ -8,7 +7,7 @@ using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.X509;
 
-namespace Esia.BouncyCastle;
+namespace AISGorod.AspNetCore.Authentication.Esia.BouncyCastle;
 
 /// <summary>
 /// Настройка подписи через bouncy castle.

@@ -1,4 +1,5 @@
-using Esia.BouncyCastle;
+using AISGorod.AspNetCore.Authentication.Esia;
+using AISGorod.AspNetCore.Authentication.Esia.BouncyCastle;
 using EsiaNet8Sample;
 using Microsoft.IdentityModel.JsonWebTokens;
 

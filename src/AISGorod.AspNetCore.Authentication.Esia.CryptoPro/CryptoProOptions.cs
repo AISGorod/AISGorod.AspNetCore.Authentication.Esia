@@ -1,4 +1,4 @@
-﻿namespace Esia.CryptoPro;
+﻿namespace AISGorod.AspNetCore.Authentication.Esia.CryptoPro;
 
 /// <summary>
 /// Настройки crypto pro.

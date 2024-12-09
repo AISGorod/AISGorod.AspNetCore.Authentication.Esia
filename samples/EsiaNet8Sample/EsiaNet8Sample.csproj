@@ -33,9 +33,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\src\Esia.BouncyCastle\Esia.BouncyCastle.csproj" />
-      <ProjectReference Include="..\..\src\Esia.CryptoPro\Esia.CryptoPro.csproj" />
-      <ProjectReference Include="..\..\src\Esia\AISGorod.AspNetCore.Authentication.Esia.csproj" />
+      <ProjectReference Include="..\..\src\AISGorod.AspNetCore.Authentication.Esia\AISGorod.AspNetCore.Authentication.Esia.csproj" />
+      <ProjectReference Include="..\..\src\AISGorod.AspNetCore.Authentication.Esia.BouncyCastle\AISGorod.AspNetCore.Authentication.Esia.BouncyCastle.csproj" />
+      <ProjectReference Include="..\..\src\AISGorod.AspNetCore.Authentication.Esia.CryptoPro\AISGorod.AspNetCore.Authentication.Esia.CryptoPro.csproj" />
     </ItemGroup>
 
 </Project>

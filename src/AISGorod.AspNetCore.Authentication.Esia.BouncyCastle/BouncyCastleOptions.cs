@@ -1,4 +1,4 @@
-﻿namespace Esia.BouncyCastle;
+﻿namespace AISGorod.AspNetCore.Authentication.Esia.BouncyCastle;
 
 /// <summary>
 /// Настройки bouncy castle.
