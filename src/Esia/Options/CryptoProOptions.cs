@@ -8,6 +8,9 @@ public class CryptoProOptions
     /// <summary>
     /// Отпечаток сертификата.
     /// </summary>
+    /// <remarks>
+    /// Поле обязательное.
+    /// </remarks>
     public string? CertThumbprint { get; set; }
 
     /// <summary>

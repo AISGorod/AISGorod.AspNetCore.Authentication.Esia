@@ -21,7 +21,10 @@ public static class CryptoProExtensions
     {
         options.UseSigner(_ =>
         {
-            var cpOptions = new CryptoProOptions();
+            var cpOptions = new CryptoProOptions
+            {
+                CertThumbprint = string.Empty
+            };
             configure.Invoke(cpOptions);
             return new CryptoProEsiaSigner(cpOptions);
         });

@@ -8,10 +8,16 @@ public class BouncyCastleOptions
     /// <summary>
     /// Ключ.
     /// </summary>
+    /// <remarks>
+    /// Поле обязательное.
+    /// </remarks>
     public string? KeyFilePath { get; set; }
 
     /// <summary>
     /// Сертификат.
     /// </summary>
+    /// <remarks>
+    /// Поле обязательное.
+    /// </remarks>
     public string? CertFilePath { get; set; }
 }

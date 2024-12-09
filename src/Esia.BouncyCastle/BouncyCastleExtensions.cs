@@ -21,7 +21,11 @@ public static class BouncyCastleExtensions
     {
         options.UseSigner(_ =>
         {
-            var bcOptions = new BouncyCastleOptions();
+            var bcOptions = new BouncyCastleOptions
+            {
+                KeyFilePath = string.Empty,
+                CertFilePath = string.Empty
+            };
             configure.Invoke(bcOptions);
             return new BouncyCastleEsiaSigner(bcOptions);
         });
