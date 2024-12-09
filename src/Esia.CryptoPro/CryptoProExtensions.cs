@@ -12,6 +12,9 @@ public static class CryptoProExtensions
     /// <summary>
     /// Добавление подписи через bouncy castle.
     /// </summary>
+    /// <remarks>
+    /// Необходимо использовать только один обработчик для подписи.
+    /// </remarks>
     /// <param name="options">Настройки.</param>
     /// <param name="configure">Конфигурация.</param>
     public static void UseCryptoPro(this EsiaOptions options, Action<CryptoProOptions> configure)

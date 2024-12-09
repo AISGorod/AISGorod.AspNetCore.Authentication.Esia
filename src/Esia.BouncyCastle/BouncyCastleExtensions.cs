@@ -13,7 +13,7 @@ public static class BouncyCastleExtensions
     /// Использовать bouncy castle для подписи.
     /// </summary>
     /// <remarks>
-    /// Необходимо использовать только один обработчик для подписи
+    /// Необходимо использовать только один обработчик для подписи.
     /// </remarks>
     /// <param name="options">Настройки.</param>
     /// <param name="configure">Конфигурация.</param>

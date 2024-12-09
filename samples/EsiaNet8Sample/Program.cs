@@ -27,7 +27,7 @@ builder.Services
         options.Scope = ["fullname", "snils", "email", "mobile", "usr_org"];
         options.SaveTokens = true;
         options.SecurityTokenValidator = new CustomSecurityTokenValidator();
-        
+
         options.UseBouncyCastle(bouncyCastleOptions =>
         {
             bouncyCastleOptions.KeyFilePath = "/home/username/esia.key";

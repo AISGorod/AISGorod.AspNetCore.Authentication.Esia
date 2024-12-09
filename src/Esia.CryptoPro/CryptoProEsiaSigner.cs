@@ -65,7 +65,7 @@ public class CryptoProEsiaSigner(CryptoProOptions options) : IEsiaSigner
             if (certs.Count == 1)
                 return certs[0];
         }
-
+        
         throw new CryptographicException("Сертификат не найден");
     }
 }
