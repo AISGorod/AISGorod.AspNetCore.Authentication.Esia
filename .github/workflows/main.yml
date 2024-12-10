@@ -1,15 +1,29 @@
 name: Main workflow
 on: [push]
+
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        project: [ 'src/', 'samples/EsiaNet8Sample/' ]
-    name: Build ${{ matrix.project }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '9.x'
-      - run: dotnet build ${{ matrix.project }}
+
+      - name: Create local nupkg directory
+        run: mkdir -p nupkg
+
+      - name: Make download script executable
+        run: chmod +x utils/download_crypto_pro.sh
+
+      - name: Run download cryptoPro packages script
+        run: ./utils/download_crypto_pro.sh
+
+      - name: Restore dependencies
+        run: dotnet restore Esia.sln
+
+      - name: Build solution
+        run: dotnet build Esia.sln --configuration Release
