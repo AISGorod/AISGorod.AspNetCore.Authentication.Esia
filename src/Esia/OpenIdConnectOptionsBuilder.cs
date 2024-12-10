@@ -49,6 +49,8 @@ namespace AISGorod.AspNetCore.Authentication.Esia
                 options.SignInScheme = esiaOptions.SignInScheme;
                 options.SignOutScheme = esiaOptions.SignOutScheme;
                 options.SaveTokens = esiaOptions.SaveTokens;
+                options.CallbackPath = esiaOptions.CallBackPath;
+                options.SignedOutCallbackPath = esiaOptions.SignedOutCallbackPath;
             };
         }
 

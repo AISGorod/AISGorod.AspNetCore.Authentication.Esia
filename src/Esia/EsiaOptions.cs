@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
 
 namespace AISGorod.AspNetCore.Authentication.Esia
@@ -93,6 +94,16 @@ namespace AISGorod.AspNetCore.Authentication.Esia
         /// Если не задан <see cref="Backchannel"/>, то позволяет настроить обработчик HTTP-клиента для сервиса обмена с REST API.
         /// </summary>
         public Action<HttpClient>? RestApiHttpClientHandler { get; set; }
+
+        /// <summary>
+        /// Путь обратного вызова для аутентификации.
+        /// </summary>
+        public PathString CallBackPath { get; set; }
+        
+        /// <summary>
+        /// Путь обратного вызова для выхода.
+        /// </summary>
+        public PathString SignedOutCallbackPath { get; set; }
         
         /// <summary>
         /// Использовать подпись.

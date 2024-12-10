@@ -28,7 +28,10 @@ builder.Services
         options.Scope = ["fullname", "snils", "email", "mobile", "usr_org"];
         options.SaveTokens = true;
         options.SecurityTokenValidator = new CustomSecurityTokenValidator();
-
+        
+        options.CallBackPath = new PathString("/signin-esia");
+        options.SignedOutCallbackPath = new PathString("/signout-esia");
+        
         options.UseBouncyCastle(bouncyCastleOptions =>
         {
             bouncyCastleOptions.KeyFilePath = "/home/username/esia.key";
