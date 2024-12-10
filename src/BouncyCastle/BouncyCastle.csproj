@@ -1,0 +1,11 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    
+    <ItemGroup>
+        <PackageReference Include="BouncyCastle.Cryptography" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <ProjectReference Include="..\Esia\Esia.csproj" />
+    </ItemGroup>
+
+</Project>
