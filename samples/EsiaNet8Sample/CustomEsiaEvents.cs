@@ -9,7 +9,7 @@ namespace EsiaNet8Sample;
 /// <summary>
 /// Собственная реализация обработки событий от поставщика данных.
 /// </summary>
-public abstract class CustomEsiaEvents(
+public class CustomEsiaEvents(
     EsiaOptions esiaOptions,
     IEsiaEnvironment esiaEnvironment,
     IEsiaSigner esiaSigner,

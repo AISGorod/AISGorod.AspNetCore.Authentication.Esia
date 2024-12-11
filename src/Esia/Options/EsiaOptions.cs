@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http;
 using AISGorod.AspNetCore.Authentication.Esia.EsiaEnvironment;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
+using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 
 namespace AISGorod.AspNetCore.Authentication.Esia.Options;
@@ -52,7 +52,7 @@ public class EsiaOptions  : RemoteAuthenticationOptions, IEsiaOptions
     public bool GetPrnsDocumentsOnSignIn { get; set; }
 
     /// <inheritdoc />
-    public TokenHandler TokenHandler { get; set; } = new JwtSecurityTokenHandler();
+    public TokenHandler TokenHandler { get; set; } = new JsonWebTokenHandler();
 
     /// <inheritdoc />
     public Action<HttpClient>? RestApiHttpClientHandler { get; set; }

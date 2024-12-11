@@ -12,9 +12,9 @@
         <div class="btn-group-vertical">
             @foreach (var personRole in Model.PersonRoles)
             {
-                <a asp-action="OrganizationSelect" asp-route-id="@Html.DisplayFor(_ => personRole.oid)" class="btn btn-outline-dark" title="@Html.DisplayFor(_ => personRole.fullName)">
-                    <h4>@Html.DisplayFor(_ => personRole.shortName)</h4>
-                    <small>ОГРН: @Html.DisplayFor(_ => personRole.ogrn)</small>
+                <a asp-action="OrganizationSelect" asp-route-id="@Html.DisplayFor(_ => personRole.Id)" class="btn btn-outline-dark" title="@Html.DisplayFor(_ => personRole.FullName)">
+                    <h4>@Html.DisplayFor(_ => personRole.ShortName)</h4>
+                    <small>ОГРН: @Html.DisplayFor(_ => personRole.Ogrn)</small>
                 </a>
             }
         </div>

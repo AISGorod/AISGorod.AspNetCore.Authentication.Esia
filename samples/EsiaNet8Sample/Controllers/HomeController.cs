@@ -119,7 +119,7 @@ public class HomeController(IEsiaRestService esiaRestService, IEsiaEnvironment e
                 return View(model);
             }
 
-            await UpdateUserClaimsAsync(model.PersonRoles.FirstOrDefault(r => r.oid == id));
+            await UpdateUserClaimsAsync(model.PersonRoles.FirstOrDefault(r => r.Id == id));
         }
 
         return RedirectToAction(nameof(Index));
@@ -158,10 +158,10 @@ public class HomeController(IEsiaRestService esiaRestService, IEsiaEnvironment e
         }
 
         // Добавляем новые claims
-        AddClaimIfNotNull(identity, "urn:esia:org:oid", organization.oid.ToString());
-        AddClaimIfNotNull(identity, "urn:esia:org:fullName", organization.fullName);
-        AddClaimIfNotNull(identity, "urn:esia:org:shortName", organization.shortName);
-        AddClaimIfNotNull(identity, "urn:esia:org:ogrn", organization.ogrn);
+        AddClaimIfNotNull(identity, "urn:esia:org:oid", organization.Id.ToString());
+        AddClaimIfNotNull(identity, "urn:esia:org:fullName", organization.FullName);
+        AddClaimIfNotNull(identity, "urn:esia:org:shortName", organization.ShortName);
+        AddClaimIfNotNull(identity, "urn:esia:org:ogrn", organization.Ogrn);
 
         if (userInfo.Principal != null)
         {

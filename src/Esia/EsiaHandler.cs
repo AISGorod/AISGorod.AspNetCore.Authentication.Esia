@@ -13,7 +13,7 @@ namespace AISGorod.AspNetCore.Authentication.Esia;
 /// <param name="logger">Логгер.</param>
 /// <param name="htmlEncoder">Кодировщик html.</param>
 /// <param name="encoder">url декодер.</param>
-internal abstract class EsiaHandler(
+internal class EsiaHandler(
     IOptionsMonitor<OpenIdConnectOptions> options,
     ILoggerFactory logger,
     HtmlEncoder htmlEncoder,

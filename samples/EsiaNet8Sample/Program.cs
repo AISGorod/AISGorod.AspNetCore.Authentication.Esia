@@ -1,5 +1,6 @@
 using AISGorod.AspNetCore.Authentication.Esia;
 using AISGorod.AspNetCore.Authentication.Esia.BouncyCastle;
+using AISGorod.AspNetCore.Authentication.Esia.EsiaEnvironment;
 using EsiaNet8Sample;
 using Microsoft.IdentityModel.JsonWebTokens;
 
@@ -22,14 +23,14 @@ builder.Services
     })
     .AddEsia<CustomEsiaEvents>("Esia", options =>
     {
-        //options.Environment = EsiaEnvironmentType.Test;
+        options.Environment = EsiaEnvironmentType.Test;
         options.EnvironmentInstance = new CustomEsiaEnvironment();
         options.Mnemonic = "TESTSYS";
         options.Scope = ["fullname", "snils", "email", "mobile", "usr_org"];
         options.SaveTokens = true;
-#pragma warning disable CS0618 // Type or member is obsolete
-        options.TokenHandler = new CustomSecurityTokenValidator();
-#pragma warning restore CS0618 // Type or member is obsolete
+        
+        // ЭТО ТЕСТОВЫЙ ОБРАБОТЧИК В Production использовать свой.
+        options.TokenHandler = new JsonWebTokenHandler();
         
         options.CallBackPath = new PathString("/signin-esia");
         options.SignedOutCallbackPath = new PathString("/signout-esia");

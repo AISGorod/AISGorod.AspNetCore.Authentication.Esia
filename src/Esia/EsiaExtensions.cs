@@ -143,6 +143,8 @@ public static class EsiaExtensions
 
 		// Создание конфигурации и добавление схемы аутентификации.
 		var configBuilder = new OpenIdConnectOptionsBuilder(esiaOptions, esiaEnvironment);
+		
+		builder.Services.AddSingleton<TEsiaEvents>();
 		return builder.AddRemoteScheme<OpenIdConnectOptions, TEsiaHandler>(
 			authenticationScheme,
 			displayName,
