@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-    
-    <ItemGroup>
-        <PackageReference Include="BouncyCastle.Cryptography" />
-    </ItemGroup>
+
+    <PropertyGroup>
+        <RootNamespace>AISGorod.AspNetCore.Authentication.Esia.BouncyCastle</RootNamespace>
+    </PropertyGroup>
     
     <ItemGroup>
       <ProjectReference Include="..\Esia\Esia.csproj" />

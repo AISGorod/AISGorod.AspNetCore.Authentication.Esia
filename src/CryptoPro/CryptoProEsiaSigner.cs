@@ -3,6 +3,7 @@ using System.Security;
 using System.Security.Cryptography;
 using System.Security.Cryptography.Pkcs;
 using System.Security.Cryptography.X509Certificates;
+using AISGorod.AspNetCore.Authentication.Esia.CryptoPro.Options;
 using CryptoPro.Security.Cryptography;
 using CryptoPro.Security.Cryptography.Pkcs;
 using CryptoPro.Security.Cryptography.X509Certificates;
@@ -12,58 +13,107 @@ namespace AISGorod.AspNetCore.Authentication.Esia.CryptoPro;
 /// <summary>
 /// Простейшая обёртка подписи запросов над КриптоПро.
 /// </summary>
-public class CryptoProEsiaSigner(CryptoProOptions options) : IEsiaSigner
+public class CryptoProEsiaSigner(ICryptoProOptions options) : IEsiaSigner
 {
     /// <inheritdoc />
     public string Sign(byte[] data)
     {
-        if (string.IsNullOrWhiteSpace(options.CertThumbprint) || string.IsNullOrWhiteSpace(options.CertPin))
-        {
-            throw new Exception($"Для подключения crypto pro необходимо указать {nameof(options.CertThumbprint)} и {nameof(options.CertPin)}");
-        }
+        ValidateOptions();
 
-        using var gostCert = GetGostX509Certificate2(options.CertThumbprint);
-        var signingKey = gostCert.GetGost3410_2012_256PrivateKey();
-        var signingKeyProvider = signingKey as Gost3410_2012_256CryptoServiceProvider;
-        if (signingKeyProvider != null)
-        {
-            var passwordString = new SecureString();
-            foreach (var s in options.CertPin)
-                passwordString.AppendChar(s);
-            signingKeyProvider.SetContainerPassword(passwordString);
-        }
+        using var gostCert = FindCertificateByThumbprint(options.CertThumbprint!);
+        using var signingKey = GetSigningKey(gostCert);
 
-        var contentInfo = new ContentInfo(data);
-        var signedCms = new CpSignedCms(contentInfo, true);
-        var cmsSigner = new CpCmsSigner(SubjectIdentifierType.IssuerAndSerialNumber, gostCert, signingKeyProvider);
+        ConfigureSigningKeyPassword(signingKey, options.CertPin!);
 
-        cmsSigner.SignedAttributes.Add(new Pkcs9SigningTime(DateTime.Now));
-        cmsSigner.SignedAttributes.Add(new PkcsSigningCertificateV2(gostCert));
-
-        signedCms.ComputeSignature(cmsSigner);
-        var signature = signedCms.Encode();
+        var signature = CreateSignature(data, gostCert, signingKey);
 
         return Convert.ToBase64String(signature);
     }
 
-    private static CpX509Certificate2 GetGostX509Certificate2(string certThumbprint)
+    /// <summary>
+    /// Проверяет корректность настроек.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">Выбрасывается, если настройки некорректны.</exception>
+    private void ValidateOptions()
     {
-        using (var store = new CpX509Store(StoreName.My, StoreLocation.LocalMachine))
+        if (string.IsNullOrWhiteSpace(options.CertThumbprint) || string.IsNullOrWhiteSpace(options.CertPin))
         {
+            throw new InvalidOperationException(
+                $"Для подключения КриптоПро необходимо указать {nameof(options.CertThumbprint)} и {nameof(options.CertPin)}.");
+        }
+    }
+
+    /// <summary>
+    /// Выполняет поиск сертификата по отпечатку.
+    /// </summary>
+    /// <param name="certThumbprint">Отпечаток сертификата.</param>
+    /// <returns>Найденный сертификат.</returns>
+    /// <exception cref="CryptographicException">Выбрасывается, если сертификат не найден.</exception>
+    private static CpX509Certificate2 FindCertificateByThumbprint(string certThumbprint)
+    {
+        return FindInStore(StoreLocation.LocalMachine) ?? FindInStore(StoreLocation.CurrentUser)
+            ?? throw new CryptographicException("Сертификат с указанным отпечатком не найден.");
+
+        CpX509Certificate2? FindInStore(StoreLocation location)
+        {
+            using var store = new CpX509Store(StoreName.My, location);
             store.Open(OpenFlags.ReadOnly);
             var certs = store.Certificates.Find(X509FindType.FindByThumbprint, certThumbprint, false);
-            if (certs.Count == 1)
-                return certs[0];
+            return certs.Count == 1 ? certs[0] : null;
+        }
+    }
+
+    /// <summary>
+    /// Получает ключ для подписи из сертификата.
+    /// </summary>
+    /// <param name="cert">Сертификат.</param>
+    /// <returns>Ключ для подписи.</returns>
+    private static Gost3410_2012_256CryptoServiceProvider GetSigningKey(CpX509Certificate2 cert)
+    {
+        if (cert.GetGost3410_2012_256PrivateKey() is not Gost3410_2012_256CryptoServiceProvider signingKey)
+        {
+            throw new CryptographicException("Ключ подписи недоступен или несовместим.");
         }
 
-        using (var store = new CpX509Store(StoreName.My, StoreLocation.CurrentUser))
+        return signingKey;
+    }
+
+    /// <summary>
+    /// Устанавливает пароль для контейнера ключа.
+    /// </summary>
+    /// <param name="signingKey">Ключ для подписи.</param>
+    /// <param name="password">Пароль в виде строки.</param>
+    private static void ConfigureSigningKeyPassword(Gost3410_2012_256CryptoServiceProvider? signingKey, string password)
+    {
+        if (signingKey == null || string.IsNullOrEmpty(password)) return;
+
+        var securePassword = new SecureString();
+        foreach (var ch in password)
         {
-            store.Open(OpenFlags.ReadOnly);
-            var certs = store.Certificates.Find(X509FindType.FindByThumbprint, certThumbprint, false);
-            if (certs.Count == 1)
-                return certs[0];
+            securePassword.AppendChar(ch);
         }
-        
-        throw new CryptographicException("Сертификат не найден");
+
+        signingKey.SetContainerPassword(securePassword);
+    }
+
+    /// <summary>
+    /// Создаёт подпись данных.
+    /// </summary>
+    /// <param name="data">Данные для подписи.</param>
+    /// <param name="cert">Сертификат.</param>
+    /// <param name="signingKey">Ключ для подписи.</param>
+    /// <returns>Подпись в виде массива байтов.</returns>
+    private static byte[] CreateSignature(byte[] data, CpX509Certificate2 cert, Gost3410_2012_256CryptoServiceProvider signingKey)
+    {
+        var contentInfo = new ContentInfo(data);
+        var signedCms = new CpSignedCms(contentInfo, true);
+        var cmsSigner = new CpCmsSigner(SubjectIdentifierType.IssuerAndSerialNumber, cert, signingKey);
+
+        cmsSigner.SignedAttributes.Add(new Pkcs9SigningTime(DateTime.Now));
+        cmsSigner.SignedAttributes.Add(new PkcsSigningCertificateV2(cert));
+
+        signedCms.ComputeSignature(cmsSigner);
+
+        return signedCms.Encode();
     }
 }

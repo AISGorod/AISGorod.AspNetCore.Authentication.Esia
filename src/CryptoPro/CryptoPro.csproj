@@ -1,14 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <RootNamespace>AISGorod.AspNetCore.Authentication.Esia.CryptoPro</RootNamespace>
+    </PropertyGroup>
     
     <ItemGroup>
       <ProjectReference Include="..\Esia\Esia.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="CryptoPro.Net.Security" Version="*" />
-      <PackageReference Include="CryptoPro.Security.Cryptography" Version="*" />
-      <PackageReference Include="CryptoPro.Security.Cryptography.Pkcs" Version="*" />
-      <PackageReference Include="CryptoPro.Security.Cryptography.Xml" Version="*" />
+      <PackageReference Include="CryptoPro.Net.Security" Version="2024.11.19" />
+      <PackageReference Include="CryptoPro.Security.Cryptography" Version="2024.11.19" />
+      <PackageReference Include="CryptoPro.Security.Cryptography.Pkcs" Version="2024.11.19" />
+      <PackageReference Include="CryptoPro.Security.Cryptography.Xml" Version="2024.11.19" />
     </ItemGroup>
 
 </Project>

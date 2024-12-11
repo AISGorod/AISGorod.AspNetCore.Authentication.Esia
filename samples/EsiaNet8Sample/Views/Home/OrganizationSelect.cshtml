@@ -5,20 +5,20 @@
 }
 
 <div class="text-center">
-    <p class="org-selector">
+    <div class="org-selector">
         <h3>Выберите организацию:</h3>
         <br/>
 
         <div class="btn-group-vertical">
             @foreach (var personRole in Model.PersonRoles)
             {
-                <a asp-action="OrganizationSelect" asp-route-id="@(personRole.oid)" class="btn btn-outline-dark" title="@(personRole.fullName)">
-                    <h4>@(personRole.shortName)</h4>
-                    <small>ОГРН: @(personRole.ogrn)</small>
+                <a asp-action="OrganizationSelect" asp-route-id="@Html.DisplayFor(_ => personRole.Id)" class="btn btn-outline-dark" title="@Html.DisplayFor(_ => personRole.FullName)">
+                    <h4>@Html.DisplayFor(_ => personRole.ShortName)</h4>
+                    <small>ОГРН: @Html.DisplayFor(_ => personRole.Ogrn)</small>
                 </a>
             }
         </div>
-    </p>
+    </div>
 </div>
 
 <style>

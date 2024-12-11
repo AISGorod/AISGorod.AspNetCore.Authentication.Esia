@@ -1,4 +1,6 @@
 ﻿using System;
+using AISGorod.AspNetCore.Authentication.Esia.BouncyCastle.Options;
+using AISGorod.AspNetCore.Authentication.Esia.Options;
 
 namespace AISGorod.AspNetCore.Authentication.Esia.BouncyCastle;
 
