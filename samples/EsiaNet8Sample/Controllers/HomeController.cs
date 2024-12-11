@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using System.Text.Json;
-using AISGorod.AspNetCore.Authentication.Esia;
+using AISGorod.AspNetCore.Authentication.Esia.EsiaEnvironment;
+using AISGorod.AspNetCore.Authentication.Esia.EsiaServices;
 using EsiaNet8Sample.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -14,27 +15,20 @@ namespace EsiaNet8Sample.Controllers;
 /// </summary>
 /// <param name="esiaRestService">Сервис выполнения запросов к сервисам ЕСИА на базе подхода REST.</param>
 /// <param name="esiaEnvironment">Настройка среды ЕСИА.</param>
-public class HomeController(
-    IEsiaRestService esiaRestService,
-    IEsiaEnvironment esiaEnvironment) : Controller
+public class HomeController(IEsiaRestService esiaRestService, IEsiaEnvironment esiaEnvironment) : Controller
 {
     /// <summary>
     /// Настройки сериализации.
     /// </summary>
     private static readonly JsonSerializerOptions JsonSerializerOptions = new() { WriteIndented = true };
-    
+
     /// <summary>
     /// Главная страница.
     /// </summary>
     public async Task<IActionResult> Index()
     {
-        // This is what [Authorize] calls
-        var authenticationProperties = (await HttpContext.AuthenticateAsync()).Properties;
-        if (authenticationProperties != null)
-        {
-            ViewBag.UserProps = authenticationProperties.Items;
-        }
-
+        var authProperties = (await HttpContext.AuthenticateAsync()).Properties;
+        ViewBag.UserProps = authProperties?.Items;
         ViewBag.EsiaEnvironment = esiaEnvironment;
 
         return View();
@@ -43,20 +37,20 @@ public class HomeController(
     /// <summary>
     /// Авторизация.
     /// </summary>
-    /// <param name="scopes">Сферы.</param>
-    /// <param name="orgSelect">Выбрана организация.</param>
     public IActionResult LogIn(string scopes, bool orgSelect)
     {
-        var callbackUrl = Url.Action(orgSelect ? nameof(OrganizationSelect) : nameof(Index));
+        var redirectUri = Url.Action(orgSelect ? nameof(OrganizationSelect) : nameof(Index));
+        var scopeList = string.IsNullOrEmpty(scopes) ? ["fullname", "snils", "email", "mobile", "usr_org"] : scopes.Split(' ');
+
         return Challenge(new OpenIdConnectChallengeProperties
         {
-            RedirectUri = callbackUrl,
-            Scope = string.IsNullOrEmpty(scopes) ? ["fullname", "snils", "email", "mobile", "usr_org" ] : scopes.Split(' ')
+            RedirectUri = redirectUri,
+            Scope = scopeList
         }, "Esia");
     }
 
     /// <summary>
-    /// Выход из аккаунта. 
+    /// Выход из аккаунта.
     /// </summary>
     [Authorize]
     public IActionResult LogOut()
@@ -65,13 +59,13 @@ public class HomeController(
     }
 
     /// <summary>
-    /// Обновление.
+    /// Обновление токенов.
     /// </summary>
     [Authorize]
     public async Task<IActionResult> Refresh()
     {
         await esiaRestService.RefreshTokensAsync();
-        return RedirectToAction("Index");
+        return RedirectToAction(nameof(Index));
     }
 
     /// <summary>
@@ -80,101 +74,106 @@ public class HomeController(
     [Authorize]
     public IActionResult Api()
     {
-        var oId = User.Claims.First(i => i.Type == "sub").Value;
-
-        ViewBag.Url = $"/rs/prns/{oId}/ctts?embed=(elements)";
+        var userId = User.Claims.FirstOrDefault(c => c.Type == "sub")?.Value;
+        ViewBag.Url = $"/rs/prns/{userId}/ctts?embed=(elements)";
         return View();
     }
-    
+
     /// <summary>
-    /// Тест API
+    /// Вызов API.
     /// </summary>
-    /// <param name="url">Путь до веб-сервиса относительно корня сайта.</param>
-    /// <param name="method">Http метод.</param>
     [Authorize]
     [HttpPost]
     public async Task<IActionResult> Api(string url, string method)
     {
-        string result;
-        // Включение отступов
         try
         {
-            var httpMethod = method switch
-            {
-                "get" => HttpMethod.Get,
-                "post" => HttpMethod.Post,
-                "put" => HttpMethod.Put,
-                "delete" => HttpMethod.Delete,
-                _ => HttpMethod.Get
-            };
-
+            var httpMethod = ParseHttpMethod(method);
             var resultJson = await esiaRestService.CallAsync(url, httpMethod);
-            result = JsonSerializer.Serialize(resultJson, JsonSerializerOptions);
+            var result = JsonSerializer.Serialize(resultJson, JsonSerializerOptions);
+
+            return Content(result);
         }
         catch (Exception ex)
         {
-            result = ex.Message + "\r\n\r\n" + ex.StackTrace;
+            return Content($"{ex.Message}\r\n\r\n{ex.StackTrace}");
         }
-
-        return Content(result);
     }
 
     /// <summary>
     /// Выбор организации.
     /// </summary>
-    /// <param name="id">Идентификатор организации.</param>
     [Authorize]
     public async Task<IActionResult> OrganizationSelect(int? id)
     {
-        var oId = User.Claims.FirstOrDefault(i => i.Type == "sub")?.Value;
-        var model = new OrganizationSelectViewModel();
-
-        var organizations = await esiaRestService.CallAsync($"/rs/prns/{oId}/roles", HttpMethod.Get);
-        var jsonString = organizations.GetProperty("elements").GetRawText();
-        model.PersonRoles = JsonSerializer.Deserialize<List<EsiaPersonRoles>>(jsonString);
-
-        if (id == null)
+        var userId = User.Claims.FirstOrDefault(c => c.Type == "sub")?.Value;
+        if (userId != null)
         {
-            // selector render logic
-            return View(model);
-        }
-        // org choice login
-
-        if (model.PersonRoles != null)
-        {
-            var currentOrganization = model.PersonRoles.First(i => i.oid == id);
-            var userInfo = await HttpContext.AuthenticateAsync("Esia");
-            var identity = userInfo.Principal?.Identity as ClaimsIdentity;
-
-            var orgClaims = identity?.Claims.Where(i => i.Type.StartsWith("urn:esia:org")).ToArray();
-            if (orgClaims != null)
-                foreach (var orgClaim in orgClaims)
-                {
-                    identity?.RemoveClaim(orgClaim);
-                }
-
-            identity?.AddClaim(new Claim("urn:esia:org:oid", currentOrganization.oid.ToString()));
-            if (currentOrganization.fullName != null)
+            var model = new OrganizationSelectViewModel
             {
-                identity?.AddClaim(new Claim("urn:esia:org:fullName", currentOrganization.fullName));
+                PersonRoles = await FetchPersonRolesAsync(userId)
+            };
+
+            if (id == null)
+            {
+                return View(model);
             }
 
-            if (currentOrganization.shortName != null)
-            {
-                identity?.AddClaim(new Claim("urn:esia:org:shortName", currentOrganization.shortName));
-            }
-
-            if (currentOrganization.ogrn != null)
-            {
-                identity?.AddClaim(new Claim("urn:esia:org:ogrn", currentOrganization.ogrn));
-            }
-
-            if (userInfo.Principal != null)
-            {
-                await HttpContext.SignInAsync(userInfo.Principal, userInfo.Properties);
-            } 
+            await UpdateUserClaimsAsync(model.PersonRoles.FirstOrDefault(r => r.oid == id));
         }
 
         return RedirectToAction(nameof(Index));
+    }
+
+    private static HttpMethod ParseHttpMethod(string method) => method.ToLower() switch
+    {
+        "get" => HttpMethod.Get,
+        "post" => HttpMethod.Post,
+        "put" => HttpMethod.Put,
+        "delete" => HttpMethod.Delete,
+        _ => HttpMethod.Get
+    };
+
+    private async Task<List<EsiaPersonRoles>> FetchPersonRolesAsync(string userId)
+    {
+        var response = await esiaRestService.CallAsync($"/rs/prns/{userId}/roles", HttpMethod.Get);
+        var rolesJson = response.GetProperty("elements").GetRawText();
+        return JsonSerializer.Deserialize<List<EsiaPersonRoles>>(rolesJson) ?? new List<EsiaPersonRoles>();
+    }
+
+    private async Task UpdateUserClaimsAsync(EsiaPersonRoles? organization)
+    {
+        if (organization == null) return;
+
+        var userInfo = await HttpContext.AuthenticateAsync("Esia");
+        var identity = userInfo.Principal?.Identity as ClaimsIdentity;
+
+        if (identity == null) return;
+
+        // Удаляем старые claims организации
+        var existingOrgClaims = identity.Claims.Where(c => c.Type.StartsWith("urn:esia:org")).ToArray();
+        foreach (var claim in existingOrgClaims)
+        {
+            identity.RemoveClaim(claim);
+        }
+
+        // Добавляем новые claims
+        AddClaimIfNotNull(identity, "urn:esia:org:oid", organization.oid.ToString());
+        AddClaimIfNotNull(identity, "urn:esia:org:fullName", organization.fullName);
+        AddClaimIfNotNull(identity, "urn:esia:org:shortName", organization.shortName);
+        AddClaimIfNotNull(identity, "urn:esia:org:ogrn", organization.ogrn);
+
+        if (userInfo.Principal != null)
+        {
+            await HttpContext.SignInAsync(userInfo.Principal, userInfo.Properties);
+        }
+    }
+
+    private static void AddClaimIfNotNull(ClaimsIdentity identity, string type, string? value)
+    {
+        if (!string.IsNullOrEmpty(value))
+        {
+            identity.AddClaim(new Claim(type, value));
+        }
     }
 }

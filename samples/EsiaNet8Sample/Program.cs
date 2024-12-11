@@ -27,7 +27,9 @@ builder.Services
         options.Mnemonic = "TESTSYS";
         options.Scope = ["fullname", "snils", "email", "mobile", "usr_org"];
         options.SaveTokens = true;
-        options.SecurityTokenValidator = new CustomSecurityTokenValidator();
+#pragma warning disable CS0618 // Type or member is obsolete
+        options.TokenHandler = new CustomSecurityTokenValidator();
+#pragma warning restore CS0618 // Type or member is obsolete
         
         options.CallBackPath = new PathString("/signin-esia");
         options.SignedOutCallbackPath = new PathString("/signout-esia");

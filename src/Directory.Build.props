@@ -21,14 +21,14 @@
     </PropertyGroup>
 
     <PropertyGroup Label="Namespaces">
-        <AssemblyName>AISGorod.AspNetCore.Authentication.Esia.$(MSBuildProjectName)</AssemblyName>
-        <RootNamespace>AISGorod.AspNetCore.Authentication.Esia.$(MSBuildProjectName)</RootNamespace>
+        <AssemblyName>AISGorod.AspNetCore.Authentication.$(MSBuildProjectName)</AssemblyName>
+        <RootNamespace>AISGorod.AspNetCore.Authentication.$(MSBuildProjectName)</RootNamespace>
     </PropertyGroup>
 
     <PropertyGroup Label="Settings">
         <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
         <Nullable>enable</Nullable>
-        <NoWarn>$(NoWarn);NU1504;NU1505;NU1701</NoWarn>
+        <AnalysisLevel>latest</AnalysisLevel>
     </PropertyGroup>
 
     <PropertyGroup Label="Icons">

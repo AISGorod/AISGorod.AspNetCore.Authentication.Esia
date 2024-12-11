@@ -17,8 +17,8 @@
             <h2>Claims</h2>
             @foreach (var claim in User.Claims)
             {
-                <strong>@(claim.Type)</strong>
-                @(claim.Value)<br/>
+                <strong>@Html.DisplayFor(_ => claim.Type)</strong>
+                @Html.DisplayFor(_ => claim.Value)<br/>
             }
         }
     </div>
@@ -35,16 +35,16 @@
     </div>
 </div>
 
-@if (ViewBag.EsiaEnvironment is AISGorod.AspNetCore.Authentication.Esia.IEsiaEnvironment esiaEnvironment)
+@if (ViewBag.EsiaEnvironment is AISGorod.AspNetCore.Authentication.Esia.EsiaEnvironment.IEsiaEnvironment esiaEnvironment)
 {
     <h2>Настройки подключения к ЕСИА:</h2>
     <strong>Тип данных</strong>
-    @(esiaEnvironment.GetType().FullName)
+    @Html.DisplayFor(_ => esiaEnvironment.GetType().FullName)
     <br/>
     <strong>Хост</strong>
-    @(esiaEnvironment.Host)
+    @Html.DisplayFor(_ => esiaEnvironment.Host)
     <br/>
     <strong>Отпечаток сертификата ЕСИА</strong>
-    @(esiaEnvironment.EsiaCertificate.Thumbprint)
+    @Html.DisplayFor(_ => esiaEnvironment.EsiaCertificate.Thumbprint)
     <br/>
 }

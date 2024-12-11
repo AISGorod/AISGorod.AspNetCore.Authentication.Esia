@@ -1,4 +1,6 @@
 using AISGorod.AspNetCore.Authentication.Esia;
+using AISGorod.AspNetCore.Authentication.Esia.EsiaEnvironment;
+using AISGorod.AspNetCore.Authentication.Esia.Options;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
@@ -7,12 +9,12 @@ namespace EsiaNet8Sample;
 /// <summary>
 /// Собственная реализация обработки событий от поставщика данных.
 /// </summary>
-public class CustomEsiaEvents(
+public abstract class CustomEsiaEvents(
     EsiaOptions esiaOptions,
     IEsiaEnvironment esiaEnvironment,
-    IServiceProvider serviceProvider,
+    IEsiaSigner esiaSigner,
     ITempDataDictionaryFactory tempDataDictionaryFactory)
-    : EsiaEvents(esiaOptions, esiaEnvironment, serviceProvider)
+    : EsiaEvents(esiaOptions, esiaEnvironment, esiaSigner)
 {
     // Собственные зависимости.
 
