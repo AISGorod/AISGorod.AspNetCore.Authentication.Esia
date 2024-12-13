@@ -29,9 +29,6 @@ builder.Services
         // ЭТО ТЕСТОВЫЙ ОБРАБОТЧИК В Production использовать свой.
         options.TokenHandler = new JsonWebTokenHandler();
 
-        options.CallBackPath = new PathString("/signin-esia");
-        options.SignedOutCallbackPath = new PathString("/signout-esia");
-
         options.UseBouncyCastle(bouncyCastleOptions =>
         {
             bouncyCastleOptions.KeyFilePath = "/home/username/esia.key";

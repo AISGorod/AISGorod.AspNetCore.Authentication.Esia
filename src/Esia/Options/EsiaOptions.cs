@@ -58,10 +58,10 @@ public class EsiaOptions : RemoteAuthenticationOptions, IEsiaOptions
     public Action<HttpClient>? RestApiHttpClientHandler { get; set; }
 
     /// <inheritdoc />
-    public PathString CallBackPath { get; set; }
+    public PathString CallBackPath { get; set; } = "/signin-esia";
 
     /// <inheritdoc />
-    public PathString SignedOutCallbackPath { get; set; }
+    public PathString SignedOutCallbackPath { get; set; } = "/signout-esia";
 
     /// <inheritdoc />
     public void UseSigner(Func<IServiceProvider, IEsiaSigner> factory)
