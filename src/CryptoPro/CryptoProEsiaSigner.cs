@@ -85,7 +85,10 @@ public class CryptoProEsiaSigner(ICryptoProOptions options) : IEsiaSigner
     /// <param name="password">Пароль в виде строки.</param>
     private static void ConfigureSigningKeyPassword(Gost3410_2012_256CryptoServiceProvider? signingKey, string password)
     {
-        if (signingKey == null || string.IsNullOrEmpty(password)) return;
+        if (signingKey == null || string.IsNullOrEmpty(password))
+        {
+            return;
+        }
 
         var securePassword = new SecureString();
         foreach (var ch in password)

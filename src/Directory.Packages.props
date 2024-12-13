@@ -4,6 +4,10 @@
     <PackageReference Include="System.Security.Cryptography.Pkcs" Version="[9.0.0,10)" />
     <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="[8.0.1,9)" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="[8.0.1,9)" />
+	<PackageReference Include="CryptoPro.Net.Security" Version="*"/>
+    <PackageReference Include="CryptoPro.Security.Cryptography" Version="*"/>
+    <PackageReference Include="CryptoPro.Security.Cryptography.Pkcs" Version="*"/>
+    <PackageReference Include="CryptoPro.Security.Cryptography.Xml" Version="*"/>
   </ItemGroup>
   <ItemGroup Label="net8.0" Condition="'$(TargetFramework)' == 'net8.0'">
 	  <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="[8.0.0,9)" />

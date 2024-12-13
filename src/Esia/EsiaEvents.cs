@@ -64,7 +64,7 @@ public class EsiaEvents(IEsiaOptions esiaOptions, IEsiaEnvironment esiaEnvironme
         {
             return Task.CompletedTask;
         }
-        
+
         pm.ClientId = context.Options.ClientId;
         pm.Parameters.Add("scope", string.Join(" ", (context.Properties as OpenIdConnectChallengeProperties)?.Scope ?? context.Options.Scope));
         pm.Parameters.Add("timestamp", now.ToString("yyyy.MM.dd HH:mm:ss") + " " + now.ToString("zzz").Replace(":", ""));

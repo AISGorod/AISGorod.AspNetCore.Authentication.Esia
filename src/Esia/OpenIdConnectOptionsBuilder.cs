@@ -57,14 +57,14 @@ internal class OpenIdConnectOptionsBuilder(EsiaOptions esiaOptions, IEsiaEnviron
             EndSessionEndpoint = environment.LogoutEndpoint
         };
     }
-    
+
     /// <summary>
     /// Настройка токена валидации.
     /// </summary>
     /// <param name="options">Настройки openId.</param>
     private void ConfigureTokenValidation(OpenIdConnectOptions options)
     {
-        options.TokenValidationParameters.IssuerSigningKey = 
+        options.TokenValidationParameters.IssuerSigningKey =
             new RsaSecurityKey(environment.EsiaCertificate.GetRSAPublicKey());
         options.TokenValidationParameters.ValidIssuer = environment.Issuer;
     }

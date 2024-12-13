@@ -7,10 +7,10 @@
 /// </summary>
 internal static class EsiaCertificates
 {
-	/// <summary>
-	/// Сертификат тестовой среды ЕСИА.
-	/// </summary>
-	public const string TestCertificate = @"-----BEGIN CERTIFICATE-----
+    /// <summary>
+    /// Сертификат тестовой среды ЕСИА.
+    /// </summary>
+    public const string TestCertificate = @"-----BEGIN CERTIFICATE-----
 MIIDGjCCAgKgAwIBAgIEZrHvUjANBgkqhkiG9w0BAQsFADAeMQswCQYDVQQGEwJS
 VTEPMA0GA1UECwwGUlRMYWJzMB4XDTI0MDgwNjA5MzkzMFoXDTM0MDgwNjA5Mzkz
 MFowHjELMAkGA1UEBhMCUlUxDzANBgNVBAsMBlJUTGFiczCCASIwDQYJKoZIhvcN
@@ -30,10 +30,10 @@ OjkZuQYqQ6F7AcgVSQHfzMEm1I+7D1ruTELZgJaE5KJF1WwI7CEhnFfbJKxgl9Tv
 tXZJVX6zc9Y457U/tcp1LMqhyJHfSuLWI8s2oynL
 -----END CERTIFICATE-----";
 
-	/// <summary>
-	/// Сертификат продукционной среды ЕСИА.
-	/// </summary>
-	public const string ProductionCertificate = @"-----BEGIN CERTIFICATE-----
+    /// <summary>
+    /// Сертификат продукционной среды ЕСИА.
+    /// </summary>
+    public const string ProductionCertificate = @"-----BEGIN CERTIFICATE-----
 MIIC+DCCAeCgAwIBAgIEZkCOZTANBgkqhkiG9w0BAQsFADA+MQswCQYDVQQGEwJS
 VTEPMA0GA1UECgwGUlRMYWJzMQ8wDQYDVQQLDAZSVExhYnMxDTALBgNVBAMMBEVT
 SUEwHhcNMjQwNTEyMDkzOTQ5WhcNMjUwNTEyMDkzOTQ5WjA+MQswCQYDVQQGEwJS

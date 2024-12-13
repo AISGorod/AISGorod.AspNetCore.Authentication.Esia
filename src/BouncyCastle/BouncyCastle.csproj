@@ -3,9 +3,9 @@
     <PropertyGroup>
         <RootNamespace>AISGorod.AspNetCore.Authentication.Esia.BouncyCastle</RootNamespace>
     </PropertyGroup>
-    
+
     <ItemGroup>
-      <ProjectReference Include="..\Esia\Esia.csproj" />
+        <ProjectReference Include="..\Esia\Esia.csproj"/>
     </ItemGroup>
 
 </Project>

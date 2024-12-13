@@ -142,6 +142,7 @@ $ openssl cms -sign -engine gost -inkey esia.key -signer esia.pem <<< '123'
 Если вы будете использовать режим подписи через CryptoPro, необходимо загрузить nuget пакеты. В проекте есть файл, который делает это автоматически:
 
 Необходимо сделать файл скрипта исполняемым и запустить:
+
 ```bash
 $ chmod +x utils/download_crypto_pro.sh
 $ utils/download_crypto_pro.sh

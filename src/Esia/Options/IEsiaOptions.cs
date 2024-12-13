@@ -89,7 +89,7 @@ public interface IEsiaOptions
     /// Путь обратного вызова для аутентификации.
     /// </summary>
     public PathString CallBackPath { get; }
-        
+
     /// <summary>
     /// Путь обратного вызова для выхода.
     /// </summary>

@@ -5,19 +5,19 @@
 /// </summary>
 public interface IBouncyCastleOptions
 {
-	/// <summary>
-	/// Путь к файлу приватного ключа.
-	/// </summary>
-	/// <remarks>
-	/// Поле обязательное.
-	/// </remarks>
-	string? KeyFilePath { get; }
+    /// <summary>
+    /// Путь к файлу приватного ключа.
+    /// </summary>
+    /// <remarks>
+    /// Поле обязательное.
+    /// </remarks>
+    string? KeyFilePath { get; }
 
-	/// <summary>
-	/// Путь к файлу сертификата.
-	/// </summary>
-	/// <remarks>
-	/// Поле обязательное.
-	/// </remarks>
-	string? CertFilePath { get; }
+    /// <summary>
+    /// Путь к файлу сертификата.
+    /// </summary>
+    /// <remarks>
+    /// Поле обязательное.
+    /// </remarks>
+    string? CertFilePath { get; }
 }

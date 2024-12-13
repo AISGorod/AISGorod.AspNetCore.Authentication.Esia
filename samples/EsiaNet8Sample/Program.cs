@@ -17,10 +17,7 @@ builder.Services
         options.DefaultScheme = "Cookies";
         options.DefaultChallengeScheme = "Esia";
     })
-    .AddCookie("Cookies", options =>
-    {
-        options.Cookie.Name = "EsiaNet8Sample.Cookie";
-    })
+    .AddCookie("Cookies", options => { options.Cookie.Name = "EsiaNet8Sample.Cookie"; })
     .AddEsia<CustomEsiaEvents>("Esia", options =>
     {
         options.Environment = EsiaEnvironmentType.Test;
@@ -28,13 +25,13 @@ builder.Services
         options.Mnemonic = "TESTSYS";
         options.Scope = ["fullname", "snils", "email", "mobile", "usr_org"];
         options.SaveTokens = true;
-        
+
         // ЭТО ТЕСТОВЫЙ ОБРАБОТЧИК В Production использовать свой.
         options.TokenHandler = new JsonWebTokenHandler();
-        
+
         options.CallBackPath = new PathString("/signin-esia");
         options.SignedOutCallbackPath = new PathString("/signout-esia");
-        
+
         options.UseBouncyCastle(bouncyCastleOptions =>
         {
             bouncyCastleOptions.KeyFilePath = "/home/username/esia.key";
@@ -48,7 +45,7 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-	app.UseDeveloperExceptionPage();
+    app.UseDeveloperExceptionPage();
 }
 
 app.UseRouting();

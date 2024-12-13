@@ -8,34 +8,34 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <_ContentIncludedByDefault Remove="Views\Home\Index.cshtml" />
-      <_ContentIncludedByDefault Remove="Views\Home\Privacy.cshtml" />
-      <_ContentIncludedByDefault Remove="Views\Shared\Error.cshtml" />
-      <_ContentIncludedByDefault Remove="Views\Shared\_Layout.cshtml" />
-      <_ContentIncludedByDefault Remove="Views\Shared\_ValidationScriptsPartial.cshtml" />
-      <_ContentIncludedByDefault Remove="Views\_ViewImports.cshtml" />
-      <_ContentIncludedByDefault Remove="Views\_ViewStart.cshtml" />
+        <_ContentIncludedByDefault Remove="Views\Home\Index.cshtml"/>
+        <_ContentIncludedByDefault Remove="Views\Home\Privacy.cshtml"/>
+        <_ContentIncludedByDefault Remove="Views\Shared\Error.cshtml"/>
+        <_ContentIncludedByDefault Remove="Views\Shared\_Layout.cshtml"/>
+        <_ContentIncludedByDefault Remove="Views\Shared\_ValidationScriptsPartial.cshtml"/>
+        <_ContentIncludedByDefault Remove="Views\_ViewImports.cshtml"/>
+        <_ContentIncludedByDefault Remove="Views\_ViewStart.cshtml"/>
     </ItemGroup>
 
     <ItemGroup>
-      <Content Update="Views\Home\Api.cshtml">
-        <Pack>false</Pack>
-      </Content>
+        <Content Update="Views\Home\Api.cshtml">
+            <Pack>false</Pack>
+        </Content>
     </ItemGroup>
 
     <ItemGroup>
-      <AdditionalFiles Include="Views\Home\Api.cshtml" />
-      <AdditionalFiles Include="Views\Home\Index.cshtml" />
-      <AdditionalFiles Include="Views\Home\OrganizationSelect.cshtml" />
-      <AdditionalFiles Include="Views\Shared\_Layout.cshtml" />
-      <AdditionalFiles Include="Views\_ViewImports.cshtml" />
-      <AdditionalFiles Include="Views\_ViewStart.cshtml" />
+        <AdditionalFiles Include="Views\Home\Api.cshtml"/>
+        <AdditionalFiles Include="Views\Home\Index.cshtml"/>
+        <AdditionalFiles Include="Views\Home\OrganizationSelect.cshtml"/>
+        <AdditionalFiles Include="Views\Shared\_Layout.cshtml"/>
+        <AdditionalFiles Include="Views\_ViewImports.cshtml"/>
+        <AdditionalFiles Include="Views\_ViewStart.cshtml"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\src\Esia\Esia.csproj" />
-      <ProjectReference Include="..\..\src\BouncyCastle\BouncyCastle.csproj" />
-      <ProjectReference Include="..\..\src\CryptoPro\CryptoPro.csproj" />
+        <ProjectReference Include="..\..\src\Esia\Esia.csproj"/>
+        <ProjectReference Include="..\..\src\BouncyCastle\BouncyCastle.csproj"/>
+        <ProjectReference Include="..\..\src\CryptoPro\CryptoPro.csproj"/>
     </ItemGroup>
 
 </Project>

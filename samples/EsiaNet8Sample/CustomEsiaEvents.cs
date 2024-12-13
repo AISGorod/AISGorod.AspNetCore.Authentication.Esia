@@ -25,6 +25,7 @@ public class CustomEsiaEvents(
         {
             tempData.Save();
         }
+
         context.Response.Redirect(context.Properties?.RedirectUri ?? "/");
         context.HandleResponse();
         return Task.CompletedTask;

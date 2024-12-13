@@ -86,7 +86,7 @@ public class BouncyCastleEsiaSigner(IBouncyCastleOptions options) : IEsiaSigner
         {
             GOST_2012_256 => RosstandartObjectIdentifiers.id_tc26_gost_3411_12_256.Id,
             GOST_2012_512 => RosstandartObjectIdentifiers.id_tc26_gost_3411_12_512.Id,
-            _ => throw new NotSupportedException("Не поддерживаемый тип хеширования."),
+            _ => throw new NotSupportedException("Не поддерживаемый тип хеширования.")
         };
     }
 
@@ -99,7 +99,9 @@ public class BouncyCastleEsiaSigner(IBouncyCastleOptions options) : IEsiaSigner
     private static X509Certificate LoadCertificate(string certPath)
     {
         if (!File.Exists(certPath))
+        {
             throw new FileNotFoundException($"Файл сертификата не найден: {certPath}");
+        }
 
         var parser = new X509CertificateParser();
         return parser.ReadCertificate(File.ReadAllBytes(certPath));
@@ -114,7 +116,9 @@ public class BouncyCastleEsiaSigner(IBouncyCastleOptions options) : IEsiaSigner
     private static AsymmetricKeyParameter LoadPrivateKey(string keyPath)
     {
         if (!File.Exists(keyPath))
+        {
             throw new FileNotFoundException($"Файл ключа не найден: {keyPath}");
+        }
 
         using var reader = File.OpenText(keyPath);
         var pemReader = new Org.BouncyCastle.Utilities.IO.Pem.PemReader(reader);

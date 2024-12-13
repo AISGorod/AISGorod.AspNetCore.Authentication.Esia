@@ -53,10 +53,7 @@ public class HomeController(IEsiaRestService esiaRestService, IEsiaEnvironment e
     /// Выход из аккаунта.
     /// </summary>
     [Authorize]
-    public IActionResult LogOut()
-    {
-        return SignOut("Cookies", "Esia");
-    }
+    public IActionResult LogOut() => SignOut("Cookies", "Esia");
 
     /// <summary>
     /// Обновление токенов.
@@ -125,14 +122,15 @@ public class HomeController(IEsiaRestService esiaRestService, IEsiaEnvironment e
         return RedirectToAction(nameof(Index));
     }
 
-    private static HttpMethod ParseHttpMethod(string method) => method.ToLower() switch
-    {
-        "get" => HttpMethod.Get,
-        "post" => HttpMethod.Post,
-        "put" => HttpMethod.Put,
-        "delete" => HttpMethod.Delete,
-        _ => HttpMethod.Get
-    };
+    private static HttpMethod ParseHttpMethod(string method) =>
+        method.ToLower() switch
+        {
+            "get" => HttpMethod.Get,
+            "post" => HttpMethod.Post,
+            "put" => HttpMethod.Put,
+            "delete" => HttpMethod.Delete,
+            _ => HttpMethod.Get
+        };
 
     private async Task<List<EsiaPersonRoles>> FetchPersonRolesAsync(string userId)
     {
@@ -143,12 +141,18 @@ public class HomeController(IEsiaRestService esiaRestService, IEsiaEnvironment e
 
     private async Task UpdateUserClaimsAsync(EsiaPersonRoles? organization)
     {
-        if (organization == null) return;
+        if (organization == null)
+        {
+            return;
+        }
 
         var userInfo = await HttpContext.AuthenticateAsync("Esia");
         var identity = userInfo.Principal?.Identity as ClaimsIdentity;
 
-        if (identity == null) return;
+        if (identity == null)
+        {
+            return;
+        }
 
         // Удаляем старые claims организации
         var existingOrgClaims = identity.Claims.Where(c => c.Type.StartsWith("urn:esia:org")).ToArray();

@@ -23,12 +23,12 @@ internal class EsiaSecureDataFormat : ISecureDataFormat<AuthenticationProperties
     public string Protect(AuthenticationProperties data, string? purpose)
     {
         var code = data.Items.TryGetValue(OpenIdConnectDefaults.UserstatePropertiesKey, out var item) ? item : Guid.NewGuid().ToString();
-        
+
         if (code == null)
         {
             return string.Empty;
         }
-        
+
         dict.Add(code, data);
         return code;
     }
@@ -40,7 +40,10 @@ internal class EsiaSecureDataFormat : ISecureDataFormat<AuthenticationProperties
     public AuthenticationProperties? Unprotect(string? protectedText, string? purpose)
     {
         if (protectedText != null)
-            return !dict.Remove(protectedText, value: out var data) ? null : data;
+        {
+            return !dict.Remove(protectedText, out var data) ? null : data;
+        }
+
         return null;
     }
 }

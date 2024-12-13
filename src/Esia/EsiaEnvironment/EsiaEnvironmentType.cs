@@ -5,13 +5,13 @@
 /// </summary>
 public enum EsiaEnvironmentType
 {
-	/// <summary>
-	/// Тестовая среда ЕСИА.
-	/// </summary>
-	Test,
+    /// <summary>
+    /// Тестовая среда ЕСИА.
+    /// </summary>
+    Test,
 
-	/// <summary>
-	/// Продуктивная среда ЕСИА.
-	/// </summary>
-	Production,
+    /// <summary>
+    /// Продуктивная среда ЕСИА.
+    /// </summary>
+    Production
 }
