@@ -1,4 +1,4 @@
-﻿using AISGorod.AspNetCore.Authentication.Esia;
+﻿using AISGorod.AspNetCore.Authentication.Esia.EsiaEnvironment;
 
 namespace EsiaNet8Sample;
 

@@ -1,14 +1,35 @@
-﻿namespace EsiaNet8Sample.Models;
+﻿using System.Text.Json.Serialization;
 
+namespace EsiaNet8Sample.Models;
+
+/// <summary>
+/// Пользователь.
+/// </summary>
 public class EsiaPersonRoles
 {
-    public int oid { get; set; }
+    /// <summary>
+    /// Идентификатор.
+    /// </summary>
+    [JsonPropertyName("oid")]
+    public int Id { get; init; }
 
-    public string? fullName { get; set; }
+    /// <summary>
+    /// Полное имя.
+    /// </summary>
+    [JsonPropertyName("fullName")]
+    public string? FullName { get; init; }
 
-    public string? shortName { get; set; }
+    /// <summary>
+    /// Короткое имя.
+    /// </summary>
+    [JsonPropertyName("shortName")]
+    public string? ShortName { get; init; }
 
-    public string? ogrn { get; set; }
+    /// <summary>
+    /// Огрн.
+    /// </summary>
+    [JsonPropertyName("ogrn")]
+    public string? Ogrn { get; init; }
 
     // Тут должно быть намного больше свойств. Но текущего набора достаточно.
 }

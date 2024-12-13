@@ -1,74 +1,125 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
+using AISGorod.AspNetCore.Authentication.Esia.EsiaEnvironment;
+using AISGorod.AspNetCore.Authentication.Esia.Options;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 
-namespace AISGorod.AspNetCore.Authentication.Esia
+namespace AISGorod.AspNetCore.Authentication.Esia;
+
+/// <summary>
+/// Формирует экземпляр класса OpenIdConnectOptions из экземпляра класса EsiaOptions.
+/// </summary>
+internal class OpenIdConnectOptionsBuilder(EsiaOptions esiaOptions, IEsiaEnvironment environment)
 {
     /// <summary>
-    /// Формирует экземпляр класса OpenIdConnectOptions из экземпляра класса EsiaOptions.
+    /// Применение настроек.
     /// </summary>
-    internal class OpenIdConnectOptionsBuilder
+    /// <typeparam name="TEsiaEvents">События.</typeparam>
+    public Action<OpenIdConnectOptions> BuildAction<TEsiaEvents>() where TEsiaEvents : OpenIdConnectEvents
     {
-        private readonly IEsiaEnvironment environment;
-        private readonly EsiaOptions esiaOptions;
-
-        public OpenIdConnectOptionsBuilder(EsiaOptions esiaOptions, IEsiaEnvironment environment)
+        return options =>
         {
-            this.esiaOptions = esiaOptions;
-            this.environment = environment;
+            ConfigureBackchannel(options);
+            ConfigureEndpoints(options);
+            ConfigureTokenValidation(options);
+            ConfigureClientSettings(options);
+            ConfigureEvents<TEsiaEvents>(options);
+            ConfigureScopes(options.Scope);
+            ConfigureSchemes(options);
+        };
+    }
+
+    /// <summary>
+    /// Настройка backchannel.
+    /// </summary>
+    /// <param name="options">Настройки openId.</param>
+    private void ConfigureBackchannel(OpenIdConnectOptions options)
+    {
+        if (esiaOptions.Backchannel != null)
+        {
+            options.Backchannel = esiaOptions.Backchannel;
         }
+    }
 
-        public Action<OpenIdConnectOptions> BuildAction()
+    /// <summary>
+    /// Настройка endpoint-ов.
+    /// </summary>
+    /// <param name="options">Настройки openId.</param>
+    private void ConfigureEndpoints(OpenIdConnectOptions options)
+    {
+        options.Configuration = new OpenIdConnectConfiguration
         {
-            return BuildAction<EsiaEvents>();
-        }
+            AuthorizationEndpoint = environment.AuthorizationEndpoint,
+            TokenEndpoint = environment.TokenEndpoint,
+            EndSessionEndpoint = environment.LogoutEndpoint
+        };
+    }
 
-        public Action<OpenIdConnectOptions> BuildAction<TEsiaEvents>() where TEsiaEvents : OpenIdConnectEvents
+    /// <summary>
+    /// Настройка токена валидации.
+    /// </summary>
+    /// <param name="options">Настройки openId.</param>
+    private void ConfigureTokenValidation(OpenIdConnectOptions options)
+    {
+        options.TokenValidationParameters.IssuerSigningKey =
+            new RsaSecurityKey(environment.EsiaCertificate.GetRSAPublicKey());
+        options.TokenValidationParameters.ValidIssuer = environment.Issuer;
+    }
+
+    /// <summary>
+    /// Настройка настроек клиента.
+    /// </summary>
+    /// <param name="options">Настройки openId.</param>
+    private void ConfigureClientSettings(OpenIdConnectOptions options)
+    {
+        options.TokenHandler = esiaOptions.TokenHandler;
+        options.ClientId = esiaOptions.Mnemonic;
+        options.ProtocolValidator.RequireNonce = false;
+        options.GetClaimsFromUserInfoEndpoint = false;
+        options.StateDataFormat = new EsiaSecureDataFormat();
+        options.SaveTokens = esiaOptions.SaveTokens;
+        options.CallbackPath = esiaOptions.CallBackPath;
+        options.SignedOutCallbackPath = esiaOptions.SignedOutCallbackPath;
+    }
+
+    /// <summary>
+    /// Настройка событий.
+    /// </summary>
+    /// <param name="options">Настройки openId.</param>
+    /// <typeparam name="TEsiaEvents">Тип событий ЕСИА.</typeparam>
+    private static void ConfigureEvents<TEsiaEvents>(OpenIdConnectOptions options) where TEsiaEvents : OpenIdConnectEvents
+    {
+        options.EventsType = typeof(TEsiaEvents);
+    }
+
+    /// <summary>
+    /// Настройка scope-ов.
+    /// </summary>
+    /// <param name="optionsScope">Scopes.</param>
+    private void ConfigureScopes(ICollection<string> optionsScope)
+    {
+        optionsScope.Clear();
+        optionsScope.Add("openid");
+
+        foreach (var scope in esiaOptions.Scope)
         {
-            return options =>
+            if (!scope.Equals("openid", StringComparison.OrdinalIgnoreCase))
             {
-                options.Backchannel = esiaOptions.Backchannel;
-                options.Configuration = new OpenIdConnectConfiguration
-                {
-                    AuthorizationEndpoint = environment.AuthorizationEndpoint,
-                    TokenEndpoint = environment.TokenEndpoint,
-                    EndSessionEndpoint = environment.LogoutEndpoint
-                };
-                options.TokenValidationParameters.IssuerSigningKey = new RsaSecurityKey(environment.EsiaCertificate.GetRSAPublicKey());
-                options.TokenValidationParameters.ValidIssuer = environment.Issuer;
-                options.SecurityTokenValidator = esiaOptions.SecurityTokenValidator;
-                options.ClientId = esiaOptions.Mnemonic;
-                options.ProtocolValidator.RequireNonce = false;
-                options.GetClaimsFromUserInfoEndpoint = false;
-                options.StateDataFormat = new EsiaSecureDataFormat();
-                options.EventsType = typeof(TEsiaEvents);
-                _FillScopes(options.Scope);
-                options.SignInScheme = esiaOptions.SignInScheme;
-                options.SignOutScheme = esiaOptions.SignOutScheme;
-                options.SaveTokens = esiaOptions.SaveTokens;
-            };
-        }
-
-        private void _FillScopes(ICollection<string> optionsScope)
-        {
-            optionsScope.Clear();
-            optionsScope.Add("openid");
-            
-            if (esiaOptions.Scope == null)
-            {
-                return;
+                optionsScope.Add(scope);
             }
-            
-            foreach (var scope in esiaOptions.Scope)
-            {
-                if (!scope.Equals("openid", StringComparison.OrdinalIgnoreCase))
-                {
-                    optionsScope.Add(scope);
-                }
-            }
         }
+    }
+
+    /// <summary>
+    /// Настройка схем.
+    /// </summary>
+    /// <param name="options">Настройки openId.</param>
+    private void ConfigureSchemes(OpenIdConnectOptions options)
+    {
+        options.SignInScheme = esiaOptions.SignInScheme;
+        options.SignOutScheme = esiaOptions.SignOutScheme;
     }
 }

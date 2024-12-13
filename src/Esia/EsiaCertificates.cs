@@ -1,16 +1,16 @@
-﻿namespace AISGorod.AspNetCore.Authentication.Esia
+﻿namespace AISGorod.AspNetCore.Authentication.Esia;
+
+/// <summary>
+/// Сертификаты тестовой и продуктивной сред ЕСИА, используемые для формирования электронных подписей ответов как поставщика.
+/// Можно взять из архива http://esia.gosuslugi.ru/public/esia.zip.
+/// Ссылка на архив взята из методических рекомендаций ЕСИА, п. 3.1.2 "Аутентификация с использованием OpenID Connect 1.0".
+/// </summary>
+internal static class EsiaCertificates
 {
     /// <summary>
-    /// Сертификаты тестовой и продуктивной сред ЕСИА, используемые для формирования электронных подписей ответов как поставщика.
-    /// Можно взять из архива http://esia.gosuslugi.ru/public/esia.zip.
-    /// Ссылка на архив взята из методических рекомендаций ЕСИА, п. 3.1.2 "Аутентификация с использованием OpenID Connect 1.0".
+    /// Сертификат тестовой среды ЕСИА.
     /// </summary>
-    internal static class EsiaCertificates
-    {
-        /// <summary>
-        /// Сертификат тестовой среды ЕСИА.
-        /// </summary>
-        public const string TestCertificate = @"-----BEGIN CERTIFICATE-----
+    public const string TestCertificate = @"-----BEGIN CERTIFICATE-----
 MIIDGjCCAgKgAwIBAgIEZrHvUjANBgkqhkiG9w0BAQsFADAeMQswCQYDVQQGEwJS
 VTEPMA0GA1UECwwGUlRMYWJzMB4XDTI0MDgwNjA5MzkzMFoXDTM0MDgwNjA5Mzkz
 MFowHjELMAkGA1UEBhMCUlUxDzANBgNVBAsMBlJUTGFiczCCASIwDQYJKoZIhvcN
@@ -30,10 +30,10 @@ OjkZuQYqQ6F7AcgVSQHfzMEm1I+7D1ruTELZgJaE5KJF1WwI7CEhnFfbJKxgl9Tv
 tXZJVX6zc9Y457U/tcp1LMqhyJHfSuLWI8s2oynL
 -----END CERTIFICATE-----";
 
-        /// <summary>
-        /// Сертификат продукционной среды ЕСИА.
-        /// </summary>
-        public const string ProductionCertificate = @"-----BEGIN CERTIFICATE-----
+    /// <summary>
+    /// Сертификат продукционной среды ЕСИА.
+    /// </summary>
+    public const string ProductionCertificate = @"-----BEGIN CERTIFICATE-----
 MIIC+DCCAeCgAwIBAgIEZkCOZTANBgkqhkiG9w0BAQsFADA+MQswCQYDVQQGEwJS
 VTEPMA0GA1UECgwGUlRMYWJzMQ8wDQYDVQQLDAZSVExhYnMxDTALBgNVBAMMBEVT
 SUEwHhcNMjQwNTEyMDkzOTQ5WhcNMjUwNTEyMDkzOTQ5WjA+MQswCQYDVQQGEwJS
@@ -52,5 +52,4 @@ KDCLEUAg+/ZuPybz8Gq8xViNA+ThFYgbW8HXmCBlCPCrrw/VSHqhDPwnBKuPeO5Z
 +mNJEAWLBRo34+8FfCaN+Fn0HNIdOGfwiH2yMFJitnT9ORIFEbDUY7zYV3E=
 -----END CERTIFICATE-----
 ";
-    }
 }

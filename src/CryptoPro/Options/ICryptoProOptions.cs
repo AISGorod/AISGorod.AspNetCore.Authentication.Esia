@@ -1,9 +1,9 @@
-﻿namespace AISGorod.AspNetCore.Authentication.Esia.CryptoPro;
+﻿namespace AISGorod.AspNetCore.Authentication.Esia.CryptoPro.Options;
 
 /// <summary>
-/// Настройки crypto pro.
+/// Интерфейс для предоставления настроек CryptoPro.
 /// </summary>
-public class CryptoProOptions
+public interface ICryptoProOptions
 {
     /// <summary>
     /// Отпечаток сертификата.
@@ -11,10 +11,10 @@ public class CryptoProOptions
     /// <remarks>
     /// Поле обязательное.
     /// </remarks>
-    public string? CertThumbprint { get; set; }
+    string? CertThumbprint { get; }
 
     /// <summary>
     /// Pin сертификата.
     /// </summary>
-    public string? CertPin { get; set; }
+    string? CertPin { get; }
 }
