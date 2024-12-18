@@ -11,4 +11,10 @@ public interface IEsiaSigner
     /// <param name="data">Данные для подписи.</param>
     /// <returns>Подпись.</returns>
     string Sign(byte[] data);
+
+    /// <summary>
+    /// Получение хеш-суммы сертификата.
+    /// </summary>
+    /// <returns></returns>
+    string GetCertificateFingerprint();
 }

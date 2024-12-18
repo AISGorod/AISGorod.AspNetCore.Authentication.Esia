@@ -40,7 +40,7 @@ public class HomeController(IEsiaRestService esiaRestService, IEsiaEnvironment e
     public IActionResult LogIn(string scopes, bool orgSelect)
     {
         var redirectUri = Url.Action(orgSelect ? nameof(OrganizationSelect) : nameof(Index));
-        var scopeList = string.IsNullOrEmpty(scopes) ? ["fullname", "snils", "email", "mobile", "usr_org"] : scopes.Split(' ');
+        var scopeList = string.IsNullOrEmpty(scopes) ? ["openid"] : scopes.Split(' ');
 
         return Challenge(new OpenIdConnectChallengeProperties
         {
@@ -147,9 +147,8 @@ public class HomeController(IEsiaRestService esiaRestService, IEsiaEnvironment e
         }
 
         var userInfo = await HttpContext.AuthenticateAsync("Esia");
-        var identity = userInfo.Principal?.Identity as ClaimsIdentity;
 
-        if (identity == null)
+        if (userInfo.Principal?.Identity is not ClaimsIdentity identity)
         {
             return;
         }

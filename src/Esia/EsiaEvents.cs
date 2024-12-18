@@ -36,6 +36,7 @@ public class EsiaEvents(IEsiaOptions esiaOptions, IEsiaEnvironment esiaEnvironme
         pm.ResponseType = OpenIdConnectResponseType.Code;
         pm.Parameters.Add("access_type", "offline");
         pm.Parameters.Add("timestamp", now.ToString("yyyy.MM.dd HH:mm:ss") + " " + now.ToString("zzz").Replace(":", ""));
+        pm.Parameters.Add("client_certificate_hash", esiaSigner.GetCertificateFingerprint());
         pm.State = Guid.NewGuid().ToString();
 
         // get data for sign
@@ -43,9 +44,9 @@ public class EsiaEvents(IEsiaOptions esiaOptions, IEsiaEnvironment esiaEnvironme
         var timestamp = pm.Parameters["timestamp"];
         var clientId = pm.ClientId;
         var state = pm.State;
+        var redirectUri = pm.RedirectUri;
 
-        // set clientSecret
-        pm.ClientSecret = EsiaExtensions.SignData(esiaSigner, scope, timestamp, clientId, state);
+        pm.ClientSecret = esiaSigner.SignData($"{clientId}{scope}{timestamp}{state}{redirectUri}");
 
         return AddAdditionalParametersForReceivingAccessCode(pm.Parameters);
     }
@@ -68,6 +69,7 @@ public class EsiaEvents(IEsiaOptions esiaOptions, IEsiaEnvironment esiaEnvironme
         pm.ClientId = context.Options.ClientId;
         pm.Parameters.Add("scope", string.Join(" ", (context.Properties as OpenIdConnectChallengeProperties)?.Scope ?? context.Options.Scope));
         pm.Parameters.Add("timestamp", now.ToString("yyyy.MM.dd HH:mm:ss") + " " + now.ToString("zzz").Replace(":", ""));
+        pm.Parameters.Add("client_certificate_hash", esiaSigner.GetCertificateFingerprint());
         pm.State = Guid.NewGuid().ToString();
 
         // get data for sign
@@ -75,11 +77,13 @@ public class EsiaEvents(IEsiaOptions esiaOptions, IEsiaEnvironment esiaEnvironme
         var timestamp = pm.Parameters["timestamp"];
         var clientId = pm.ClientId;
         var state = pm.State;
+        var redirectUri = pm.RedirectUri;
+        var code = pm.Code;
 
         // set clientSecret
         if (clientId != null)
         {
-            pm.ClientSecret = EsiaExtensions.SignData(esiaSigner, scope, timestamp, clientId, state);
+            pm.ClientSecret = esiaSigner.SignData($"{clientId}{scope}{timestamp}{state}{redirectUri}{code}");
         }
 
         // ok

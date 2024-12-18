@@ -1,5 +1,5 @@
 using AISGorod.AspNetCore.Authentication.Esia;
-using AISGorod.AspNetCore.Authentication.Esia.BouncyCastle;
+using AISGorod.AspNetCore.Authentication.Esia.CryptoPro;
 using AISGorod.AspNetCore.Authentication.Esia.EsiaEnvironment;
 using EsiaNet8Sample;
 using Microsoft.IdentityModel.JsonWebTokens;
@@ -22,17 +22,14 @@ builder.Services
     {
         options.Environment = EsiaEnvironmentType.Test;
         options.EnvironmentInstance = new CustomEsiaEnvironment();
-        options.Mnemonic = "TESTSYS";
-        options.Scope = ["fullname", "snils", "email", "mobile", "usr_org"];
+        options.Mnemonic = "RIAS-HCS-ULYANOVSK";
+        options.Scope = [];
         options.SaveTokens = true;
 
-        // ЭТО ТЕСТОВЫЙ ОБРАБОТЧИК В Production использовать свой.
-        options.TokenHandler = new JsonWebTokenHandler();
-
-        options.UseBouncyCastle(bouncyCastleOptions =>
+        options.UseCryptoPro(bouncyCastleOptions =>
         {
-            bouncyCastleOptions.KeyFilePath = "/home/username/esia.key";
-            bouncyCastleOptions.CertFilePath = "/home/username/esia.pem";
+            bouncyCastleOptions.CertThumbprint = "3673cc78dc9b50d304a6cb4d9265a11c0f429796";
+            bouncyCastleOptions.CertPin = "1";
         });
     });
 

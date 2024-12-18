@@ -2,9 +2,8 @@
 using System.IO;
 using AISGorod.AspNetCore.Authentication.Esia.BouncyCastle.Options;
 using Org.BouncyCastle.Asn1.Pkcs;
-using Org.BouncyCastle.Asn1.Rosstandart;
-using Org.BouncyCastle.Cms;
 using Org.BouncyCastle.Crypto;
+using Org.BouncyCastle.Crypto.Digests;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.X509;
 
@@ -30,20 +29,46 @@ public class BouncyCastleEsiaSigner(IBouncyCastleOptions options) : IEsiaSigner
     {
         ValidateOptions();
 
+        var privateKey = LoadPrivateKey(options.KeyFilePath!);
+
+        var signer = SignerUtilities.GetSigner(GOST_2012_256);
+        signer.Init(true, privateKey);
+        signer.BlockUpdate(data, 0, data.Length);
+
+        // Создание подписи
+        var signature = signer.GenerateSignature();
+
+        return Convert.ToBase64String(signature);
+    }
+    
+    /// <inheritdoc />
+    public string GetCertificateFingerprint()
+    {
+        ValidateOptions();
+
         var cert = LoadCertificate(options.CertFilePath!);
-        var key = LoadPrivateKey(options.KeyFilePath!);
+        var digest = GetDigest(cert.SigAlgName);
+        
+        var certBytes = cert.GetEncoded();
 
-        var signedData = CreateSignedDataGenerator(cert, key);
-
-        using var memoryStream = new MemoryStream();
-        using (var signedStream = signedData.Open(memoryStream, true))
-        {
-            signedStream.Write(data, 0, data.Length);
-        }
-
-        return Convert.ToBase64String(memoryStream.ToArray());
+        var hash = ComputeHash(digest, certBytes);
+        return Convert.ToHexString(hash).ToUpperInvariant();
     }
 
+    /// <summary>
+    /// Вычисление хеша.
+    /// </summary>
+    /// <param name="digest">Тип хеша.</param>
+    /// <param name="data">Массив байтов.</param>
+    /// <returns>Хеш.</returns>
+    private static byte[] ComputeHash(IDigest digest, byte[] data)
+    {
+        digest.BlockUpdate(data, 0, data.Length);
+        var result = new byte[digest.GetDigestSize()];
+        digest.DoFinal(result, 0);
+        return result;
+    }
+    
     /// <summary>
     /// Валидация настроек.
     /// </summary>
@@ -57,36 +82,18 @@ public class BouncyCastleEsiaSigner(IBouncyCastleOptions options) : IEsiaSigner
     }
 
     /// <summary>
-    /// Создание генератора подписанных данных на основе сертификата и приватного ключа.
-    /// </summary>
-    /// <param name="cert">Сертификат X509.</param>
-    /// <param name="key">Приватный ключ.</param>
-    /// <returns>Экземпляр <see cref="CmsSignedDataStreamGenerator"/> для подписания данных.</returns>
-    /// <exception cref="NotSupportedException">Используется неподдерживаемый тип хеширования.</exception>
-    private static CmsSignedDataStreamGenerator CreateSignedDataGenerator(X509Certificate cert, AsymmetricKeyParameter key)
-    {
-        var digestOid = GetDigestOid(cert.SigAlgName);
-
-        var generator = new CmsSignedDataStreamGenerator();
-        generator.AddSigner(key, cert, digestOid);
-        generator.AddCertificate(cert);
-
-        return generator;
-    }
-
-    /// <summary>
-    /// Получает идентификатор OID для типа хеширования на основе имени алгоритма подписи.
+    /// Получает тип хеширования на основе имени алгоритма подписи.
     /// </summary>
     /// <param name="algorithm">Имя алгоритма подписи.</param>
     /// <returns>Идентификатор OID для хеширования.</returns>
     /// <exception cref="NotSupportedException">Алгоритм подписи не поддерживается.</exception>
-    private static string GetDigestOid(string algorithm)
+    private static IDigest GetDigest(string algorithm)
     {
         return algorithm switch
         {
-            GOST_2012_256 => RosstandartObjectIdentifiers.id_tc26_gost_3411_12_256.Id,
-            GOST_2012_512 => RosstandartObjectIdentifiers.id_tc26_gost_3411_12_512.Id,
-            _ => throw new NotSupportedException("Не поддерживаемый тип хеширования.")
+            GOST_2012_256 => new Gost3411_2012_256Digest(),
+            GOST_2012_512 => new Gost3411_2012_512Digest(),
+            _ => new Gost3411_2012_256Digest()
         };
     }
 

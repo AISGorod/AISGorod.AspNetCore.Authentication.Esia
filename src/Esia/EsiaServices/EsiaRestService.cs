@@ -89,7 +89,8 @@ internal class EsiaRestService(
         var state = Guid.NewGuid().ToString();
 
         var clientId = options.ClientId ?? throw new InvalidOperationException("ClientId не настроен.");
-        var clientSecret = EsiaExtensions.SignData(esiaSigner, scope, timestamp, clientId, state);
+
+        var clientSecret = esiaSigner.SignData($"{clientId}{scope}{timestamp}{state}{refreshToken}");
 
         var content = new FormUrlEncodedContent(new Dictionary<string, string>
         {

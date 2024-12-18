@@ -1,0 +1,9 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<ItemGroup>
+		<ProjectReference Include="..\Esia\Esia.csproj"/>
+		<PackageReference Include="CryptoPro.Net.Security" />
+		<PackageReference Include="CryptoPro.Security.Cryptography" />
+	</ItemGroup>
+
+</Project>

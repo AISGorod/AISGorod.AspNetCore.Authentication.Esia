@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Security;
 using System.Security.Cryptography;
-using System.Security.Cryptography.Pkcs;
 using System.Security.Cryptography.X509Certificates;
 using AISGorod.AspNetCore.Authentication.Esia.CryptoPro.Options;
 using CryptoPro.Security.Cryptography;
-using CryptoPro.Security.Cryptography.Pkcs;
 using CryptoPro.Security.Cryptography.X509Certificates;
 
 namespace AISGorod.AspNetCore.Authentication.Esia.CryptoPro;
@@ -25,9 +23,49 @@ public class CryptoProEsiaSigner(ICryptoProOptions options) : IEsiaSigner
 
         ConfigureSigningKeyPassword(signingKey, options.CertPin!);
 
-        var signature = CreateSignature(data, gostCert, signingKey);
-
+        var signature = CreateSignature(data, signingKey);
         return Convert.ToBase64String(signature);
+    }
+
+    /// <inheritdoc />
+    public string GetCertificateFingerprint()
+    {
+        ValidateOptions();
+
+        using var gostCert = FindCertificateByThumbprint(options.CertThumbprint!);
+
+        var keyAlgorithm = gostCert.GetKeyAlgorithm();
+        var hashAlgorithmName = GetHashAlgorithmByKeyAlgorithm(keyAlgorithm);
+
+        // Возвращаем отпечаток сертификата
+        return gostCert.GetCertHashString(hashAlgorithmName);
+    }
+    
+    /// <summary>
+    /// Получение типа хеширования по ключу.
+    /// </summary>
+    /// <param name="keyAlgorithm"></param>
+    /// <returns>Название алгоритма хеширования.</returns>
+    private static CpHashAlgorithmName GetHashAlgorithmByKeyAlgorithm(string keyAlgorithm)
+    {
+        return keyAlgorithm switch
+        {
+            // ГОСТ Р 34.11-2012 (256 бит)
+            "1.2.643.7.1.1.1.1" => CpHashAlgorithmName.GOST3411_2012_256, 
+
+            // ГОСТ Р 34.11-2012 (512 бит)
+            "1.2.643.7.1.1.1.2" => CpHashAlgorithmName.GOST3411_2012_512, 
+
+            // ГОСТ Р 34.11-94
+            "1.2.643.2.2.19" => CpHashAlgorithmName.GOST3411, 
+
+            // Алгоритмы SHA
+            "1.2.840.113549.1.1.1" => CpHashAlgorithmName.SHA1,
+            "1.2.840.113549.1.1.5" => CpHashAlgorithmName.SHA256,
+
+            // По умолчанию — ГОСТ 2012 (256 бит)
+            _ => CpHashAlgorithmName.GOST3411_2012_256
+        };
     }
 
     /// <summary>
@@ -103,20 +141,8 @@ public class CryptoProEsiaSigner(ICryptoProOptions options) : IEsiaSigner
     /// Создаёт подпись данных.
     /// </summary>
     /// <param name="data">Данные для подписи.</param>
-    /// <param name="cert">Сертификат.</param>
     /// <param name="signingKey">Ключ для подписи.</param>
     /// <returns>Подпись в виде массива байтов.</returns>
-    private static byte[] CreateSignature(byte[] data, CpX509Certificate2 cert, Gost3410_2012_256CryptoServiceProvider signingKey)
-    {
-        var contentInfo = new ContentInfo(data);
-        var signedCms = new CpSignedCms(contentInfo, true);
-        var cmsSigner = new CpCmsSigner(SubjectIdentifierType.IssuerAndSerialNumber, cert, signingKey);
-
-        cmsSigner.SignedAttributes.Add(new Pkcs9SigningTime(DateTime.Now));
-        cmsSigner.SignedAttributes.Add(new PkcsSigningCertificateV2(cert));
-
-        signedCms.ComputeSignature(cmsSigner);
-
-        return signedCms.Encode();
-    }
+    private static byte[] CreateSignature(byte[] data, Gost3410_2012_256CryptoServiceProvider signingKey)
+        => signingKey.SignData(data);
 }

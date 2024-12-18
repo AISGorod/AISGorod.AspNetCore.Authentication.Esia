@@ -1,3 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" />
+		<PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" />
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" />
+		<PackageReference Include="System.Security.Cryptography.Pkcs" />
+	</ItemGroup>
 </Project>

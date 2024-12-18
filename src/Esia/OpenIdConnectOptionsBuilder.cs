@@ -81,7 +81,7 @@ internal class OpenIdConnectOptionsBuilder(EsiaOptions esiaOptions, IEsiaEnviron
         options.GetClaimsFromUserInfoEndpoint = false;
         options.StateDataFormat = new EsiaSecureDataFormat();
         options.SaveTokens = esiaOptions.SaveTokens;
-        options.CallbackPath = esiaOptions.CallBackPath;
+        options.CallbackPath = esiaOptions.CallbackPath;
         options.SignedOutCallbackPath = esiaOptions.SignedOutCallbackPath;
     }
 
