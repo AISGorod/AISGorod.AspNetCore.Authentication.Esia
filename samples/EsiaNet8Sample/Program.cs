@@ -1,4 +1,5 @@
 using AISGorod.AspNetCore.Authentication.Esia;
+using AISGorod.AspNetCore.Authentication.Esia.BouncyCastle;
 using AISGorod.AspNetCore.Authentication.Esia.CryptoPro;
 using AISGorod.AspNetCore.Authentication.Esia.EsiaEnvironment;
 using EsiaNet8Sample;
@@ -22,14 +23,14 @@ builder.Services
     {
         options.Environment = EsiaEnvironmentType.Test;
         options.EnvironmentInstance = new CustomEsiaEnvironment();
-        options.Mnemonic = "RIAS-HCS-ULYANOVSK";
+        options.Mnemonic = "TESTSYS";
         options.Scope = [];
         options.SaveTokens = true;
 
-        options.UseCryptoPro(bouncyCastleOptions =>
+        options.UseBouncyCastle(bouncyCastleOptions =>
         {
-            bouncyCastleOptions.CertThumbprint = "3673cc78dc9b50d304a6cb4d9265a11c0f429796";
-            bouncyCastleOptions.CertPin = "1";
+            bouncyCastleOptions.CertFilePath = "/home/username/esia.pem";
+            bouncyCastleOptions.KeyFilePath = "/home/username/esia.key";
         });
     });
 
