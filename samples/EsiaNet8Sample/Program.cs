@@ -24,13 +24,13 @@ builder.Services
         options.Environment = EsiaEnvironmentType.Test;
         options.EnvironmentInstance = new CustomEsiaEnvironment();
         options.Mnemonic = "TESTSYS";
-        options.Scope = [];
+        options.Scope = ["fullname", "snils", "email", "mobile", "usr_org"];
         options.SaveTokens = true;
 
         options.UseBouncyCastle(bouncyCastleOptions =>
         {
-            bouncyCastleOptions.CertFilePath = "/home/username/esia.pem";
             bouncyCastleOptions.KeyFilePath = "/home/username/esia.key";
+            bouncyCastleOptions.CertFilePath = "/home/username/esia.pem";
         });
     });
 

@@ -166,22 +166,4 @@ public static class EsiaExtensions
         builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IPostConfigureOptions<OpenIdConnectOptions>, OpenIdConnectPostConfigureOptions>());
         builder.Services.AddHttpClient(EsiaDefaults.RestClientHttpName, options.RestApiHttpClientHandler ?? (_ => { }));
     }
-
-    /// <summary>
-    /// Подписывает запрос для получения авторизационного кода.
-    /// </summary>
-    /// <param name="esiaSigner">Класс подписи данных.</param>
-    /// <param name="concatenatedString">Строка, которую необходимо подписать.</param>
-    /// <returns>Подпись.</returns>
-    /// <exception cref="ArgumentNullException">Не указан тип подписи.</exception>
-    internal static string SignData(this IEsiaSigner? esiaSigner, string concatenatedString)
-    {
-        if (esiaSigner == null)
-        {
-            throw new ArgumentNullException(nameof(esiaSigner), $"Необходимо явно задать класс для {nameof(IEsiaSigner)}.");
-        }
-
-        var signData = Encoding.UTF8.GetBytes(concatenatedString);
-        return esiaSigner.Sign(signData);
-    }
 }

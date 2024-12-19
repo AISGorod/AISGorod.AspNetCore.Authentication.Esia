@@ -34,8 +34,8 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\src\Esia\Esia.csproj"/>
-        <ProjectReference Include="..\..\src\Esia.BouncyCastle\Esia.BouncyCastle.csproj" />
-        <ProjectReference Include="..\..\src\Esia.CryptoPro\Esia.CryptoPro.csproj" />
+        <ProjectReference Include="..\..\src\Esia.BouncyCastle\Esia.BouncyCastle.csproj"/>
+        <ProjectReference Include="..\..\src\Esia.CryptoPro\Esia.CryptoPro.csproj"/>
     </ItemGroup>
 
 </Project>

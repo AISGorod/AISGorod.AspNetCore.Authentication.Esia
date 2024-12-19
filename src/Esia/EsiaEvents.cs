@@ -46,7 +46,7 @@ public class EsiaEvents(IEsiaOptions esiaOptions, IEsiaEnvironment esiaEnvironme
         var state = pm.State;
         var redirectUri = pm.RedirectUri;
 
-        pm.ClientSecret = esiaSigner.SignData($"{clientId}{scope}{timestamp}{state}{redirectUri}");
+        pm.ClientSecret = esiaSigner.Sign($"{clientId}{scope}{timestamp}{state}{redirectUri}");
 
         return AddAdditionalParametersForReceivingAccessCode(pm.Parameters);
     }
@@ -83,7 +83,7 @@ public class EsiaEvents(IEsiaOptions esiaOptions, IEsiaEnvironment esiaEnvironme
         // set clientSecret
         if (clientId != null)
         {
-            pm.ClientSecret = esiaSigner.SignData($"{clientId}{scope}{timestamp}{state}{redirectUri}{code}");
+            pm.ClientSecret = esiaSigner.Sign($"{clientId}{scope}{timestamp}{state}{redirectUri}{code}");
         }
 
         // ok

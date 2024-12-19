@@ -2,6 +2,7 @@
 using System.Security;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using System.Text;
 using AISGorod.AspNetCore.Authentication.Esia.CryptoPro.Options;
 using CryptoPro.Security.Cryptography;
 using CryptoPro.Security.Cryptography.X509Certificates;
@@ -14,16 +15,18 @@ namespace AISGorod.AspNetCore.Authentication.Esia.CryptoPro;
 public class CryptoProEsiaSigner(ICryptoProOptions options) : IEsiaSigner
 {
     /// <inheritdoc />
-    public string Sign(byte[] data)
+    public string Sign(string concatenatedString)
     {
         ValidateOptions();
+
+        var signData = Encoding.UTF8.GetBytes(concatenatedString);
 
         using var gostCert = FindCertificateByThumbprint(options.CertThumbprint!);
         using var signingKey = GetSigningKey(gostCert);
 
         ConfigureSigningKeyPassword(signingKey, options.CertPin!);
 
-        var signature = CreateSignature(data, signingKey);
+        var signature = CreateSignature(signData, signingKey);
         return Convert.ToBase64String(signature);
     }
 
@@ -40,30 +43,21 @@ public class CryptoProEsiaSigner(ICryptoProOptions options) : IEsiaSigner
         // Возвращаем отпечаток сертификата
         return gostCert.GetCertHashString(hashAlgorithmName);
     }
-    
+
     /// <summary>
-    /// Получение типа хеширования по ключу.
+    /// Получение типа хеширования по ключу (по умолчанию GOST3411_2012_256).
     /// </summary>
-    /// <param name="keyAlgorithm"></param>
+    /// <param name="keyAlgorithm">Алгоритм получения ключа в виде строки.</param>
     /// <returns>Название алгоритма хеширования.</returns>
     private static CpHashAlgorithmName GetHashAlgorithmByKeyAlgorithm(string keyAlgorithm)
     {
         return keyAlgorithm switch
         {
-            // ГОСТ Р 34.11-2012 (256 бит)
-            "1.2.643.7.1.1.1.1" => CpHashAlgorithmName.GOST3411_2012_256, 
-
-            // ГОСТ Р 34.11-2012 (512 бит)
-            "1.2.643.7.1.1.1.2" => CpHashAlgorithmName.GOST3411_2012_512, 
-
-            // ГОСТ Р 34.11-94
-            "1.2.643.2.2.19" => CpHashAlgorithmName.GOST3411, 
-
-            // Алгоритмы SHA
-            "1.2.840.113549.1.1.1" => CpHashAlgorithmName.SHA1,
-            "1.2.840.113549.1.1.5" => CpHashAlgorithmName.SHA256,
-
-            // По умолчанию — ГОСТ 2012 (256 бит)
+            CryptoProOids.GOST3410_2012_256 => CpHashAlgorithmName.GOST3411_2012_256,
+            CryptoProOids.GOST3410_2012_512 => CpHashAlgorithmName.GOST3411_2012_512,
+            CryptoProOids.GOST3410_94 => CpHashAlgorithmName.GOST3411,
+            CryptoProOids.RSA_SHA1 => CpHashAlgorithmName.SHA1,
+            CryptoProOids.RSA_SHA256 => CpHashAlgorithmName.SHA256,
             _ => CpHashAlgorithmName.GOST3411_2012_256
         };
     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using AISGorod.AspNetCore.Authentication.Esia.BouncyCastle.Options;
 using Org.BouncyCastle.Asn1.Pkcs;
 using Org.BouncyCastle.Crypto;
@@ -25,22 +26,23 @@ public class BouncyCastleEsiaSigner(IBouncyCastleOptions options) : IEsiaSigner
     private const string GOST_2012_512 = "ECGOST3410-2012-512";
 
     /// <inheritdoc />
-    public string Sign(byte[] data)
+    public string Sign(string concatenatedString)
     {
         ValidateOptions();
 
+        var signData = Encoding.UTF8.GetBytes(concatenatedString);
         var privateKey = LoadPrivateKey(options.KeyFilePath!);
 
         var signer = SignerUtilities.GetSigner(GOST_2012_256);
         signer.Init(true, privateKey);
-        signer.BlockUpdate(data, 0, data.Length);
+        signer.BlockUpdate(signData, 0, signData.Length);
 
         // Создание подписи
         var signature = signer.GenerateSignature();
 
         return Convert.ToBase64String(signature);
     }
-    
+
     /// <inheritdoc />
     public string GetCertificateFingerprint()
     {
@@ -48,7 +50,7 @@ public class BouncyCastleEsiaSigner(IBouncyCastleOptions options) : IEsiaSigner
 
         var cert = LoadCertificate(options.CertFilePath!);
         var digest = GetDigest(cert.SigAlgName);
-        
+
         var certBytes = cert.GetEncoded();
 
         var hash = ComputeHash(digest, certBytes);
@@ -68,7 +70,7 @@ public class BouncyCastleEsiaSigner(IBouncyCastleOptions options) : IEsiaSigner
         digest.DoFinal(result, 0);
         return result;
     }
-    
+
     /// <summary>
     /// Валидация настроек.
     /// </summary>

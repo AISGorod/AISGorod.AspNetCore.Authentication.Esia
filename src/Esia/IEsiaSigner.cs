@@ -6,15 +6,15 @@
 public interface IEsiaSigner
 {
     /// <summary>
-    /// Подписать последовательность байт при помощи ключа из сертификата ИС.
+    /// Подписать строку при помощи ключа из сертификата ИС.
     /// </summary>
-    /// <param name="data">Данные для подписи.</param>
+    /// <param name="concatenatedString">Строка, которую необходимо подписать.</param>
     /// <returns>Подпись.</returns>
-    string Sign(byte[] data);
+    string Sign(string concatenatedString);
 
     /// <summary>
     /// Получение хеш-суммы сертификата.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>Хеш-сумма сертификата.</returns>
     string GetCertificateFingerprint();
 }
