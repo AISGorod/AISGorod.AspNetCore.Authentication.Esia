@@ -26,6 +26,7 @@ builder.Services
         options.Mnemonic = "TESTSYS";
         options.Scope = ["fullname", "snils", "email", "mobile", "usr_org"];
         options.SaveTokens = true;
+        options.TokenHandler = new JsonWebTokenHandler();
 
         options.UseBouncyCastle(bouncyCastleOptions =>
         {
