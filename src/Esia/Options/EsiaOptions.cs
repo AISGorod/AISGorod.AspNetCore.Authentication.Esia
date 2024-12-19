@@ -58,7 +58,7 @@ public class EsiaOptions : RemoteAuthenticationOptions, IEsiaOptions
     public Action<HttpClient>? RestApiHttpClientHandler { get; set; }
 
     /// <inheritdoc />
-    public PathString CallBackPath { get; set; } = "/signin-esia";
+    public new PathString CallbackPath { get; set; } = "/signin-esia";
 
     /// <inheritdoc />
     public PathString SignedOutCallbackPath { get; set; } = "/signout-esia";

@@ -1,5 +1,6 @@
 using AISGorod.AspNetCore.Authentication.Esia;
 using AISGorod.AspNetCore.Authentication.Esia.BouncyCastle;
+using AISGorod.AspNetCore.Authentication.Esia.CryptoPro;
 using AISGorod.AspNetCore.Authentication.Esia.EsiaEnvironment;
 using EsiaNet8Sample;
 using Microsoft.IdentityModel.JsonWebTokens;
@@ -25,8 +26,6 @@ builder.Services
         options.Mnemonic = "TESTSYS";
         options.Scope = ["fullname", "snils", "email", "mobile", "usr_org"];
         options.SaveTokens = true;
-
-        // ЭТО ТЕСТОВЫЙ ОБРАБОТЧИК В Production использовать свой.
         options.TokenHandler = new JsonWebTokenHandler();
 
         options.UseBouncyCastle(bouncyCastleOptions =>

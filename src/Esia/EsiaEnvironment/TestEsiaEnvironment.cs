@@ -28,12 +28,12 @@ public class TestEsiaEnvironment : IEsiaEnvironment
     /// <summary>
     /// Endpoint для получения авторизационного кода.
     /// </summary>
-    public string AuthorizationEndpoint => Host + "/aas/oauth2/ac";
+    public string AuthorizationEndpoint => Host + "/aas/oauth2/v2/ac";
 
     /// <summary>
     /// Endpoint для получения маркера доступа и(или) маркера идентификации.
     /// </summary>
-    public string TokenEndpoint => Host + "/aas/oauth2/te";
+    public string TokenEndpoint => Host + "/aas/oauth2/v3/te";
 
     /// <summary>
     /// Endpoint для логаута.

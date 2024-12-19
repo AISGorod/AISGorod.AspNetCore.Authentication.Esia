@@ -147,9 +147,8 @@ public class HomeController(IEsiaRestService esiaRestService, IEsiaEnvironment e
         }
 
         var userInfo = await HttpContext.AuthenticateAsync("Esia");
-        var identity = userInfo.Principal?.Identity as ClaimsIdentity;
 
-        if (identity == null)
+        if (userInfo.Principal?.Identity is not ClaimsIdentity identity)
         {
             return;
         }

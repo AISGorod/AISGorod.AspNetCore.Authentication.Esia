@@ -1,11 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <RootNamespace>AISGorod.AspNetCore.Authentication.Esia.CryptoPro</RootNamespace>
-    </PropertyGroup>
-
     <ItemGroup>
         <ProjectReference Include="..\Esia\Esia.csproj"/>
+        <PackageReference Include="CryptoPro.Net.Security"/>
+        <PackageReference Include="CryptoPro.Security.Cryptography"/>
     </ItemGroup>
-    
+
 </Project>

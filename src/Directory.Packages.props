@@ -1,18 +1,19 @@
 <Project>
-  <ItemGroup Label="any">
-	<PackageReference Include="BouncyCastle.Cryptography" Version="[2.5.0,9)" />
-    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="[9.0.0,10)" />
-    <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="[8.0.1,9)" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="[8.0.1,9)" />
-	<PackageReference Include="CryptoPro.Net.Security" Version="*"/>
-    <PackageReference Include="CryptoPro.Security.Cryptography" Version="*"/>
-    <PackageReference Include="CryptoPro.Security.Cryptography.Pkcs" Version="*"/>
-    <PackageReference Include="CryptoPro.Security.Cryptography.Xml" Version="*"/>
-  </ItemGroup>
-  <ItemGroup Label="net8.0" Condition="'$(TargetFramework)' == 'net8.0'">
-	  <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="[8.0.0,9)" />
-  </ItemGroup>
-  <ItemGroup Label="net9.0" Condition="'$(TargetFramework)' == 'net9.0'">
-	  <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="[9.0.0,10)" />
-  </ItemGroup>
+    <PropertyGroup>
+        <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    </PropertyGroup>
+    <ItemGroup Label="any">
+        <PackageVersion Include="BouncyCastle.Cryptography" Version="[2.5.0,3)"/>
+        <PackageVersion Include="System.Security.Cryptography.Pkcs" Version="[9.0.0,10)"/>
+        <PackageVersion Include="Microsoft.IdentityModel.JsonWebTokens" Version="[8.0.1,9)"/>
+        <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="[8.0.1,9)"/>
+        <PackageVersion Include="CryptoPro.Net.Security" Version="[2024.11.19,)"/>
+        <PackageVersion Include="CryptoPro.Security.Cryptography" Version="[2024.11.19,)"/>
+    </ItemGroup>
+    <ItemGroup Label="net8.0" Condition="'$(TargetFramework)' == 'net8.0'">
+        <PackageVersion Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="[8.0.0,9)"/>
+    </ItemGroup>
+    <ItemGroup Label="net9.0" Condition="'$(TargetFramework)' == 'net9.0'">
+        <PackageVersion Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="[9.0.0,10)"/>
+    </ItemGroup>
 </Project>

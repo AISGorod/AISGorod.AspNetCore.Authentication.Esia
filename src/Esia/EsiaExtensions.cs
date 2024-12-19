@@ -166,25 +166,4 @@ public static class EsiaExtensions
         builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IPostConfigureOptions<OpenIdConnectOptions>, OpenIdConnectPostConfigureOptions>());
         builder.Services.AddHttpClient(EsiaDefaults.RestClientHttpName, options.RestApiHttpClientHandler ?? (_ => { }));
     }
-    
-    /// <summary>
-    /// Подписывает запрос (или вычисляет client_secret запроса). 
-    /// </summary>
-    /// <param name="esiaSigner">Класс подписи данных.</param>
-    /// <param name="scope">Scope.</param>
-    /// <param name="timestamp">Время.</param>
-    /// <param name="clientId">Идентификатор клиента.</param>
-    /// <param name="state">Состояние.</param>
-    /// <returns>Подпись.</returns>
-    /// <exception cref="ArgumentNullException">Не указан тип подписи.</exception>
-    internal static string SignData(IEsiaSigner? esiaSigner, string scope, string timestamp, string clientId, string state)
-    {
-        if (esiaSigner == null)
-        {
-            throw new ArgumentNullException(nameof(esiaSigner), $"Необходимо явно задать класс для {nameof(IEsiaSigner)}.");
-        }
-
-        var signData = Encoding.UTF8.GetBytes(scope + timestamp + clientId + state);
-        return esiaSigner.Sign(signData);
-    }
 }
