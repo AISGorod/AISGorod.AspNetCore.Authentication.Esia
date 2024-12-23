@@ -5,12 +5,16 @@ runs:
   steps:
     - name: Create local nupkg directory
       run: mkdir -p nupkg
+      shell: bash
 
     - name: Run download cryptoPro packages script
       run: ./utils/download_crypto_pro.sh
+      shell: bash
 
     - name: Restore dependencies
       run: dotnet restore Esia.sln
+      shell: bash
 
     - name: Build solution
       run: dotnet build Esia.sln --configuration Release
+      shell: bash
