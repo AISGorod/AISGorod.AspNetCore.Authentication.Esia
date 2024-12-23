@@ -10,20 +10,8 @@ jobs:
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '9.x'
+        #with:
+        #  dotnet-version: "9.x"
 
-      - name: Create local nupkg directory
-        run: mkdir -p nupkg
-
-      - name: Make download script executable
-        run: chmod +x utils/download_crypto_pro.sh
-
-      - name: Run download cryptoPro packages script
-        run: ./utils/download_crypto_pro.sh
-
-      - name: Restore dependencies
-        run: dotnet restore Esia.sln
-
-      - name: Build solution
-        run: dotnet build Esia.sln --configuration Release
+      - name: Build projects
+        uses: ./.github/actions/build-action

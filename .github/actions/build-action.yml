@@ -1,0 +1,16 @@
+name: "Build action"
+description: "Build all projects into release mode"
+runs:
+  using: "composite"
+  steps:
+    - name: Create local nupkg directory
+      run: mkdir -p nupkg
+
+    - name: Run download cryptoPro packages script
+      run: ./utils/download_crypto_pro.sh
+
+    - name: Restore dependencies
+      run: dotnet restore Esia.sln
+
+    - name: Build solution
+      run: dotnet build Esia.sln --configuration Release
