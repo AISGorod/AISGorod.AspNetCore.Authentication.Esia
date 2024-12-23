@@ -16,7 +16,7 @@
         </Description>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
         <PackageReadmeFile>README.md</PackageReadmeFile>
-        <Version>2.0.0-alpha3</Version>
+        <Version>0.0.1-alpha1</Version>
         <PackageIcon>icon.png</PackageIcon>
     </PropertyGroup>
 
