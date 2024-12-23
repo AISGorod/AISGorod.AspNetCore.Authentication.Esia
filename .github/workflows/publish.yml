@@ -13,19 +13,22 @@ jobs:
         with:
           dotnet-version: "9.x"
 
-      - name: Build Esia
+      - name: Build projects
+        uses: ./.github/actions/build-projects
+
+      - name: Publish Esia
         uses: ./.github/actions/publish-project
         with:
           project-name: Esia
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-        
-      - name: Build Esia.BouncyCastle
+
+      - name: Publish Esia.BouncyCastle
         uses: ./.github/actions/publish-project
         with:
           project-name: Esia.BouncyCastle
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
 
-      - name: Build Esia.CryptoPro
+      - name: Publish Esia.CryptoPro
         uses: ./.github/actions/publish-project
         with:
           project-name: Esia.CryptoPro
