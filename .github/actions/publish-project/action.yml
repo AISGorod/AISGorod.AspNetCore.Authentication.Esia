@@ -5,7 +5,7 @@ inputs:
     description: "Project name"
     required: true
   NUGET_API_KEY:
-    description: "Project name"
+    description: "NuGet API Key"
     required: true
   version:
     description: "Version of package"

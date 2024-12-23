@@ -16,5 +16,5 @@ runs:
       shell: bash
 
     - name: Build solution
-      run: dotnet build --configuration Release Esia.sln
+      run: dotnet build --no-restore --configuration Release Esia.sln
       shell: bash
