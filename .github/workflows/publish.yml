@@ -5,16 +5,25 @@ jobs:
     runs-on: ubuntu-latest
     name: Publish package into NuGet
     steps:
-      - uses: actions/checkout@v4
-      - name: Setup dotnet
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: | 
-            8.x
-            9.x
-      - name: Pack
-        run: dotnet pack src -c release -o bld
-      - name: Rename
-        run: find bld/ -type f -name "*.nupkg" -exec mv {} bld/out.nupkg \;
-      - name: Push
-        run: dotnet nuget push bld/out.nupkg -s "https://api.nuget.org/v3/index.json" -k ${{secrets.NUGET_API_KEY}}
+          dotnet-version: "9.x"
+
+      - name: Build Esia
+        uses: ./.github/actions/publish-project
+        with:
+          project-name: Esia
+        
+      - name: Build Esia.BouncyCastle
+        uses: ./.github/actions/publish-project
+        with:
+          project-name: Esia.BouncyCastle
+
+      - name: Build Esia.CryptoPro
+        uses: ./.github/actions/publish-project
+        with:
+          project-name: Esia.CryptoPro

@@ -1,0 +1,16 @@
+name: "Publish project"
+description: "Publish project into nuget"
+inputs:
+  project-name:
+    description: 'Project name'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Pack
+      run: dotnet pack --no-build --configuration Release src/${{ inputs.project-name }}
+      shell: bash
+
+    - name: Push
+      run: dotnet nuget push src/${{ inputs.project-name }}/bin/Release/*.nupkg -k ${{secrets.NUGET_API_KEY}} -s https://api.nuget.org/v3/index.json
+      shell: bash

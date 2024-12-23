@@ -14,4 +14,4 @@ jobs:
           dotnet-version: "9.x"
 
       - name: Build projects
-        uses: ./.github/actions/build-action
+        uses: ./.github/actions/build-projects
