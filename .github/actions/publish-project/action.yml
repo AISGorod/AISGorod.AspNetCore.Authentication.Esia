@@ -2,16 +2,19 @@ name: "Publish project"
 description: "Publish project into nuget"
 inputs:
   project-name:
-    description: 'Project name'
+    description: "Project name"
     required: true
   NUGET_API_KEY:
-    description: 'Project name'
+    description: "Project name"
+    required: true
+  version:
+    description: "Version of package"
     required: true
 runs:
   using: "composite"
   steps:
     - name: Pack
-      run: dotnet pack --no-build --configuration Release src/${{ inputs.project-name }}
+      run: dotnet pack -p:Version=${{ inputs.version }} --no-build --configuration Release src/${{ inputs.project-name }}
       shell: bash
 
     - name: Push
