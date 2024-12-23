@@ -10,8 +10,8 @@ jobs:
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
-        #with:
-        #  dotnet-version: "9.x"
+        with:
+          dotnet-version: "9.x"
 
       - name: Build projects
         uses: ./.github/actions/build-action
