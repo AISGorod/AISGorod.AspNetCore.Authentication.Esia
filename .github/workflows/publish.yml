@@ -17,13 +17,16 @@ jobs:
         uses: ./.github/actions/publish-project
         with:
           project-name: Esia
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
         
       - name: Build Esia.BouncyCastle
         uses: ./.github/actions/publish-project
         with:
           project-name: Esia.BouncyCastle
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
 
       - name: Build Esia.CryptoPro
         uses: ./.github/actions/publish-project
         with:
           project-name: Esia.CryptoPro
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}

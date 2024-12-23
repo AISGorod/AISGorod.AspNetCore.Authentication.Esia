@@ -4,6 +4,9 @@ inputs:
   project-name:
     description: 'Project name'
     required: true
+  NUGET_API_KEY:
+    description: 'Project name'
+    required: true
 runs:
   using: "composite"
   steps:
@@ -12,5 +15,5 @@ runs:
       shell: bash
 
     - name: Push
-      run: dotnet nuget push src/${{ inputs.project-name }}/bin/Release/*.nupkg -k ${{secrets.NUGET_API_KEY}} -s https://api.nuget.org/v3/index.json
+      run: dotnet nuget push src/${{ inputs.project-name }}/bin/Release/*.nupkg -k ${{ inputs.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
       shell: bash
