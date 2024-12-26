@@ -3,6 +3,7 @@ using System.Security;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Threading.Tasks;
 using AISGorod.AspNetCore.Authentication.Esia.CryptoPro.Options;
 using CryptoPro.Security.Cryptography;
 using CryptoPro.Security.Cryptography.X509Certificates;
@@ -15,7 +16,7 @@ namespace AISGorod.AspNetCore.Authentication.Esia.CryptoPro;
 public class CryptoProEsiaSigner(ICryptoProOptions options) : IEsiaSigner
 {
     /// <inheritdoc />
-    public string Sign(string concatenatedString)
+    public Task<string> SignAsync(string concatenatedString)
     {
         ValidateOptions();
 
@@ -27,11 +28,11 @@ public class CryptoProEsiaSigner(ICryptoProOptions options) : IEsiaSigner
         ConfigureSigningKeyPassword(signingKey, options.CertPin!);
 
         var signature = CreateSignature(signData, signingKey);
-        return Convert.ToBase64String(signature);
+        return Task.FromResult(Convert.ToBase64String(signature));
     }
 
     /// <inheritdoc />
-    public string GetCertificateFingerprint()
+    public Task<string> GetCertificateFingerprintAsync()
     {
         ValidateOptions();
 
@@ -41,7 +42,7 @@ public class CryptoProEsiaSigner(ICryptoProOptions options) : IEsiaSigner
         var hashAlgorithmName = GetHashAlgorithmByKeyAlgorithm(keyAlgorithm);
 
         // Возвращаем отпечаток сертификата
-        return gostCert.GetCertHashString(hashAlgorithmName);
+        return Task.FromResult(gostCert.GetCertHashString(hashAlgorithmName));
     }
 
     /// <summary>

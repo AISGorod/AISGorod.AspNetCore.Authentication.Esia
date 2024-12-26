@@ -90,12 +90,12 @@ internal class EsiaRestService(
 
         var clientId = options.ClientId ?? throw new InvalidOperationException("ClientId не настроен.");
 
-        var clientSecret = esiaSigner.Sign($"{clientId}{scope}{timestamp}{state}{refreshToken}");
+        var clientSecret = esiaSigner.SignAsync($"{clientId}{scope}{timestamp}{state}{refreshToken}");
 
         var content = new FormUrlEncodedContent(new Dictionary<string, string>
         {
             { "client_id", clientId },
-            { "client_secret", clientSecret },
+            { "client_secret", await clientSecret },
             { "scope", scope },
             { "timestamp", timestamp },
             { "state", state },

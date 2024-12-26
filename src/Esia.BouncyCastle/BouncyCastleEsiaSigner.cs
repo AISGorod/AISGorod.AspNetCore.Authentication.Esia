@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using AISGorod.AspNetCore.Authentication.Esia.BouncyCastle.Options;
 using Org.BouncyCastle.Asn1.Pkcs;
 using Org.BouncyCastle.Crypto;
@@ -26,7 +27,7 @@ public class BouncyCastleEsiaSigner(IBouncyCastleOptions options) : IEsiaSigner
     private const string GOST_2012_512 = "ECGOST3410-2012-512";
 
     /// <inheritdoc />
-    public string Sign(string concatenatedString)
+    public Task<string> SignAsync(string concatenatedString)
     {
         ValidateOptions();
 
@@ -40,11 +41,11 @@ public class BouncyCastleEsiaSigner(IBouncyCastleOptions options) : IEsiaSigner
         // Создание подписи
         var signature = signer.GenerateSignature();
 
-        return Convert.ToBase64String(signature);
+        return Task.FromResult(Convert.ToBase64String(signature));
     }
 
     /// <inheritdoc />
-    public string GetCertificateFingerprint()
+    public Task<string> GetCertificateFingerprintAsync()
     {
         ValidateOptions();
 
@@ -54,7 +55,7 @@ public class BouncyCastleEsiaSigner(IBouncyCastleOptions options) : IEsiaSigner
         var certBytes = cert.GetEncoded();
 
         var hash = ComputeHash(digest, certBytes);
-        return Convert.ToHexString(hash).ToUpperInvariant();
+        return Task.FromResult(Convert.ToHexString(hash).ToUpperInvariant());
     }
 
     /// <summary>
