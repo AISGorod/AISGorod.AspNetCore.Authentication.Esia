@@ -1,4 +1,6 @@
-﻿namespace AISGorod.AspNetCore.Authentication.Esia;
+﻿using System.Threading.Tasks;
+
+namespace AISGorod.AspNetCore.Authentication.Esia;
 
 /// <summary>
 /// Интерфейс для подписи данных с помощью ключа ИС.
@@ -10,11 +12,11 @@ public interface IEsiaSigner
     /// </summary>
     /// <param name="concatenatedString">Строка, которую необходимо подписать.</param>
     /// <returns>Подпись.</returns>
-    string Sign(string concatenatedString);
+    Task<string> SignAsync(string concatenatedString);
 
     /// <summary>
     /// Получение хеш-суммы сертификата.
     /// </summary>
     /// <returns>Хеш-сумма сертификата.</returns>
-    string GetCertificateFingerprint();
+    Task<string> GetCertificateFingerprintAsync();
 }

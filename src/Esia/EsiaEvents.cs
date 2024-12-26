@@ -26,7 +26,7 @@ public class EsiaEvents(IEsiaOptions esiaOptions, IEsiaEnvironment esiaEnvironme
     /// <summary>
     /// Событие перенаправления к поставщику данных.
     /// </summary>
-    public override Task RedirectToIdentityProvider(RedirectContext context)
+    public override async Task<Task> RedirectToIdentityProvider(RedirectContext context)
     {
         // prepare data
         var now = DateTimeOffset.Now;
@@ -36,7 +36,7 @@ public class EsiaEvents(IEsiaOptions esiaOptions, IEsiaEnvironment esiaEnvironme
         pm.ResponseType = OpenIdConnectResponseType.Code;
         pm.Parameters.Add("access_type", "offline");
         pm.Parameters.Add("timestamp", now.ToString("yyyy.MM.dd HH:mm:ss") + " " + now.ToString("zzz").Replace(":", ""));
-        pm.Parameters.Add("client_certificate_hash", esiaSigner.GetCertificateFingerprint());
+        pm.Parameters.Add("client_certificate_hash", await esiaSigner.GetCertificateFingerprintAsync());
         pm.State = Guid.NewGuid().ToString();
 
         // get data for sign
@@ -46,7 +46,7 @@ public class EsiaEvents(IEsiaOptions esiaOptions, IEsiaEnvironment esiaEnvironme
         var state = pm.State;
         var redirectUri = pm.RedirectUri;
 
-        pm.ClientSecret = esiaSigner.Sign($"{clientId}{scope}{timestamp}{state}{redirectUri}");
+        pm.ClientSecret = await esiaSigner.SignAsync($"{clientId}{scope}{timestamp}{state}{redirectUri}");
 
         return AddAdditionalParametersForReceivingAccessCode(pm.Parameters);
     }
@@ -54,7 +54,7 @@ public class EsiaEvents(IEsiaOptions esiaOptions, IEsiaEnvironment esiaEnvironme
     /// <summary>
     /// Событие получения маркера доступа и(или) маркера идентификации.
     /// </summary>
-    public override Task AuthorizationCodeReceived(AuthorizationCodeReceivedContext context)
+    public override async Task AuthorizationCodeReceived(AuthorizationCodeReceivedContext context)
     {
         // prepare data
         var now = DateTimeOffset.Now;
@@ -63,13 +63,13 @@ public class EsiaEvents(IEsiaOptions esiaOptions, IEsiaEnvironment esiaEnvironme
         // add additional fields for redirect
         if (pm == null)
         {
-            return Task.CompletedTask;
+            return;
         }
 
         pm.ClientId = context.Options.ClientId;
         pm.Parameters.Add("scope", string.Join(" ", (context.Properties as OpenIdConnectChallengeProperties)?.Scope ?? context.Options.Scope));
         pm.Parameters.Add("timestamp", now.ToString("yyyy.MM.dd HH:mm:ss") + " " + now.ToString("zzz").Replace(":", ""));
-        pm.Parameters.Add("client_certificate_hash", esiaSigner.GetCertificateFingerprint());
+        pm.Parameters.Add("client_certificate_hash", await esiaSigner.GetCertificateFingerprintAsync());
         pm.State = Guid.NewGuid().ToString();
 
         // get data for sign
@@ -83,11 +83,8 @@ public class EsiaEvents(IEsiaOptions esiaOptions, IEsiaEnvironment esiaEnvironme
         // set clientSecret
         if (clientId != null)
         {
-            pm.ClientSecret = esiaSigner.Sign($"{clientId}{scope}{timestamp}{state}{redirectUri}{code}");
+            pm.ClientSecret = await esiaSigner.SignAsync($"{clientId}{scope}{timestamp}{state}{redirectUri}{code}");
         }
-
-        // ok
-        return Task.CompletedTask;
     }
 
     /// <summary>

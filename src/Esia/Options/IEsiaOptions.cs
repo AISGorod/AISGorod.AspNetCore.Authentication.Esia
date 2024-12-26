@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using AISGorod.AspNetCore.Authentication.Esia.EsiaEnvironment;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 
 namespace AISGorod.AspNetCore.Authentication.Esia.Options;
@@ -96,8 +97,17 @@ public interface IEsiaOptions
     public PathString SignedOutCallbackPath { get; }
 
     /// <summary>
-    /// Использовать подпись.
+    /// Использовать обработчик подписи.
     /// </summary>
     /// <param name="factory">Фабрика.</param>
     public void UseSigner(Func<IServiceProvider, IEsiaSigner> factory);
+
+    /// <summary>
+    /// Использовать свой обработчик подписи.
+    /// </summary>
+    /// <param name="services">Коллекция сервисов.</param>
+    /// <param name="lifetime">Время жизни.</param>
+    /// <typeparam name="TSigner">Тип класса для подписи.</typeparam>
+    public void UseSigner<TSigner>(IServiceCollection services, ServiceLifetime lifetime = ServiceLifetime.Singleton)
+        where TSigner : class, IEsiaSigner;
 }
