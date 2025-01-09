@@ -21,6 +21,11 @@ jobs:
       - name: Build projects
         uses: ./.github/actions/build-projects
 
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v3.1.1
+        with:
+          versionSpec: '6.0.x'
+
       - name: Determine Version
         id: version_step
         uses: gittools/actions/gitversion/execute@v3.1.1
