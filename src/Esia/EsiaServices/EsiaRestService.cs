@@ -36,7 +36,7 @@ internal class EsiaRestService(
     /// <summary>
     /// Контекст http.
     /// </summary>
-    private readonly HttpContext httpContext = httpContextAccessor.HttpContext ?? throw new ArgumentNullException(nameof(httpContextAccessor.HttpContext));
+    private readonly HttpContext _httpContext = httpContextAccessor.HttpContext ?? throw new ArgumentNullException(nameof(httpContextAccessor.HttpContext));
 
     ///<inheritdoc />
     public async Task<JsonElement> CallAsync(string url, HttpMethod method)
@@ -71,7 +71,7 @@ internal class EsiaRestService(
     {
         var refreshToken = await GetTokenAsync(OpenIdConnectParameterNames.RefreshToken);
 
-        var userResult = await httpContext.AuthenticateAsync();
+        var userResult = await _httpContext.AuthenticateAsync();
         var user = userResult.Principal;
         var props = userResult.Properties;
 
@@ -90,12 +90,12 @@ internal class EsiaRestService(
 
         var clientId = options.ClientId ?? throw new InvalidOperationException("ClientId не настроен.");
 
-        var clientSecret = esiaSigner.SignAsync($"{clientId}{scope}{timestamp}{state}{refreshToken}");
+        var clientSecret = await esiaSigner.SignAsync($"{clientId}{scope}{timestamp}{state}{refreshToken}");
 
         var content = new FormUrlEncodedContent(new Dictionary<string, string>
         {
             { "client_id", clientId },
-            { "client_secret", await clientSecret },
+            { "client_secret", clientSecret },
             { "scope", scope },
             { "timestamp", timestamp },
             { "state", state },
@@ -106,7 +106,7 @@ internal class EsiaRestService(
         var tokenResponse = await options.Backchannel.PostAsync(
             options.Configuration?.TokenEndpoint,
             content,
-            httpContext.RequestAborted);
+            _httpContext.RequestAborted);
 
         tokenResponse.EnsureSuccessStatusCode();
 
@@ -118,7 +118,7 @@ internal class EsiaRestService(
 
         if (user != null)
         {
-            await httpContext.SignInAsync(user, props);
+            await _httpContext.SignInAsync(user, props);
         }
     }
 
@@ -130,7 +130,7 @@ internal class EsiaRestService(
     /// <exception cref="ArgumentNullException">Название отсутствует.</exception>
     private async Task<string> GetTokenAsync(string tokenName)
     {
-        var token = await httpContext.GetTokenAsync(tokenName);
+        var token = await _httpContext.GetTokenAsync(tokenName);
         if (string.IsNullOrEmpty(token))
         {
             throw new ArgumentNullException(tokenName, $"{tokenName} отсутствует.");
