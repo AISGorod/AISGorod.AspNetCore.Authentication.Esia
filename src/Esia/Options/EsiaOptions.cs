@@ -4,6 +4,7 @@ using System.Net.Http;
 using AISGorod.AspNetCore.Authentication.Esia.EsiaEnvironment;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 
@@ -23,6 +24,15 @@ public class EsiaOptions : RemoteAuthenticationOptions, IEsiaOptions
     /// Фабрика подписей.
     /// </summary>
     internal Func<IServiceProvider, IEsiaSigner>? SignerFactory { get; private set; }
+    
+    /// <summary>
+    /// Конструктор по умолчанию.
+    /// </summary>
+    public EsiaOptions()
+    {
+        // Устанавливаем стандартную фабрику SignerFactory
+        SignerFactory = sp => sp.GetRequiredService<IEsiaSigner>();
+    }
 
     /// <inheritdoc />
     public EsiaEnvironmentType? Environment { get; set; }
@@ -72,6 +82,22 @@ public class EsiaOptions : RemoteAuthenticationOptions, IEsiaOptions
         }
 
         SignerFactory = factory;
+        signerConfigured = true;
+    }
+    
+    /// <inheritdoc />
+    public void UseSigner<TSigner>(IServiceCollection services, ServiceLifetime lifetime = ServiceLifetime.Singleton)
+        where TSigner : class, IEsiaSigner
+    {
+        if (signerConfigured)
+        {
+            throw new InvalidOperationException("Можно настроить только один вариант подписи. Множественные варианты подписи не допускаются.");
+        }
+
+        services.Add(new ServiceDescriptor(typeof(IEsiaSigner), typeof(TSigner), lifetime));
+
+        // Устанавливаем фабрику для использования зарегистрированного сервиса
+        SignerFactory = sp => sp.GetRequiredService<IEsiaSigner>();
         signerConfigured = true;
     }
 }
