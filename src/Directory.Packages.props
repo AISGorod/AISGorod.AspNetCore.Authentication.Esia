@@ -9,6 +9,7 @@
         <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="[8.0.1,9)"/>
         <PackageVersion Include="CryptoPro.Net.Security" Version="[2024.11.19,)"/>
         <PackageVersion Include="CryptoPro.Security.Cryptography" Version="[2024.11.19,)"/>
+        <PackageVersion Include="MinVer" Version="6.0.0"/>
     </ItemGroup>
     <ItemGroup Label="net8.0" Condition="'$(TargetFramework)' == 'net8.0'">
         <PackageVersion Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="[8.0.0,9)"/>
