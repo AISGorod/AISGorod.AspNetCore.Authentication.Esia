@@ -7,14 +7,11 @@ inputs:
   NUGET_API_KEY:
     description: "NuGet API Key"
     required: true
-  version:
-    description: "Version of package"
-    required: true
 runs:
   using: "composite"
   steps:
     - name: Pack
-      run: dotnet pack -p:Version=${{ inputs.version }} --no-build --configuration Release src/${{ inputs.project-name }}
+      run: dotnet pack --no-build --configuration Release src/${{ inputs.project-name }}
       shell: bash
 
     - name: Push
