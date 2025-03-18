@@ -1,5 +1,45 @@
 # История изменений
 
+## Версия 2.0.0
+
+### Добавлено
+
+- Проект переведён на NRT.
+- Добавлен пакет `AISGorod.AspNetCore.Authentication.Esia.BouncyCastle` для реализации подписи сообщений при помощи библиотеки _BouncyCastle.Cryptography_.
+- Добавлен пакет `AISGorod.AspNetCore.Authentication.Esia.CryptoPro` для реализации подписи сообщений при помощи [КриптоПро .NET 2](https://github.com/cryptopro/libcore).
+- Добавлены новые флаги `GetPrns<...>OnSignIn` в настройки подключения к ЕСИА, которые позволяют в момент получения access_token сразу запрашивать дополнительные данные из ЕСИА и складывать их в определённые claims.
+
+### Изменено
+
+- **❗breaking change❗** Callback-обработчик для аутентификации по умолчанию теперь не `/signin-oidc`, а `/signin-esia`.
+  Callback-обработчик для выхода из системы - `/signout-esia`.
+  Так как в ЕСИА указываются только домены, то это изменение не влечёт изменение сведений о системе на Технологическом портале.
+- **❗breaking change❗** Изменены пространства имён классов.
+  - Классы, связанные со средой ЕСИА, теперь находятся в `AISGorod.AspNetCore.Authentication.Esia.EsiaEnvironment`.
+  - `EsiaOptions` и другие классы, связанные с настройками интеграции, теперь находятся в `AISGorod.AspNetCore.Authentication.Esia.Options`.
+  - `IEsiaRestService` переместился в `AISGorod.AspNetCore.Authentication.Esia.EsiaServices`.
+- **❗breaking change❗** Изменено определение `IEsiaSigner`:
+  - Метод `Sign` теперь асинхронный `SignAsync`, а также работает не с массивом байт, а со строками.
+  - Метод `SignAsync` должен возвращать не подпись в формате PKCS#7 detached signature, а подпись строки по алгоритму ГОСТ Р 34.10-2012 (требование нового API ЕСИА).
+  - Добавлен метод `GetCertificateFingerprintAsync` для получения хеш-суммы сертификата (требование нового API ЕСИА).
+- Для регистрации самостоятельной реализации `IEsiaSigner` теперь используется метод `EsiaOptions.UseSigner`.
+- Выделен интерфейс `IEsiaOptions`.
+  Изменено наследование в `EsiaOptions`.
+- Произведена миграция с устаревшего API ЕСИА v1 на актуальный:
+  - Авторизационный код: `/aas/oauth2/v2/ac`.
+  - Получение маркера доступа: `/aas/oauth2/v3/te`.
+- Пример интеграции с ЕСИА переписан на .NET 8 и WebApplication (без Startup.cs).
+
+### Устарело
+
+- **❗breaking change❗** Удалена поддержка .NET 6.
+  Осталась поддержка .NET 8 и .NET 9.
+
+### Удалено
+
+- Удалён пример генерации сертификата ЭП через OpenSSL с gost-engine.
+- Удалён пример использования OpenSSL для подписи запросов.
+
 ## Версия 1.6.1
 
 - Исправлена ошибка обращения к REST API ЕСИА, если `EsiaOptions.Backchannel` не указан.
