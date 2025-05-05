@@ -49,7 +49,7 @@ internal class EsiaRestService(
             var accessToken = await GetTokenAsync(OpenIdConnectParameterNames.AccessToken);
 
             var client = esiaOptions.Backchannel ?? httpClientFactory.CreateClient(EsiaDefaults.RestClientHttpName);
-            var request = new HttpRequestMessage(method, $"{esiaEnvironment.Host}{url}")
+            var request = new HttpRequestMessage(method, $"{esiaEnvironment.BackchannelUri ?? esiaEnvironment.Host}{url}")
             {
                 Headers = { Authorization = new AuthenticationHeaderValue(tokenType, accessToken) }
             };
@@ -103,8 +103,12 @@ internal class EsiaRestService(
             { "refresh_token", refreshToken }
         });
 
-        var tokenResponse = await options.Backchannel.PostAsync(
-            options.Configuration?.TokenEndpoint,
+        var tokenEndpoint = new Uri(new Uri(esiaEnvironment.BackchannelUri ?? esiaEnvironment.Host), "connect/token");
+
+        var client = esiaOptions.Backchannel ?? httpClientFactory.CreateClient(EsiaDefaults.RestClientHttpName);
+        
+        var tokenResponse = await client.PostAsync(
+            tokenEndpoint,
             content,
             _httpContext.RequestAborted);
 

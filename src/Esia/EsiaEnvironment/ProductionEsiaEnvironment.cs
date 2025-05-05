@@ -8,9 +8,7 @@ namespace AISGorod.AspNetCore.Authentication.Esia.EsiaEnvironment;
 /// </summary>
 public class ProductionEsiaEnvironment : IEsiaEnvironment
 {
-    /// <summary>
-    /// Сертификат среды ЕСИА.
-    /// </summary>
+    /// <inheritdoc />
     public X509Certificate2 EsiaCertificate
     {
         get
@@ -20,33 +18,24 @@ public class ProductionEsiaEnvironment : IEsiaEnvironment
         }
     }
 
-    /// <summary>
-    /// Базовый URL для запросов.
-    /// </summary>
+    /// <inheritdoc />
     public string Host => "https://esia.gosuslugi.ru";
+    
+    /// <inheritdoc />
+    public string BackchannelUri => Host;
 
-    /// <summary>
-    /// Endpoint для получения авторизационного кода.
-    /// </summary>
+    /// <inheritdoc />
     public string AuthorizationEndpoint => Host + "/aas/oauth2/v2/ac";
 
-    /// <summary>
-    /// Endpoint для получения маркера доступа и(или) маркера идентификации.
-    /// </summary>
-    public string TokenEndpoint => Host + "/aas/oauth2/v3/te";
+    /// <inheritdoc />
+    public string TokenEndpoint => BackchannelUri + "/aas/oauth2/v3/te";
 
-    /// <summary>
-    /// Endpoint для логаута.
-    /// </summary>
+    /// <inheritdoc />
     public string LogoutEndpoint => Host + "/idp/ext/Logout";
 
-    /// <summary>
-    /// Базовый URL для REST-сервиса персональных данных.
-    /// </summary>
+    /// <inheritdoc />
     public string RestPersonsEndpoint => Host + "/rs/prns/";
 
-    /// <summary>
-    /// Issuer маркеров доступа.
-    /// </summary>
+    /// <inheritdoc />
     public string Issuer => "http://esia.gosuslugi.ru/";
 }
