@@ -9,38 +9,43 @@
 
 ## Требования
 
-1. AspNetCore не ниже 6.0.
+1. AspNetCore не ниже 8.0.
 2. Алгоритм формирования электронной подписи должен быть RS256 (указывается в настройках ИС на [технологическом портале](https://esia.gosuslugi.ru/console/tech/)).
 
 ## Подключение
 
 1. Добавьте NuGet-пакет `AISGorod.AspNetCore.Authentication.Esia`.
-2. Добавьте в _Startup.cs_ следующие строки (ниже данные для примера):
+2. Добавьте NuGet-пакет с криптографией, например, `AISGorod.AspNetCore.Authentication.Esia.BouncyCastle`.
+3. Добавьте в _Startup.cs_ следующие строки (ниже данные для примера):
 
 ```csharp
 services
-    .AddAuthentication(...)
-    ...
-    .AddEsia("Esia", options =>
+    .AddAuthentication(/*...*/)
+    //...
+    .AddEsia(options =>
     {
         options.Environment = EsiaEnvironmentType.Test;
-        //options.EnvironmentInstance = ...; // можно использовать свою реализацию.
-        options.Mnemonic = "TESTSYS";
-        options.Scope = new[] { "fullname", "snils", "email", "mobile" };
+        // options.EnvironmentInstance = ...; // можно использовать свою реализацию.
+        options.Mnemonic = "МНЕМОНИКА_ВАШЕЙ_СИСТЕМЫ";
+        options.Scope = ["fullname", "snils", "email", "mobile", "usr_org"];
+
+        options.UseBouncyCastle(bouncyCastleOptions =>
+        {
+            bouncyCastleOptions.KeyFilePath = "/home/username/esia.key";
+            bouncyCastleOptions.CertFilePath = "/home/username/esia.pem";
+        });
     });
-services.AddSingleton<IEsiaSigner, OpensslEsiaSigner>(); // нужна своя реализация подписи запросов от ИС в ЕСИА
 ```
 
-3. Также убедитесь, что в _Startup.cs_ есть подключение _HttpContextAccessor_:
+4. Если хотите вызывать API-методы с использованием access_token через `IEsiaRestService`, убедитесь, что в приложении подключен _HttpContextAccessor_:
 
 ```csharp
 services.AddHttpContextAccessor();
 ```
 
-> Пример кода смотрите в проекте `EsiaSample`.
-> Необходимо только изменить _Startup.cs_.
+[Больше примеров в репозитории](./samples/)
 
-## Выполнение методов API
+## Выполнение методов API через `IEsiaRestService`
 
 Необходимо в контроллере (или где-нибудь ещё) запросить интерфейс `IEsiaRestService`.
 В нём есть метод `CallAsync`, который и отвечает за актуализацию токенов и общение с API ЕСИА.
@@ -53,7 +58,7 @@ var contactsJson = await esiaRestService.CallAsync($"/rs/prns/{oId}/ctts?embed=(
 ViewBag.Contacts = contactsJson.ToString(Newtonsoft.Json.Formatting.Indented);
 ```
 
-Данный кусок кода получает _oId_ пользователя, запрашивает все контакты и складывает их JSON-представление в ViewBag.
+Данный фрагмент кода получает _oId_ пользователя, запрашивает все контакты и складывает их JSON-представление в ViewBag.
 
 ## Получение настроек подключения к ЕСИА
 
@@ -63,81 +68,35 @@ ViewBag.Contacts = contactsJson.ToString(Newtonsoft.Json.Formatting.Indented);
 
 Также открытыми являются классы `TestEsiaEnvironment` и `ProductionEsiaEnvironment`, от которых можно унаследоваться.
 
-> Пример использования настроек подключения смотрите в проекте `EsiaSample` на стартовой странице.
+> Пример использования настроек подключения смотрите в проекте [EsiaNet8Sample](./samples/EsiaNet8Sample/) на стартовой странице.
 
-## Как запустить пример
+## Получение дополнительных сведений о ФЛ в момент входа
 
-> Для ОС Windows 10 необходимо установить [Windows Subsystem for Linux](https://docs.microsoft.com/ru-ru/windows/wsl/install-win10) и Ubuntu 18.04 в нём.
-> Действия выполняются внутри терминала этой ОС.
+Для упрощения процесса получения данных о физическом лице в момент его аутентификации в системе, в настройках `IEsiaOptions` объявлены флаги `GetPrns<...>OnSignIn`.
+Если они выбраны, то после получения _access_token_ дополнительно в API ЕСИА отправляются запросы, связанные с этими флагами.
 
-Данный раздел показывает, как можно запустить пример работы с ЕСИА на Ubuntu 18.04 (или Windows 10 c WSL).
-Такая конфигурация выбрана из-за того, что на Linux намного удобнее включается поддержка ГОСТ для openssl.
+Примеры данных, которые можно дополнительно получить (при наличии соответствующего scope):
 
-Сперва необходимо обновить списки пакетов: `$ sudo apt update`.
+- `GetPrnsContactInformationOnSignIn` - сведения о контактных данных ФЛ.
+- `GetPrnsAddressesOnSignIn` - сведения об адресах ФЛ.
+- `GetPrnsDocumentsOnSignIn` - сведения о документах ФЛ.
 
-Затем устанавливается пакет для поддержки ГОСТ в openssl: `$ sudo apt install libengine-gost-openssl1.1`.
+## Как запустить примеры
 
-После этого необходимо открыть файл с настройками openssl: `$ sudo nano /etc/ssl/openssl.cnf`.
+Для того, чтобы запустить примеры, необходимо предварительно:
 
-Дописать в начало файла (например, после `oid_section = new_oids`): `openssl_conf = openssl_def`.
-
-Дописать в конец файла:
-
-```ini
-[openssl_def]
-engines = engine_section
-
-[engine_section]
-gost = gost_section
-
-[gost_section]
-engine_id = gost
-dynamic_path = /usr/lib/x86_64-linux-gnu/engines-1.1/gost.so
-default_algorithms = ALL
-CRYPT_PARAMS = id-Gost28147-89-CryptoPro-A-ParamSet
-```
-
-Для проверки установки движка gost можно выполнить следующую команду и сравнить результат с представленным ниже:
-
-```bash
-$ openssl engine gost -c
-(gost) Reference implementation of GOST engine
- [gost89, gost89-cnt, gost89-cnt-12, gost89-cbc, grasshopper-ecb, grasshopper-cbc, grasshopper-cfb, grasshopper-ofb, grasshopper-ctr, md_gost94, gost-mac, md_gost12_256, md_gost12_512, gost-mac-12, gost2001, gost-mac, gost2012_256, gost2012_512, gost-mac-12]
-```
-
-Теперь необходимо сгенерировать ключи для ЕСИА при помощи команд:
-
-```bash
-$ openssl req -x509 -newkey gost2012_256 -pkeyopt paramset:A -nodes -keyout esia.key -out esia.pem -days 3650 -engine gost
-$ openssl pkcs12 -export -out esia.pfx -inkey esia.key -in esia.pem -engine gost
-```
-
-Данные о стране, городе, имени сертификата можно вбивать любые, они не играют роли для ЕСИА.
-
-Чтобы проверить, что подпись данных в openssl работает, можете использовать следующую команду:
-
-```bash
-$ openssl cms -sign -engine gost -inkey esia.key -signer esia.pem <<< '123'
-```
-
-Должен вернуться вывод с огромным base64-текстом, разбитым на несколько строк.
-
-> Для регистрации ключа в ЕСИА на технологический портал требуется загружать файл `.pem`.
-
-В проекте существует 2 способа подписи:
-
-- Bouncy castle.
-- CryptoPro.
-
-По умолчание указан Bouncy castle. CryptoPro используется аналогично.
+- Определиться с поставщиком криптографии.
+  Для целей тестирования можно использовать как trial-версию КриптоПРО CSP, так и BouncyCastle.
+- Затем необходимо выпустить тестовый сертификат ЭП, который понадобится для подписи запросов.
+  Его выпуск целиком и полностью зависит от того поставщика криптографии, который был выбран ранее.
+- Затем необходимо подать заявку на регистрацию ИС в тестовой среде ЕСИА согласно [регламенту взаимодействия с ЕСИА](https://digital.gov.ru/documents/reglament-informaczionnogo-vzaimodejstviya-uchastnikov-s-operatorom-esia-i-operatorom-ekspluataczii-infrastruktury-elektronnogo-pravitelstva).
 
 Теперь для запуска примера потребуется:
 
-- изменить мнемонику ИС в `~/samples/EsiaSample/Program.cs`.
-- изменить путь до ключа (KeyFilePath) и сертификата (CertFilePath) в `~/samples/EsiaSample/Program.cs` метод `UseBouncyCastle(...)`.
-- установить [.NET Core SDK](https://docs.microsoft.com/ru-ru/dotnet/core/install/linux-package-manager-ubuntu-1804), если он ещё не стоит.
-  При этом версия SDK должна совпадать с версией netcore в `~/samples/EsiaSample`.
-  Это необходимо для Razor.
+- Изменить мнемонику ИС в `~/samples/EsiaSample/Program.cs`.
+- Изменить путь до ключа (KeyFilePath) и сертификата (CertFilePath) в `~/samples/EsiaSample/Program.cs` метод `UseBouncyCastle(...)`.
+  Или использовать КриптоПРО .NET.
+  Там будет необходимо указать отпечаток сертификата ЭП и пароль от ключевого носителя (при наличии).
 
 Если вы будете использовать режим подписи через CryptoPro, необходимо загрузить nuget пакеты. В проекте есть файл, который делает это автоматически:
 
@@ -152,13 +111,10 @@ $ utils/download_crypto_pro.sh
 
 ```bash
 $ dotnet build
-$ dotnet run -p samples/EsiaSample/
+$ dotnet run -p samples/EsiaNet8Sample/
 ```
 
 Веб-сайт для демонстрации работы с ЕСИА будет доступен по адресу https://localhost:5000/.
-
-> Кстати, замечено, что при включенном ГОСТ в openssl не всегда восстанавливаются пакеты NuGet.
-> Временно выключить поддержку ГОСТ можно, закомментировав строку, написанную в настройках openssl в начале файла.
 
 ## Есть замечания / хочу внести вклад
 

@@ -23,7 +23,7 @@ builder.Services
     {
         options.Environment = EsiaEnvironmentType.Test;
         options.EnvironmentInstance = new CustomEsiaEnvironment();
-        options.Mnemonic = "TESTSYS";
+        options.Mnemonic = "МНЕМОНИКА_ВАШЕЙ_СИСТЕМЫ";
         options.Scope = ["fullname", "snils", "email", "mobile", "usr_org"];
         options.SaveTokens = true;
         options.TokenHandler = new JsonWebTokenHandler();
