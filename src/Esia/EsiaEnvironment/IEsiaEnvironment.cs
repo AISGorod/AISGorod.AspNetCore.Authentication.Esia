@@ -16,6 +16,11 @@ public interface IEsiaEnvironment
     /// Базовый URL для запросов.
     /// </summary>
     string Host { get; }
+    
+    /// <summary>
+    /// Ссылка на Backchannel.
+    /// </summary>
+    string? BackchannelUri { get; }
 
     /// <summary>
     /// Endpoint для получения авторизационного кода.
