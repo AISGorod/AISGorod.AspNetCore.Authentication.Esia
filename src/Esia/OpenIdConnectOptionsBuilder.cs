@@ -6,6 +6,7 @@ using AISGorod.AspNetCore.Authentication.Esia.Options;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
+using System.Linq;
 
 namespace AISGorod.AspNetCore.Authentication.Esia;
 
@@ -64,9 +65,15 @@ internal class OpenIdConnectOptionsBuilder(EsiaOptions esiaOptions, IEsiaEnviron
     /// <param name="options">Настройки openId.</param>
     private void ConfigureTokenValidation(OpenIdConnectOptions options)
     {
-        options.TokenValidationParameters.IssuerSigningKey =
-            new RsaSecurityKey(environment.EsiaCertificate.GetRSAPublicKey());
-        options.TokenValidationParameters.ValidIssuer = environment.Issuer;
+        var signingKeys = environment.EsiaCertificates
+            .Select(cert => new RsaSecurityKey(cert.GetRSAPublicKey()))
+            .ToList<SecurityKey>();
+
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            IssuerSigningKeys = signingKeys,
+            ValidIssuer = environment.Issuer
+        };
     }
 
     /// <summary>

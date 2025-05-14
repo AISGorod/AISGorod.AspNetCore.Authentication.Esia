@@ -1,4 +1,5 @@
-﻿using System.Security.Cryptography.X509Certificates;
+﻿using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
 
 namespace AISGorod.AspNetCore.Authentication.Esia.EsiaEnvironment;
 
@@ -10,7 +11,7 @@ public interface IEsiaEnvironment
     /// <summary>
     /// Сертификат среды ЕСИА.
     /// </summary>
-    X509Certificate2 EsiaCertificate { get; }
+    IReadOnlyCollection<X509Certificate2> EsiaCertificates { get; }
 
     /// <summary>
     /// Базовый URL для запросов.

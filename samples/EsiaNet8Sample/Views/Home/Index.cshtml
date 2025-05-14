@@ -44,7 +44,12 @@
     <strong>Хост</strong>
     @Html.DisplayFor(_ => esiaEnvironment.Host)
     <br/>
-    <strong>Отпечаток сертификата ЕСИА</strong>
-    @Html.DisplayFor(_ => esiaEnvironment.EsiaCertificate.Thumbprint)
+    <strong>Отпечатки сертификатов ЕСИА:</strong>
+    <ul>
+        @foreach (var cert in esiaEnvironment.EsiaCertificates)
+        {
+            <li>@cert.Thumbprint</li>
+        }
+    </ul>
     <br/>
 }
