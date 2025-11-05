@@ -22,13 +22,13 @@ public class TestEsiaEnvironment : IEsiaEnvironment
     public string Host => "https://esia-portal1.test.gosuslugi.ru";
     
     /// <inheritdoc />
-    public string BackchannelUri => Host;
+    public virtual string? BackchannelUri => null;
 
     /// <inheritdoc />
     public string AuthorizationEndpoint => Host + "/aas/oauth2/v2/ac";
 
     /// <inheritdoc />
-    public string TokenEndpoint => BackchannelUri + "/aas/oauth2/v3/te";
+    public string TokenEndpoint => (BackchannelUri ?? Host) + "/aas/oauth2/v3/te";
 
     /// <inheritdoc />
     public string LogoutEndpoint => Host + "/idp/ext/Logout";

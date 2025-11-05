@@ -103,12 +103,10 @@ internal class EsiaRestService(
             { "refresh_token", refreshToken }
         });
 
-        var tokenEndpoint = new Uri(new Uri(esiaEnvironment.BackchannelUri ?? esiaEnvironment.Host), "connect/token");
-
         var client = esiaOptions.Backchannel ?? httpClientFactory.CreateClient(EsiaDefaults.RestClientHttpName);
         
         var tokenResponse = await client.PostAsync(
-            tokenEndpoint,
+            options.Configuration?.TokenEndpoint,
             content,
             _httpContext.RequestAborted);
 
