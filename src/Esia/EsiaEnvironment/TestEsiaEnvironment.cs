@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
 
 namespace AISGorod.AspNetCore.Authentication.Esia.EsiaEnvironment;
 
@@ -10,12 +10,19 @@ namespace AISGorod.AspNetCore.Authentication.Esia.EsiaEnvironment;
 public class TestEsiaEnvironment : IEsiaEnvironment
 {
     /// <summary>
+    /// Сертификат среды ЕСИА.
+    /// Устарело: используйте <see cref="EsiaCertificates"/>.
+    /// </summary>
+    [Obsolete("Свойство устарело. Используйте EsiaCertificates.")]
+    public X509Certificate2 EsiaCertificate =>
+        X509CertificateUtils.LoadCertificate(Esia.EsiaCertificates.TestCertificate);
+
+    /// <summary>
     /// Сертификаты среды ЕСИА.
     /// </summary>
     public IReadOnlyCollection<X509Certificate2> EsiaCertificates =>
     [
-        LoadCertificate(Esia.EsiaCertificates.TestCertificate),
-        //LoadCertificate(Esia.EsiaCertificates.Production2025)
+        X509CertificateUtils.LoadCertificate(Esia.EsiaCertificates.TestCertificate)
     ];
 
     /// <summary>
@@ -47,12 +54,5 @@ public class TestEsiaEnvironment : IEsiaEnvironment
     /// Issuer маркеров доступа.
     /// </summary>
     public string Issuer => "http://esia-portal1.test.gosuslugi.ru/";
-    
-    /// <summary>
-    /// Загрузка сертификата.
-    /// </summary>
-    /// <param name="pem">Сертификат.</param>
-    /// <returns><see cref="X509Certificate2"/>.</returns>
-    private static X509Certificate2 LoadCertificate(string pem) =>
-        X509CertificateLoader.LoadCertificate(Encoding.UTF8.GetBytes(pem));
+
 }

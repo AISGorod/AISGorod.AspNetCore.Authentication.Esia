@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 
 namespace AISGorod.AspNetCore.Authentication.Esia.EsiaEnvironment;
@@ -10,6 +11,13 @@ public interface IEsiaEnvironment
 {
     /// <summary>
     /// Сертификат среды ЕСИА.
+    /// Устарело: используйте <see cref="EsiaCertificates"/>.
+    /// </summary>
+    [Obsolete("Свойство устарело. Используйте EsiaCertificates.")]
+    X509Certificate2 EsiaCertificate { get; }
+
+    /// <summary>
+    /// Сертификаты среды ЕСИА.
     /// </summary>
     IReadOnlyCollection<X509Certificate2> EsiaCertificates { get; }
 
