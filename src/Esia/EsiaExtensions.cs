@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text;
 using AISGorod.AspNetCore.Authentication.Esia.EsiaEnvironment;
 using AISGorod.AspNetCore.Authentication.Esia.EsiaServices;
 using AISGorod.AspNetCore.Authentication.Esia.Options;
