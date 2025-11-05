@@ -1,5 +1,6 @@
-﻿using System.Security.Cryptography.X509Certificates;
-using System.Text;
+﻿using System;
+using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
 
 namespace AISGorod.AspNetCore.Authentication.Esia.EsiaEnvironment;
 
@@ -10,16 +11,20 @@ public class ProductionEsiaEnvironment : IEsiaEnvironment
 {
     /// <summary>
     /// Сертификат среды ЕСИА.
+    /// Устарело: используйте <see cref="EsiaCertificates"/>.
     /// </summary>
-    public X509Certificate2 EsiaCertificate
-    {
-        get
-        {
-            var certificateBytes = Encoding.UTF8.GetBytes(EsiaCertificates.ProductionCertificate);
-            return X509CertificateLoader.LoadCertificate(certificateBytes);
-        }
-    }
+    [Obsolete("Свойство устарело. Используйте EsiaCertificates.")]
+    public X509Certificate2 EsiaCertificate =>
+        X509CertificateUtils.LoadCertificate(Esia.EsiaCertificates.ProductionCertificate);
 
+    /// <summary>
+    /// Сертификаты среды ЕСИА.
+    /// </summary>
+    public IReadOnlyCollection<X509Certificate2> EsiaCertificates =>
+    [
+        X509CertificateUtils.LoadCertificate(Esia.EsiaCertificates.ProductionCertificate)
+    ];
+    
     /// <summary>
     /// Базовый URL для запросов.
     /// </summary>
@@ -49,4 +54,5 @@ public class ProductionEsiaEnvironment : IEsiaEnvironment
     /// Issuer маркеров доступа.
     /// </summary>
     public string Issuer => "http://esia.gosuslugi.ru/";
+
 }
