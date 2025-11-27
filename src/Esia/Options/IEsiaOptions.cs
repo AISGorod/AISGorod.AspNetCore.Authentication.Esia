@@ -5,6 +5,7 @@ using AISGorod.AspNetCore.Authentication.Esia.EsiaEnvironment;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 
 namespace AISGorod.AspNetCore.Authentication.Esia.Options;
 
@@ -97,7 +98,8 @@ public interface IEsiaOptions
     public PathString SignedOutCallbackPath { get; }
 
     /// <summary>
-    /// Если вы укажете этот параметр в TRUE, то проверка подписи токена, будет пропущена и вы будете должны сами реализовать эту проверку в TokenValidated.
+    /// Если для этого параметра установлено значение <c>true</c>, проверка подписи токена будет пропущена. 
+    /// В этом случае вы должны самостоятельно реализовать проверку подписи внутри обработчика события  <see cref="OpenIdConnectEvents.TokenValidated"/>.
     /// </summary>
     public bool SkipSignatureValidation { get; }
 
