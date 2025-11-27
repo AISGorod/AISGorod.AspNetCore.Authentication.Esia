@@ -98,8 +98,8 @@ public interface IEsiaOptions
     public PathString SignedOutCallbackPath { get; }
 
     /// <summary>
-    /// Если для этого параметра установлено значение <c>true</c>, проверка подписи токена будет пропущена. 
-    /// В этом случае вы должны самостоятельно реализовать проверку подписи внутри обработчика события  <see cref="OpenIdConnectEvents.TokenValidated"/>.
+    /// Если для этого параметра установлено значение <c>true</c>, проверка подписи токена будет пропущена.
+    /// В этом случае вы должны самостоятельно реализовать проверку подписи внутри обработчика события <see cref="OpenIdConnectEvents.TokenValidated"/>.
     /// </summary>
     public bool SkipSignatureValidation { get; }
 
