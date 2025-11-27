@@ -97,6 +97,11 @@ public interface IEsiaOptions
     public PathString SignedOutCallbackPath { get; }
 
     /// <summary>
+    /// Если вы укажете этот параметр в TRUE, то проверка подписи токена, будет пропущена и вы будете должны сами реализовать эту проверку в TokenValidated.
+    /// </summary>
+    public bool SkipSignatureValidation { get; }
+
+    /// <summary>
     /// Использовать обработчик подписи.
     /// </summary>
     /// <param name="factory">Фабрика.</param>
