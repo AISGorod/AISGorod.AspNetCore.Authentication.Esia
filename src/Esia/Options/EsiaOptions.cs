@@ -74,6 +74,9 @@ public class EsiaOptions : RemoteAuthenticationOptions, IEsiaOptions
     public PathString SignedOutCallbackPath { get; set; } = "/signout-esia";
 
     /// <inheritdoc />
+    public bool SkipSignatureValidation { get; set; } = false;
+
+    /// <inheritdoc />
     public void UseSigner(Func<IServiceProvider, IEsiaSigner> factory)
     {
         if (signerConfigured)

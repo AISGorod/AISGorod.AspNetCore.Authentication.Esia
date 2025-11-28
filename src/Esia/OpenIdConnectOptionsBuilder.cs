@@ -4,6 +4,7 @@ using System.Security.Cryptography.X509Certificates;
 using AISGorod.AspNetCore.Authentication.Esia.EsiaEnvironment;
 using AISGorod.AspNetCore.Authentication.Esia.Options;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 
@@ -64,9 +65,22 @@ internal class OpenIdConnectOptionsBuilder(EsiaOptions esiaOptions, IEsiaEnviron
     /// <param name="options">Настройки openId.</param>
     private void ConfigureTokenValidation(OpenIdConnectOptions options)
     {
-        options.TokenValidationParameters.IssuerSigningKey =
-            new RsaSecurityKey(environment.EsiaCertificate.GetRSAPublicKey());
         options.TokenValidationParameters.ValidIssuer = environment.Issuer;
+
+        if (esiaOptions.SkipSignatureValidation)
+        {
+            // Отключаем стандартную проверку подписи ключом потому что у нас это делается на отдельном сервере (тут не сертификата, с открытым ключом), код для проверки будет в OnTokenValidated
+            options.TokenValidationParameters.ValidateIssuerSigningKey = false;
+            options.TokenValidationParameters.SignatureValidator = (token, parameters) =>
+            {
+                // Просто возвращаем токен как есть, без локальной проверки подписи
+                return new JsonWebToken(token);
+            };
+        }
+        else
+        {
+            options.TokenValidationParameters.IssuerSigningKey = new RsaSecurityKey(environment.EsiaCertificate.GetRSAPublicKey());
+        }
     }
 
     /// <summary>
