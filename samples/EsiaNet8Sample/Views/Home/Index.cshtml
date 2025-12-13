@@ -42,7 +42,14 @@
     @Html.DisplayFor(_ => esiaEnvironment.GetType().FullName)
     <br/>
     <strong>Хост</strong>
-    @Html.DisplayFor(_ => esiaEnvironment.Host)
+    @if (!string.IsNullOrWhiteSpace(esiaEnvironment.BackchannelUri))
+    {
+        @Html.DisplayFor(_ => esiaEnvironment.BackchannelUri)
+    }
+    else
+    {
+        @Html.DisplayFor(_ => esiaEnvironment.Host)
+    }
     <br/>
     <strong>Отпечаток сертификата ЕСИА</strong>
     @Html.DisplayFor(_ => esiaEnvironment.EsiaCertificate.Thumbprint)
