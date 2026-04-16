@@ -4,7 +4,6 @@
     </PropertyGroup>
     <ItemGroup Label="any">
         <PackageVersion Include="BouncyCastle.Cryptography" Version="[2.5.0,3)"/>
-        <PackageVersion Include="System.Security.Cryptography.Pkcs" Version="[9.0.0,10)"/>
         <PackageVersion Include="Microsoft.IdentityModel.JsonWebTokens" Version="[8.0.1,9)"/>
         <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="[8.0.1,9)"/>
         <PackageVersion Include="CryptoPro.Net.Security" Version="[2024.11.19,)"/>
@@ -13,11 +12,14 @@
     </ItemGroup>
     <ItemGroup Label="net8.0" Condition="'$(TargetFramework)' == 'net8.0'">
         <PackageVersion Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="[8.0.0,9)"/>
+        <PackageVersion Include="System.Security.Cryptography.Pkcs" Version="[9.0.0,10)"/>
     </ItemGroup>
     <ItemGroup Label="net9.0" Condition="'$(TargetFramework)' == 'net9.0'">
         <PackageVersion Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="[9.0.0,10)"/>
+        <PackageVersion Include="System.Security.Cryptography.Pkcs" Version="[9.0.0,10)"/>
     </ItemGroup>
     <ItemGroup Label="net10.0" Condition="'$(TargetFramework)' == 'net10.0'">
         <PackageVersion Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="[10.0.0,11)"/>
+        <PackageVersion Include="System.Security.Cryptography.Pkcs" Version="[10.0.0,11)"/>
     </ItemGroup>
 </Project>
