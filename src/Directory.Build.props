@@ -16,9 +16,16 @@
         </Description>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
         <PackageReadmeFile>README.md</PackageReadmeFile>
-        <Version>0.0.1-alpha1</Version>
         <PackageIcon>icon.png</PackageIcon>
     </PropertyGroup>
+    
+    <PropertyGroup Label="MinVer">
+		<MinVerTagPrefix>v</MinVerTagPrefix>
+    </PropertyGroup>
+
+    <ItemGroup>
+		<PackageReference Include="MinVer" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers" />
+    </ItemGroup>
 
     <PropertyGroup Label="Namespaces">
         <AssemblyName>AISGorod.AspNetCore.Authentication.$(MSBuildProjectName)</AssemblyName>
