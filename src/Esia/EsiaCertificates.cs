@@ -5,12 +5,18 @@
 /// Можно взять из архива http://esia.gosuslugi.ru/public/esia.zip.
 /// Ссылка на архив взята из методических рекомендаций ЕСИА, п. 3.1.2 "Аутентификация с использованием OpenID Connect 1.0".
 /// </summary>
+/// <remarks>
+/// ЕСИА меняет сертификаты без предварительного уведомления, поэтому для каждой среды хранится набор сертификатов
+/// (прошлые, текущий и, если он уже известен, будущий). Все они передаются в параметры валидации токенов,
+/// поэтому смена сертификата на стороне ЕСИА не приводит к отказу в обслуживании.
+/// Имя константы содержит год выпуска сертификата.
+/// </remarks>
 internal static class EsiaCertificates
 {
     /// <summary>
-    /// Сертификат тестовой среды ЕСИА.
+    /// Сертификат тестовой среды ЕСИА, выпущенный 06.08.2024 (действует до 06.08.2034).
     /// </summary>
-    public const string TestCertificate = @"-----BEGIN CERTIFICATE-----
+    public const string TestCertificate2024 = @"-----BEGIN CERTIFICATE-----
 MIIDGjCCAgKgAwIBAgIEZrHvUjANBgkqhkiG9w0BAQsFADAeMQswCQYDVQQGEwJS
 VTEPMA0GA1UECwwGUlRMYWJzMB4XDTI0MDgwNjA5MzkzMFoXDTM0MDgwNjA5Mzkz
 MFowHjELMAkGA1UEBhMCUlUxDzANBgNVBAsMBlJUTGFiczCCASIwDQYJKoZIhvcN
@@ -31,9 +37,31 @@ tXZJVX6zc9Y457U/tcp1LMqhyJHfSuLWI8s2oynL
 -----END CERTIFICATE-----";
 
     /// <summary>
-    /// Сертификат продукционной среды ЕСИА.
+    /// Сертификат продукционной среды ЕСИА, выпущенный 29.04.2025 (истёк 29.04.2026).
     /// </summary>
-    public const string ProductionCertificate = @"-----BEGIN CERTIFICATE-----
+    public const string ProductionCertificate2025 = @"-----BEGIN CERTIFICATE-----
+MIIC/DCCAeSgAwIBAgIIU+kXiIvlFgcwDQYJKoZIhvcNAQELBQAwPjELMAkGA1UE
+BhMCUlUxDzANBgNVBAoTBlJUTGFiczEPMA0GA1UECxMGUlRMYWJzMQ0wCwYDVQQD
+EwRFU0lBMB4XDTI1MDQyOTA4MTYwMFoXDTI2MDQyOTA4MTYwMFowPjELMAkGA1UE
+BhMCUlUxDzANBgNVBAoTBlJUTGFiczEPMA0GA1UECxMGUlRMYWJzMQ0wCwYDVQQD
+EwRFU0lBMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqi0oaWj50Bl1
++87p0sPCFqBAV2jrOy0yLGmroYbMUGeJT93yK7/K60htYR477BYG34Wuz9rvr+0I
+urL7mJ0sjYu+BdxH+WzTol08sCB2rFcGbO6hLhfz3l0cyrPCUgvDlBSCx7ZNDby7
+OS/6Gm+J4KVKRIJZB57ZYRATpE9iZHj/L58rkxMyN/MFaUkjYaWFMrMfrz+NtRK/
+3+sULYhqjkAAx8RUNtJO6het/e1VvwfMNxneVytpHBa0nB4XqiBbHCP7J/jmQWIz
+vwwxjtamr0ODUzmh6ufjJFMNuZCn8s7UfIanrI5gKeez7qHkuhHdKHRRhi94TbJP
+H9whoF4ZvQIDAQABMA0GCSqGSIb3DQEBCwUAA4IBAQAst71aPatAa7Fbp0FbdjNE
+sT2MOIiiOwx57PNkId11Ryh1LRkZ98qog9CombS0bXbIAwTYjmmRJ6gDvLIBYssL
+fFUA3OWNu+LUqidkNmdLYbwIu4UEJ9+4CsjWLzhHlHVCk1a4VUSPOFWzD2TCkRu+
+x6VxibADYg8jzLlk+pWmPW9izZCs7etN0vTfj4eGMP18eNU1jI/oMfiMkUNPdI11
+sl0dfK0oSP6vnowT+VyCxnie/rP12UZo4vApDo8Bvk4+KTEIKIYXeUjzivvLuyLS
+pUPKADeUSRcek57OpIKm5bR1ezl/0BpjjuLFL4UyN1/tNLEritLyTgQ8E+LJwWiu
+-----END CERTIFICATE-----";
+
+    /// <summary>
+    /// Сертификат продукционной среды ЕСИА, выпущенный 23.04.2026 (действует до 30.04.2030).
+    /// </summary>
+    public const string ProductionCertificate2026 = @"-----BEGIN CERTIFICATE-----
 MIIC+DCCAeCgAwIBAgIEaeoozTANBgkqhkiG9w0BAQsFADA+MQswCQYDVQQGEwJS
 VTEPMA0GA1UECgwGUlRMYWJzMQ8wDQYDVQQLDAZSVExhYnMxDTALBgNVBAMMBEVT
 SUEwHhcNMjYwNDIzMTQxMjI5WhcNMzAwNDMwMTQxMjI5WjA+MQswCQYDVQQGEwJS

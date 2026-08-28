@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using AISGorod.AspNetCore.Authentication.Esia.EsiaEnvironment;
 using AISGorod.AspNetCore.Authentication.Esia.Options;
@@ -79,7 +80,12 @@ internal class OpenIdConnectOptionsBuilder(EsiaOptions esiaOptions, IEsiaEnviron
         }
         else
         {
-            options.TokenValidationParameters.IssuerSigningKey = new RsaSecurityKey(environment.EsiaCertificate.GetRSAPublicKey());
+            // Передаём все известные сертификаты среды: ЕСИА меняет сертификат без предупреждения,
+            // и подойти должен любой из них.
+            options.TokenValidationParameters.IssuerSigningKeys = environment
+                .EsiaCertificates
+                .Select(certificate => new RsaSecurityKey(certificate.GetRSAPublicKey()))
+                .ToArray();
         }
     }
 

@@ -1,5 +1,6 @@
-﻿using System.Security.Cryptography.X509Certificates;
-using System.Text;
+﻿using System;
+using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
 
 namespace AISGorod.AspNetCore.Authentication.Esia.EsiaEnvironment;
 
@@ -9,16 +10,25 @@ namespace AISGorod.AspNetCore.Authentication.Esia.EsiaEnvironment;
 public class ProductionEsiaEnvironment : IEsiaEnvironment
 {
     /// <summary>
+    /// Сертификаты продуктивной среды ЕСИА: сначала актуальный, затем предыдущие.
+    /// Загружаются один раз, так как <see cref="X509Certificate2"/> удерживает неуправляемые ресурсы.
+    /// </summary>
+    private static readonly X509Certificate2[] Certificates =
+    [
+        X509CertificateUtils.LoadCertificate(Esia.EsiaCertificates.ProductionCertificate2026),
+        X509CertificateUtils.LoadCertificate(Esia.EsiaCertificates.ProductionCertificate2025)
+    ];
+
+    /// <summary>
     /// Сертификат среды ЕСИА.
     /// </summary>
-    public X509Certificate2 EsiaCertificate
-    {
-        get
-        {
-            var certificateBytes = Encoding.UTF8.GetBytes(EsiaCertificates.ProductionCertificate);
-            return X509CertificateLoader.LoadCertificate(certificateBytes);
-        }
-    }
+    [Obsolete("Свойство устарело и будет удалено в следующей мажорной версии. Используйте EsiaCertificates.")]
+    public X509Certificate2 EsiaCertificate => Certificates[0];
+
+    /// <summary>
+    /// Сертификаты среды ЕСИА.
+    /// </summary>
+    public IReadOnlyCollection<X509Certificate2> EsiaCertificates => Certificates;
 
     /// <summary>
     /// Базовый URL для запросов.
